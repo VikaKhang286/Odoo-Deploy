@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="dac_sale_dashboard.Dashboard">
+    <!-- Viewport chiếm trọn vùng action; scrollbar NGANG + DỌC nằm ở đây -->
+    <div class="dac-viewport" t-ref="dacAnchor">
+      <div class="o_dac_dashboard container-xxl py-2">
+        <t t-if="state.loading">
+          <div class="d-flex align-items-center justify-content-center py-5">
+            <i class="fa fa-spinner fa-pulse fa-2x"/><span class="ms-2">Đang tải…</span>
+          </div>
+        </t>
+        <t t-elif="state.error">
+          <div class="alert alert-danger"><t t-esc="state.error"/></div>
+        </t>
+        <t t-else="">
+
+          <!-- WELCOME BANNER 
+          <div class="row align-items-center mb-2">
+            <div class="col">
+              <h3 class="fw-semibold m-0">
+                Chào mừng trở lại
+                <t t-if="state.data and state.data.user_name">, <t t-esc="state.data.user_name"/></t>
+                <t t-else="">!</t>
+              </h3>
+            </div>
+            <div class="col-auto text-end text-muted small">
+              <t t-esc="(new Date()).toLocaleDateString('vi-VN', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' })"/>
+            </div>
+          </div> -->
+
+          <!-- Khối có độ rộng tối thiểu để xuất hiện scroll ngang khi cần -->
+          <div class="dac-wide">
+
+            <!-- HEADER 3 cột + thanh progress -->
+            <div class="dac-header row g-3">
+              <div class="col-lg-12">
+                <div class="dac-card is-hoverable">
+                  <!-- Hàng KPI: 3 cột -->
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="k-label">Doanh thu / Mục tiêu</div>
+                      <div class="k-value">
+                        <t t-esc="state.data.header.current_revenue"/> /
+                        <t t-esc="state.data.header.month_target"/>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="k-label">Số đơn hàng đã chốt</div>
+                      <div class="k-value"><t t-esc="state.data.header.closed_orders"/></div>
+                    </div>
+
+                    <div class="col-md-4">
+                      <div class="k-label">Doanh thu dự kiến</div>
+                      <div class="k-value"><t t-esc="state.data.header.expected_revenue"/></div>
+                    </div>
+                  </div>
+
+                  <!-- Hàng progress: chiếm full width card -->
+                  <div class="row align-items-center mt-2">
+                    <div class="col-12">
+                      <div class="progress dac-progress" style="height:10px;">
+                        <div class="progress-bar"
+                            role="progressbar"
+                            t-att-style="'width:'+Math.round((state.data.header.progress_ratio||0)*100)+'%';">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-between k-sub mt-1">
+                      <span>
+                        Tiến độ thực tế:
+                        <t t-esc="Math.round((state.data.header.progress_ratio||0)*100)"/>%
+                      </span>
+                      <span class="text-muted">
+                        (Kỳ vọng: <t t-esc="Math.round((state.data.header.expected_ratio||0)*100)"/>%)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3 KPI (cùng 1 chiều cao nhờ -kpi-list-h) -->
+            <div class="row g-3 mt-3">
+              <!-- Đang tư vấn -->
+              <div class="col-lg-4">
+                <div class="dac-card">
+                  <div class="sec-title">Đang tư vấn (<t t-esc="(state.data.lists.consulting||[]).length"/>)
+                    <!-- <button type="button"
+                            class="btn btn-link btn-sm float-end px-0"
+                            t-on-click="(ev)=>this.openListByBox('consulting', ev)">
+                      Xem chi tiết
+                    </button> -->
+                  </div>
+                  <div class="list-scroll">
+                    <t t-if="(state.data.lists.consulting||[]).length">
+                      <t t-foreach="state.data.lists.consulting" t-as="it" t-key="it.id">
+                        <!-- chỉ add class trạng thái khi có + VIP class -->
+                        <div t-attf-class="ticket ticket--lg #{ this.getStatusKey(it) ? 'ticket--state-' + this.getStatusKey(it) : '' } #{ it.vip_class || '' }">
+                          <div class="ticket__row">
+                            <div class="ticket__main" t-on-click="(ev)=>this.openConversation(it, ev)">
+                              <div class="ticket__title">
+                                <t t-esc="this.getTitle(it)"/>
+                              </div>
+
+                              <!-- Dòng trạng thái: đỏ/vàng/xanh -->
+                              <div class="ticket__state"
+                                   t-attf-class="ticket__state #{ (this.getStatusKey(it) == 'new' || this.getStatusKey(it) == 'recontact') ? 'text-danger' : (this.getStatusKey(it) == 'waiting' ? 'text-warning' : 'text-success') }">
+                                <t t-esc="this.getStateText(it)"/>
+                              </div>
+
+                              <!-- Trích tin nhắn -->
+                              <div class="ticket__snippet">
+                                <t t-esc="this.getSnippet(it)"/>
+                              </div>
+                            </div>
+
+                            <div class="ticket__actions">
+                              <!-- Nút checklist - CHỈ 2 TRẠNG THÁI -->
+                              <button t-att-class="{
+                                                    'btn': true,
+                                                    'btn-icon': true,
+                                                    'btn-checklist-done': !it.require_processing,
+                                                    'btn-checklist-pending': it.require_processing
+                                                  }"
+                                      t-att-title="it.require_processing ? 'Đánh dấu đã xử lý' : 'Đánh dấu cần xử lý'"
+                                      t-on-click="(ev)=>this.toggleChecklist(it, ev)">
+                                <i class="fa fa-check"/>
+                              </button>
+
+                              <!-- Nút mở Pancake (nếu có URL) -->
+                              <button t-if="this.getExternalUrl(it)"
+                                      class="btn btn-primary btn-icon text-white"
+                                      title="Mở trên Pancake"
+                                      t-on-click="(ev)=>this.openPancake(it, ev)">
+                                <i class="fa fa-comments"/> 
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </t>
+                    </t>
+                    <t t-else=""><div class="no-data">Không có dữ liệu</div></t>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Đã báo giá -->
+              <div class="col-lg-4">
+                <div class="dac-card">
+                  <div class="sec-title">Đã báo giá (<t t-esc="(state.data.lists.quotation||[]).length"/>)
+                    <button type="button"
+                            class="btn btn-link btn-sm float-end px-0"
+                            t-on-click="(ev)=>this.openListByBox('quotation', ev)">
+                      Xem chi tiết
+                    </button>
+                  </div>
+                  <div class="list-scroll">
+                    <t t-if="(state.data.lists.quotation||[]).length">
+                      <t t-foreach="state.data.lists.quotation" t-as="it" t-key="it.id">
+                        <div t-attf-class="ticket cursor-pointer #{ it.vip_class || '' } #{ it.is_high_value ? 'high-value' : '' }" t-on-click.stop.prevent="(ev)=>this.openForm('sale.order', it.id)">
+                          <div class="d-flex justify-content-between">
+                            <div class="ticket-title text-truncate"><t t-esc="it.title"/></div>
+                            <div class="ticket-amount"><t t-esc="it.amount"/></div>
+                          </div>
+                          <div class="ticket-sub text-muted">
+                            Ngày: <t t-esc="(it.date||'').slice(0,10).split('-').reverse().join('-')"/>
+                          </div>
+                        </div>
+                      </t>
+                    </t>
+                    <t t-else=""><div class="no-data">Không có dữ liệu</div></t>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Đang sản xuất (theo state custom của sale.order) -->
+              <div class="col-lg-4">
+                <div class="dac-card">
+                  <div class="sec-title">Đang sản xuất (<t t-esc="(state.data.lists.manufacturing||[]).length"/>)
+                      <button type="button"
+                              class="btn btn-link btn-sm float-end px-0"
+                              t-on-click="(ev)=>this.openListByBox('production', ev)">
+                        Xem chi tiết
+                      </button>
+                  </div>
+                  <div class="list-scroll">
+                    <t t-if="(state.data.lists.manufacturing||[]).length">
+                      <t t-foreach="state.data.lists.manufacturing" t-as="so" t-key="so.id">
+                        <div t-attf-class="ticket #{ so.vip_class || '' } #{ so.late_days &gt; 0 ? 'ticket-late' : '' }" t-on-click.stop.prevent="(ev)=>this.openForm('sale.order', so.id)">
+                          <div class="d-flex justify-content-between">
+                            <div class="ticket-title text-truncate"><t t-esc="so.title"/></div>
+                            <div class="ticket-sub text-end">
+                                <!-- Nếu là ưu tiên: tô màu -->
+                               <t t-if="so.is_priority_today">
+                                  <span class="badge badge-today me-2">TRONG NGÀY</span>
+                                </t>
+                                <t t-elif="so.is_priority">
+                                  <span class="badge badge-priority me-2">ƯU TIÊN</span>
+                                </t>
+                                
+                                <t t-if="so.late_days &gt; 0">
+                                  <span class="badge-late">Trễ <t t-esc="so.late_days"/> ngày</span>
+                                </t>
+                                <t t-else="">
+                                  <t t-if="so.deadline">
+                                    <t t-set="__dLeft"
+                                      t-value="Math.max(0, Math.ceil((new Date(so.deadline) - new Date()) / 86400000))"/>
+                                    <t t-if="__dLeft === 0">
+                                      <span class="badge-due">Đến hạn</span>
+                                    </t>
+                                    <t t-else="">
+                                      <span class="text-warning">Còn <t t-esc="__dLeft"/> ngày</span>
+                                    </t>
+                                  </t>
+                                  <t t-else=""><span class="text-muted">—</span></t>
+                                </t>
+                              </div>
+                          </div>
+                          <div class="ticket-sub">
+                            <t t-if="so.has_order_no">
+                              <span class="text-muted me-1">Số ĐH:</span>
+                              <span class="dac-orderno dac-orderno--has"><t t-esc="so.order_no"/></span>
+                            </t>
+                            <t t-else="">
+                              <span class="dac-orderno dac-orderno--none">Chưa có số ĐH</span>
+                            </t>
+                          </div>
+                        </div>
+                      </t>
+                    </t>
+                    <t t-else=""><div class="no-data">Không có dữ liệu</div></t>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2 bảng dưới -->
+            <div class="row g-3 mt-2">
+              <!-- Công nợ cần thu -->
+                <div class="col-lg-6">
+                  <div class="dac-card bottom-card">
+                    <div class="sec-title">
+                      Công nợ cần thu (<t t-esc="(state.data.lists.receivables||[]).length"/>)
+                    </div>
+
+                    <!-- header cố định -->
+                    <div class="row fw-bold small pb-2 bottom-head">
+                      <div class="col-6">Khách hàng</div>
+                      <div class="col-3 text-end">Số tiền</div>
+                      <div class="col-3 text-end">Hạn</div>
+                    </div>
+
+                    <!-- THÂN: cuộn -->
+                    <div class="bottom-scroll">
+                      <t t-if="(state.data.lists.receivables||[]).length">
+                        <t t-foreach="state.data.lists.receivables" t-as="m" t-key="m.move_id">
+                          <div class="row py-1 list-row"
+                              t-on-click.stop.prevent="(ev)=>this.openReceivable(m, ev)">
+                            <div class="col-6 text-truncate"><t t-esc="m.partner"/></div>
+                            <div class="col-3 text-end"><t t-esc="m.amount"/></div>
+                            <div class="col-3 text-end">
+                              <t t-if="m.due_days === 'no_invoice'">
+                                <span class="text-info">Chưa có hóa đơn</span>
+                              </t>
+                              <t t-else="">
+                                <t t-if="m.due_days &gt; 0">
+                                  <span class="badge-late">Quá <t t-esc="m.due_days"/> ngày</span>
+                                </t>
+                                <t t-elif="m.due_days === 0">
+                                  <span class="badge-due">Đến hạn</span>
+                                </t>
+                                <t t-else="">
+                                  <span class="text-warning">Còn <t t-esc="Math.abs(m.due_days)"/> ngày</span>
+                                </t>
+                              </t>
+                            </div>
+                          </div>
+                        </t>
+                      </t>
+                      <t t-else=""><div class="no-data">Không có dữ liệu</div></t>
+                    </div>
+
+                    <!-- FOOTER: không cuộn -->
+                    <div class="row bottom-foot pt-2 mt-2">
+                      <div class="col-6 text-end fw-bold">Tổng</div>
+                      <div class="col-3 text-end fw-bold"><t t-esc="state.data.sums.receivables_total_str"/></div>
+                      <div class="col-3"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Khách hàng đã hoàn thành -->
+                <div class="col-lg-6">
+                  <div class="dac-card bottom-card">
+                    <div class="sec-title">Khách hàng đã hoàn thành
+                        <button type="button"
+                                class="btn btn-link btn-sm float-end px-0"
+                                t-on-click="(ev)=>this.openListByBox('completed', ev)">
+                          Xem chi tiết
+                        </button>
+                    </div>
+
+                    <!-- header cố định -->
+                    <div class="row fw-bold small pb-2 bottom-head">
+                      <div class="col-6">Khách hàng</div>
+                      <div class="col-3 text-end">Giá trị đơn</div>
+                      <div class="col-3 text-end">Ngày</div>
+                    </div>
+
+                    <!-- THÂN: cuộn -->
+                    <div class="bottom-scroll">
+                      <t t-if="(state.data.lists.completed_customers||[]).length">
+                        <t t-foreach="state.data.lists.completed_customers" t-as="s" t-key="s.id">
+                          <div class="row py-1 list-row"
+                              t-on-click.stop.prevent="(ev)=>this.openForm('sale.order', s.id)">
+                            <div class="col-6 text-truncate"><t t-esc="s.name"/></div>
+                            <div class="col-3 text-end"><span class="text-success"><t t-esc="s.amount"/></span></div>
+                            <div class="col-3 text-end">
+                              <t t-esc="s.date ? s.date.slice(0,10).split('-').reverse().join('-') : '—'"/>
+                            </div>
+                          </div>
+                        </t>
+                      </t>
+                      <t t-else=""><div class="no-data">Không có dữ liệu</div></t>
+                    </div>
+
+                    <!-- FOOTER: không cuộn -->
+                    <div class="row bottom-foot pt-2 mt-2">
+                      <div class="col-6 text-end fw-bold">Tổng</div>
+                      <div class="col-3 text-end fw-bold text-success">
+                        <t t-esc="state.data.sums.completed_total_str"/>
+                      </div>
+                      <div class="col-3"></div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+          </div><!-- /dac-wide -->
+        </t>
+      </div>
+    </div>
+  </t>
+</templates>

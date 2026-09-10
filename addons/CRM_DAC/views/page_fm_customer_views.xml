@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List view cho page.fm.customer (dùng standalone hoặc inline) -->
+        <record id="view_page_fm_customer_list" model="ir.ui.view">
+            <field name="name">page.fm.customer.list</field>
+            <field name="model">page.fm.customer</field>
+            <field name="arch" type="xml">
+                <list string="Pancake Customer IDs">
+                    <field name="pancake_customer_id"/>
+                    <field name="partner_id"/>
+                    <field name="page_id"/>
+                    <field name="is_primary"/>
+                    <field name="note"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Form view cho page.fm.customer -->
+        <record id="view_page_fm_customer_form" model="ir.ui.view">
+            <field name="name">page.fm.customer.form</field>
+            <field name="model">page.fm.customer</field>
+            <field name="arch" type="xml">
+                <form string="Pancake Customer Alias">
+                    <sheet>
+                        <group>
+                            <group string="Liên kết Pancake">
+                                <field name="pancake_customer_id"/>
+                                <field name="page_id"/>
+                                <field name="is_primary"/>
+                            </group>
+                            <group string="Khách hàng Odoo">
+                                <field name="partner_id"/>
+                                <field name="partner_phone"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note" placeholder="Ghi chú (tùy chọn)"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Inherit partner form — thêm tab Pancake IDs -->
+        <record id="view_partner_form_inherit_pancake_customer_ids" model="ir.ui.view">
+            <field name="name">res.partner.form.pancake.customer.ids</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Pancake IDs" name="pancake_customer_ids"
+                          groups="dac_erp.group_dac_erp_manager">
+                        <field name="pancake_customer_ids">
+                            <list editable="bottom">
+                                <field name="pancake_customer_id"/>
+                                <field name="page_id"/>
+                                <field name="is_primary"/>
+                                <field name="note"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

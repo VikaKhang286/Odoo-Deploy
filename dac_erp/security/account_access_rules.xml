@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Record rules đơn giản cho account.move - CHỈ ÁP DỤNG CHO SALES USERS -->
+        <record id="account_move_sale_user_rule" model="ir.rule">
+            <field name="name">DAC ERP: Account Move Sales User Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[('dac_user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+            <field name="global" eval="False"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Record rules cho account.payment - CHỈ ÁP DỤNG CHO SALES USERS -->
+        <record id="account_payment_sale_user_rule" model="ir.rule">
+            <field name="name">Account Payment: Sales User Access Only</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="domain_force">[('dac_user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Manager có quyền truy cập tất cả - KHÔNG BỊ HẠN CHẾ -->
+        <record id="account_move_manager_rule" model="ir.rule">
+            <field name="name">Account Move: Manager Full Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+            <field name="global" eval="False"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="account_payment_manager_rule" model="ir.rule">
+            <field name="name">Account Payment: Manager Full Access</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Admin/Superuser có quyền truy cập tất cả - KHÔNG BỊ HẠN CHẾ -->
+        <record id="account_move_admin_rule" model="ir.rule">
+            <field name="name">Account Move: Admin Full Access</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+            <field name="global" eval="False"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record id="account_payment_admin_rule" model="ir.rule">
+            <field name="name">Account Payment: Admin Full Access</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    </data>
+</odoo>

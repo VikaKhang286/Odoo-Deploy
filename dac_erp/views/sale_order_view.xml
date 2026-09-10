@@ -1,0 +1,835 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="dac_sale_order_custom_view_form" model="ir.ui.view">
+            <field name="name">sale.order.custom.form</field>
+            <field name="model">sale.order</field>
+            <field name="priority">1</field> <!-- Ưu tiên view này -->
+            <field name="arch" type="xml">
+                <form string="Báo giá" class="dac-sale-form">
+                    <header>
+                        <field name="order_state_custom" 
+                                widget="statusbar" 
+                                statusbar_visible="quotation,deposit,production,installation,delivery,payment,completed"
+                                statusbar_colors='{"cancel":"red"}'
+                            />
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="check_and_add_deposit_line"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-search"
+                                    string="Kiểm tra cọc"
+                                    help="Kiểm tra và thêm dòng đặt cọc nếu có hóa đơn cọc đã thanh toán"
+                                    invisible="deposit_invoice_count == 0"/>
+                            <button name="check_and_update_completion_status"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-refresh"
+                                    string="Cập nhật"
+                                    help="Kiểm tra, cập nhật trạng thái và tải lại view"
+                                    groups="base.group_system,dac_erp.group_dac_erp_manager"/>
+                            <button name="action_reset_completion_status_if_only_deposit"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-undo"
+                                    string="Reset"
+                                    help="Reset trạng thái nếu đơn bị set sai khi chỉ thanh toán cọc"
+                                    groups="base.group_system"/>
+                            <button name="action_reset_payment_status"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-undo"
+                                    string="Reset Thanh Toán"
+                                    help="Reset trạng thái thanh toán khi nhấn nhầm (chỉ Manager)"
+                                    invisible="order_state_custom != 'completed'"
+                                    groups="dac_erp.group_dac_erp_manager"/>
+                            <button name="action_push_gs_both"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-cloud-upload"
+                                    string="Push Google Sheet"
+                                    help="Đẩy cả 1-sheet &amp; 2-sheets (append-only, chống trùng)"
+                                    groups="dac_erp.group_dac_erp_manager"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <field name="has_paid_deposit_invoice" invisible="1"/>
+                        <field name="deposit_invoice_count" invisible="1"/>
+                        <field name="total_invoice_count" invisible="1"/>
+                        <field name="has_final_invoice" invisible="1"/>
+                        <field name="can_delete_products" invisible="1"/>
+                        <field name="conversation_count" invisible="1"/>
+                        <field name="conversation_buttons_html" invisible="1"/>
+                        <!-- TẦNG 1: Thông tin khách hàng và cơ bản -->
+                        <group name="customer_info">
+                            <group name="partner_details">
+                                <field name="partner_vip_class" invisible="1"/>
+                                
+                                <!-- Partner field cho Design/Production - readonly -->
+                                <field name="partner_id"
+                                       groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production"
+                                       options="{'no_open': True, 'no_create_edit': True}"
+                                       context="{'show_address': 1, 'show_vat': True}"
+                                       readonly="1"
+                                       />
+
+                                <!-- Partner field cho Sale/Manager - editable -->
+                                <field name="partner_id"
+                                       groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"
+                                       options="{'no_create_edit': True}"
+                                       context="{'show_address': 1, 'show_vat': True}"
+                                       />
+
+                                
+                                <!-- Số đơn trên excel -->
+                                <field name="order_number"
+                                       string="Số đặt hàng"
+                                       placeholder="VD: 8766"
+                                       readonly="is_design_user or is_production_user"/>
+                                <field name="phone" 
+                                       string="Số điện thoại"
+                                       placeholder="Số điện thoại"
+                                       readonly="is_design_user or is_production_user"/>
+                                <!-- Trường địa chỉ giao hàng - hiện khi chọn "Giao hàng" -->
+                                <field name="delivery_address" 
+                                       string="Địa chỉ giao hàng"
+                                       invisible="fulfillment_method != 'delivery' or order_state_custom not in ['production','delivery', 'payment','completed']"
+                                       readonly="is_delivery_confirmed or is_design_user"
+                                       widget="text"/>
+                                <!-- Trường địa chỉ thi công/lắp đặt - hiện khi chọn "Thi công - lắp đặt" -->
+                                <field name="installation_address" 
+                                       string="Địa chỉ thi công/lắp đặt"
+                                       invisible="fulfillment_method != 'installation' or order_state_custom not in ['production','installation', 'payment','completed']"
+                                       readonly="is_installation_confirmed or is_design_user"
+                                       widget="text"/>
+                            </group>
+                            <group name="staff_assignment">
+                                <!-- Hiển thị thông tin Sale, Thiết kế, Sản xuất -->
+                                <field name="user_id" 
+                                       widget="many2one_avatar_user" 
+                                       string="Sale phụ trách"
+                                       readonly="is_design_user or is_production_user"/>
+                                <!-- Thiết kế -->
+                                <field name="user_id_design"
+                                       widget="many2one_avatar_user"
+                                       string="Người thiết kế"
+                                       readonly="is_design_user"/>
+                                <!-- Sản xuất -->
+                                <field name="user_id_production"
+                                       widget="many2one_avatar_user"
+                                       string="Người sản xuất"
+                                       readonly="is_design_user"/>
+                                <!-- Nhóm sản xuất -->
+                                <field name="production_group_ids"
+                                       widget="many2many_tags"
+                                       string="Nhóm sản xuất"
+                                       readonly="is_design_user"/> <!-- thêm domain="[('id','!=', user_id_production)]" nếu không để người phụ trách sản xuất vào-->
+                            </group>
+                        </group>
+
+                        <!-- TẦNG 2: Độ ưu tiên và Hình thức thực hiện -->
+                        <group name="priority_and_method">
+                            <group name="priority_settings">
+                                <separator string="Độ ưu tiên" />
+                                <field name="is_priority" 
+                                        string="Ưu tiên" 
+                                        widget="boolean_toggle"
+                                        readonly="is_design_user"/>
+                                <field name="is_priority_today" 
+                                        string="Trong ngày" 
+                                        widget="boolean_toggle" 
+                                        readonly="not is_priority or is_design_user"
+                                        invisible="not is_priority"/>
+                            </group>
+                            <group name="fulfillment_settings">
+                                <separator string="Hình thức thực hiện" />
+                                <field name="fulfillment_method"
+                                       nolabel="1"
+                                       widget="radio"
+                                       readonly="order_state_custom in ['completed', 'cancelled','delivery','installation','payment'] 
+                                       or is_delivery_confirmed or is_installation_confirmed
+                                       or is_design_user"/>
+                            </group>
+                        </group>
+                        <!-- TẦNG 3: Đặt cọc & Thiết kế và Sản xuất -->
+                        <group name="deposit_design_production">
+                            <group name="deposit_design">
+                                <separator string="Đặt cọc &amp; Thiết kế" invisible="order_state_custom == 'quotation'"/>
+                                <field name="design_deadline"
+                                       string="Dự kiến hoàn tất"
+                                       groups="dac_erp.group_dac_erp_design"
+                                       invisible="order_state_custom == 'quotation'"
+                                       readonly="1"/>
+                                <!-- DESIGN + ADMIN: highlight (admin xem giống design) -->
+                                <!-- Ô nhập: kéo full bề ngang -->
+                                <div class="dac-dp-block"
+                                    groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production,dac_erp.group_dac_erp_manager"
+                                    invisible="order_state_custom == 'quotation'">
+
+                                    <div class="dac-dp-card">
+                                        <field name="design_link" nolabel="1"
+                                            placeholder="Hãy nhập link thiết kế"/>
+
+
+                                        <!-- Nút 'Hoàn thành' CHỈ CHO DESIGN + PRODUCTION + MANAGER -->
+                                        <button name="action_submit_design_link"
+                                            type="object"
+                                            class="btn btn-success o_col-12 dac-dp-submit"
+                                            string="Hoàn thành"
+                                            groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production,dac_erp.group_dac_erp_manager"
+                                            invisible="not (order_state_custom in ['deposit','production']) or design_done"/>
+                                    </div>    
+                                </div>
+                                
+                                <field name="design_link"
+                                    class="o_w-100"
+                                    groups="dac_erp.group_dac_erp_sale"
+                                    placeholder="Link thiết kế"
+                                    invisible="order_state_custom == 'quotation'"/>
+
+                                <!-- 3 field lưu trạng thái hoàn tất -->
+                                <field name="design_done" readonly="1" invisible="not design_done"/>
+                                <field name="design_done_user_id" invisible="1"/>
+                                <field name="design_done_date" invisible="1"/>
+
+                                <!-- Tiền cọc-->
+                                <field name="has_deposit"
+                                       invisible="order_state_custom == 'quotation' and not is_deposit_confirmed"
+                                       readonly="is_deposit_confirmed or order_state_custom != 'deposit' or is_production_confirmed"
+                                       groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                <!-- Div tiền cọc: Luôn hiện ở mọi tiến trình trừ báo giá đầu tiên, chỉ ẩn nếu không có cọc hoặc đang ở quotation -->
+                                <div invisible="(order_state_custom == 'quotation' and not is_deposit_confirmed) or not has_deposit" 
+                                     class="dac-deposit-container"
+                                     groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system">
+                                    <div class="dac-deposit-flex">
+                                        <label for="deposit_amount" class="dac-deposit-label">TIỀN CỌC</label>
+                                        <div class="dac-deposit-amount-container">
+                                            <div class="dac-deposit-amount-inner">
+                                                <field name="deposit_amount"
+                                                       class="dac-deposit-amount-field"
+                                                       readonly="is_deposit_confirmed"
+                                                       widget="integer"
+                                                       groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                                <span class="dac-deposit-currency">đ</span>
+                                            </div>
+                                        </div>
+                                        <button name="action_deposit_invoice"
+                                            string="Lên cọc"
+                                            type="object"
+                                            class="btn btn-success dac-invoice-button"
+                                            groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"
+                                            invisible="not (order_state_custom == 'deposit' and has_deposit and not is_deposit_confirmed)"/>
+                                        <!-- Nút Xem hóa đơn cho đơn CÓ cọc - nằm cùng hàng -->
+                                        <button name="action_view_all_invoices"
+                                            string="Xem hóa đơn"
+                                            type="object"
+                                            class="btn btn-success dac-invoice-button"
+                                            groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"
+                                            invisible="total_invoice_count == 0"/>
+                                    </div>
+                                </div>
+                                <!-- Nút Xem hóa đơn cho đơn KHÔNG cọc - hiện riêng lẻ và đẹp hơn -->
+                                <div class="dac-invoice-button-container" invisible="has_deposit or total_invoice_count == 0">
+                                    <button name="action_view_all_invoices"
+                                        string="Xem hóa đơn"
+                                        type="object"
+                                        groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"
+                                        class="btn btn-success dac-invoice-button-standalone"/>
+                                </div>
+                            </group>
+                            <group name="production_details">
+                                <separator string="Sản xuất" invisible="order_state_custom == 'quotation'"/>
+                                <field name="production_image" 
+                                       string="Hình ảnh" 
+                                       widget="image"
+                                       class="oe_avatar dac-production-image"
+                                       invisible="order_state_custom == 'quotation'"/>
+                                <!-- Nút tiện ích cho ảnh -->
+                                <button name="action_view_production_image"
+                                        type="object"
+                                        class="btn btn-secondary"
+                                        invisible="not production_image">
+                                    <i class="fa fa-external-link dac-image-button"/>
+                                    <span>Xem ảnh</span>
+                                </button>
+
+                                <!-- Nút Tải ảnh -->
+                                <button name="action_download_production_image"
+                                        type="object"
+                                        class="btn btn-secondary"
+                                        invisible="not production_image">
+                                    <i class="fa fa-download dac-image-button"/>
+                                    <span>Tải xuống</span>
+                                </button>
+                                <!-- Trường deadline sản xuất - thiết kế lại: luôn nằm trên, điều kiện invisible gốc, giao diện hài hòa -->
+                                <div invisible="order_state_custom == 'quotation' and not is_deposit_confirmed or 1"
+                                     class="dac-deadline-container">
+                                    <i class="fa fa-calendar dac-deadline-icon"></i>
+                                    <span class="o_form_label dac-deadline-label">Ngày dự kiến hoàn tất sản xuất</span>
+                                    <field name="production_deadline"
+                                           placeholder="VD: 01/09/2025"
+                                           class="dac-deadline-field"/>
+                                </div>
+                                <field name="production_deadline"
+                                           placeholder="VD: 01/09/2025"
+                                           string="Ngày dự kiến hoàn tất sản xuất"
+                                           class="dac-deadline-container"
+                                           invisible="order_state_custom == 'quotation' and not is_deposit_confirmed"/>
+                                <!-- Trường hợp sản xuất bị trễ -->
+                                <field name="production_is_delayed"
+                                       string="Có trễ không?"
+                                       widget="boolean_toggle"
+                                       invisible="(order_state_custom in ['quotation','deposit']) and (not started_delivery) or 1"
+                                       readonly="order_state_custom != 'production' or started_delivery or started_installation"/>
+                                <field name="production_delay_date"
+                                       string="Ngày trễ"
+                                       invisible="(not production_is_delayed) or ((order_state_custom in ['quotation','deposit']) and (not started_delivery and not started_installation))"
+                                       readonly="order_state_custom != 'production' or started_delivery or started_installation"/>
+                                <field name="production_delay_reason"
+                                       string="Lý do trễ"
+                                       widget="text"
+                                       placeholder="Hãy điền nguyên nhân trễ…"
+                                       invisible="(not production_is_delayed) or ((order_state_custom in ['quotation','deposit']) and (not started_delivery and not started_installation))"
+                                       readonly="order_state_custom != 'production' or started_delivery or started_installation"/>
+                                       
+                                <!-- Nút đánh dấu hoàn thành sản xuất -->
+                                <button name="action_mark_production_done"
+                                        type="object"
+                                        string="Hoàn thành sản xuất"
+                                        class="btn btn-success"
+                                        groups="dac_erp.group_dac_erp_production,dac_erp.group_dac_erp_manager,base.group_system"
+                                        invisible="order_state_custom != 'production' or not is_production_confirmed or production_done"/>
+
+
+                                <field name="production_done" invisible="order_state_custom != 'production' or not is_production_confirmed or not production_done" readonly="1"/>
+                                <field name="production_done_user_id" invisible="1"/>
+                                <field name="production_done_date" invisible="1"/>
+                            </group> 
+                        </group>
+                        <notebook>
+                            <page string="Chi tiết đơn hàng">
+                                <field name="order_line" widget="section_and_note_one2many" mode="list,kanban" 
+                                       readonly="state == 'cancel' or locked"
+                                       can_delete="can_delete_products"
+                                       context="{'list_view_ref': 'dac_erp.sale_order_line_list_view'}">
+                                    <list editable="bottom">
+                                        <!-- Phần control để thêm ghi chú -->
+                                        <control>
+                                            <create name="add_product_control" string="Thêm sản phẩm"/>
+                                            <!-- <create name="add_section_control" string="Thêm đầu mục" context="{'default_display_type': 'line_section'}"/> -->
+                                            <create name="add_note_control" string="Thêm ghi chú" context="{'default_display_type': 'line_note'}"/>
+                                        </control>
+                                        <field name="sequence" widget="handle" optional="show"/>
+                                        <field name="product_id" string="Sản phẩm" invisible="display_type" 
+                                               options="{'no_create_edit': False, 'can_create': True, 'can_write': True}"/>
+                                        <field name="description" string="Nội dung" invisible="display_type"/>
+                                        <field name="material" string="Chất liệu" invisible="display_type"/>
+                                        <field name="height" string="Chiều cao" invisible="display_type"/>
+                                        <field name="width" string="Chiều ngang" invisible="display_type"/>
+                                        <field name="product_uom_qty" string="Số lượng" invisible="display_type"/>
+                                        <field name="price_unit" string="Đơn giá" widget="integer" invisible="display_type"/>
+                                        <field name="tax_id" string="Thuế" widget="many2many_tags" invisible="display_type"/>
+                                        <field name="price_subtotal" string="Thành tiền" readonly="1" invisible="display_type"/>
+                                        <field name="company_id" invisible="1" optional="hide"/>
+                                        <field name="currency_id" invisible="1" optional="hide"/>
+                                        <!-- Hiển thị name CHỈ khi là dòng section/note và giữ cột này không trong menu tùy chọn -->
+                                         <field name="name" 
+                                               string=""
+                                               width="1px"
+                                               invisible="not display_type" 
+                                               decoration-bf="display_type == 'line_section'" 
+                                               decoration-it="display_type == 'line_note'"
+                                               required="display_type in ['line_section', 'line_note']"
+                                               widget="sol_text"/> <!-- Thêm widget này -->
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Thông tin thiết kế"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager">
+
+                                <group>
+                                    <!-- Sale chỉ định ngày phân công & deadline trong giai đoạn Đặt cọc -->
+                                    <field name="design_assigned_date"
+                                        string="Ngày phân công"
+                                        placeholder="VD: 23/10/2025"
+                                        readonly="design_done"/>
+
+                                    <field name="design_deadline"
+                                        string="Deadline"
+                                        placeholder="VD: 26/10/2025"
+                                        readonly="design_done"/>
+
+                                    <field name="design_link"
+                                        string="Link thiết kế"/>
+
+                                    <field name="design_done"
+                                        string="Đã hoàn thành"
+                                        readonly="1"/>
+                                    
+                                    <!-- Gợi ý: giữ nguyên nút “Hoàn thành” ở khu Design (Sale KHÔNG có nút này) -->
+                                    <!-- <span class="o_form_label">* Lưu ý: Chỉ Designer xác nhận 'Hoàn thành'.</span> -->
+                                </group>
+                            </page>
+                            <page string="Thông tin sản xuất"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager">
+
+                                <group>
+                                    <!-- Sale chỉ định ngày phân công & deadline trong giai đoạn Sản xuất -->
+                                    <field name="production_deadline"
+                                        string="Deadline"
+                                        placeholder="VD: 30/10/2025"
+                                        readonly="production_done"/>
+                                    
+                                    <field name="production_image"
+                                        string="Hình ảnh sản xuất"
+                                        widget="image"
+                                        class="oe_avatar dac-production-image"/>
+
+                                    <field name="production_is_delayed"
+                                        string="Có trễ không?"
+                                        widget="boolean_toggle"
+                                        />
+                                    <field name="production_delay_date"
+                                        string="Ngày trễ"
+                                        invisible="not production_is_delayed"/>
+                                    <field name="production_delay_reason"
+                                        string="Lý do trễ"
+                                        widget="text"
+                                        placeholder="Hãy điền nguyên nhân trễ…"
+                                        invisible="not production_is_delayed"/>
+                                    
+                                    <field name="production_done"
+                                        string="Đã hoàn thành"
+                                        readonly="1"/>
+                                    
+                                    <!-- Gợi ý: giữ nguyên nút “Hoàn thành sản xuất” ở khu Production (Sale KHÔNG có nút này) -->
+                                    <!-- <span class="o_form_label">* Lưu ý: Chỉ Production xác nhận 'Hoàn thành sản xuất'.</span> -->
+                                </group>
+                            </page>
+                        </notebook>
+                        <!-- <div style="text-align: left; margin-top: 24px;">
+                            <field name="note" placeholder="Ghi chú" nolabel="1"/>
+                        </div> -->
+                        
+                        <!-- Phần tóm tắt tiền - CHỈ cho Sale và Manager -->
+                        <div class="dac-summary-container" 
+                             groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager">
+                            <field name="currency_id" invisible="1"/>
+                            <!-- 1. Thành tiền (bắt buộc có) -->
+                            <div class="dac-summary-row">
+                                <label for="amount_untaxed_original" class="dac-summary-label">Thành tiền:</label>
+                                <span class="dac-summary-value">
+                                    <field name="amount_untaxed_original" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <!-- 2. Thuế (bắt buộc có) -->
+                            <div class="dac-summary-row">
+                                <label for="amount_tax" class="dac-summary-label">Thuế:</label>
+                                <span class="dac-summary-value">
+                                    <field name="amount_tax" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <!-- 3. Tổng (bắt buộc có) -->
+                            <div class="dac-summary-row">
+                                <label for="amount_total" class="dac-summary-label">Tổng:</label>
+                                <span class="dac-summary-value dac-summary-value--large">
+                                    <field name="amount_total" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <!-- 4. Cọc đã thu (nếu có) -->
+                            <div class="dac-summary-row" invisible="total_deposit_paid == 0">
+                                <label for="total_deposit_paid" class="dac-summary-label">Cọc đã thu:</label>
+                                <span class="dac-summary-value dac-summary-value--deposit">
+                                    <field name="total_deposit_paid" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <!-- 5. Số tiền phải thu (nổi bật) -->
+                            <div class="dac-summary-row" invisible="order_state_custom == 'cancel'">
+                                <label for="remaining_amount_display" class="dac-summary-label" style="font-weight: bold; color: #e55353;">Số tiền phải thu:</label>
+                                <span class="dac-summary-value--highlight">
+                                    <field name="remaining_amount_display" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <div invisible="not is_order_completed" class="dac-alert dac-alert--completed">
+                                <span>Đơn hàng đã thanh toán</span>
+                            </div>
+                            <div invisible="order_state_custom != 'cancel'" class="dac-alert dac-alert--cancel">
+                                <span>Đơn hàng đã hủy</span>
+                            </div>
+                            <field name="is_order_completed" invisible="1"/>
+                            <field name="remaining_amount_display" invisible="1"/>
+                        </div>
+                        
+                        <!-- Phần buttons - CHO TẤT CẢ USERS -->
+                        <div class="dac-action-buttons">
+                                <!-- Nút Hủy đơn hàng - chỉ hiện ở trạng thái báo giá và đã lưu và chưa có hóa đơn cọc -->
+                                <button name="action_cancel_order"
+                                    string="Hủy đơn hàng"
+                                    type="object"
+                                    class="btn-danger"
+                                    invisible="not id or order_state_custom != 'quotation' or deposit_invoice_count > 0"
+                                    confirm="Bạn có chắc chắn muốn HỦY đơn hàng này không?"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"/>
+
+                                <!-- Nút Lưu -->
+                                <button name="action_save_custom"
+                                    string="Lưu" 
+                                    type="object"  
+                                    class="btn-primary"
+                                    invisible="is_order_completed or order_state_custom == 'cancel'"
+                                    />
+
+                                <!-- Nút Quay lại tiến trình trước: Dùng chung cho mọi tiến trình (trừ báo giá) -->
+                                <button name="action_back_custom_step"
+                                    string="Quay lại"
+                                    type="object"
+                                    class="btn-secondary"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"
+                                    invisible="order_state_custom == 'quotation' or is_order_completed or order_state_custom == 'cancel'"/>
+
+                                <!-- Nút Xác nhận cho tiến trình báo giá -->
+                                <button name="action_confirm_info"
+                                    string="Xác nhận"
+                                    type="object"
+                                    class="btn-warning"
+                                    invisible="
+                                        order_state_custom != 'quotation'
+                                        or is_quotation_confirmed"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+
+                                <!-- Nút "Tiến hành sản xuất" cho trạng thái deposit với logic mới -->
+                                <button name="action_proceed_to_production"
+                                    string="Tiến hành sản xuất"
+                                    type="object"
+                                    class="btn-primary"
+                                    context="{'from_ui_button': True}"
+                                    invisible="
+                                        order_state_custom != 'deposit'
+                                        or not production_deadline
+                                        or (has_deposit and (not is_deposit_confirmed or not has_paid_deposit_invoice))"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                
+                                <!-- Nút "Tiến hành thi công" cho trạng thái production -->
+                                <button name="action_proceed_to_installation"
+                                        string="Tiến hành thi công"
+                                        type="object" 
+                                        class="btn-primary"
+                                        groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_production"
+                                        invisible="order_state_custom != 'production' or not is_production_confirmed or fulfillment_method != 'installation'"/>
+
+
+                                <!-- Nút "Tiến hành giao hàng" cho trạng thái production -->
+                                <button name="action_proceed_to_delivery"
+                                    string="Tiến hành giao hàng"
+                                    type="object"
+                                    class="btn-primary"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_production"
+                                    invisible="order_state_custom != 'production' or not is_production_confirmed or fulfillment_method != 'delivery'"/>
+
+                                <!-- Nút Xác nhận cho các tiến trình khác (chỉ delivery) -->
+                                <button name="action_confirm_info"
+                                    string="Xác nhận"
+                                    type="object"
+                                    class="btn-warning"
+                                    invisible="
+                                        order_state_custom != 'delivery'
+                                        or is_delivery_confirmed"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                <!-- Nút Xác nhận cho tiến trình lắp đặt (installation) -->
+                                <button name="action_confirm_info" 
+                                    string="Xác nhận" 
+                                    type="object" 
+                                    class="btn-warning"
+                                    invisible="
+                                        order_state_custom != 'installation' 
+                                        or is_installation_confirmed"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+
+                                <!-- Nút Tạo hóa đơn ở bước cuối cùng (payment) -->
+                                <button name="action_create_final_invoice"
+                                    string="Tạo hóa đơn"
+                                    type="object"
+                                    class="btn-success"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"
+                                    invisible="order_state_custom != 'payment' or is_payment_confirmed or has_final_invoice"/>
+
+                                <!-- Nút Chuyển sang tiến trình tiếp theo: Đặt cọc -->
+                                <button name="action_next_step"
+                                    string="Đặt cọc"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="order_state_custom != 'quotation' or not is_quotation_confirmed"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                    
+                                <!-- Nút Chuyển sang tiến trình tiếp theo: Thu tiền -->
+                                <!-- Bỏ nút Giao hàng vì đã có nút "Tiến hành giao hàng" riêng -->
+                                <button name="action_next_step"
+                                    string="Thu tiền"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="order_state_custom != 'delivery' or not is_delivery_confirmed"
+                                    groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+                                <!-- Nút Chuyển sang tiến trình tiếp theo: Ẩn ở bước cuối cùng -->
+                                <!-- Không cần nút cho bước 'payment' vì không có bước tiếp theo -->
+                        </div>
+                    </sheet>
+                    
+                    <!-- Conversation Widget - Draggable với bubble mode -->
+                    <div id="conversation-floating-widget" 
+                         class="conversation-widget-container"
+                         groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"
+                         invisible="conversation_count == 0">
+                        
+                        <!-- Draggable Conversation Widget -->
+                        <div class="conversation-widget" id="conversation-widget">
+                            
+                            <!-- Bubble Mode Content (hidden by default) -->
+                            <div class="conversation-bubble-content">
+                                <i class="fa fa-comments" style="font-size: 20px;"></i>
+                                <div style="font-size: 10px; margin-top: 2px;">
+                                    <field name="conversation_count"/>
+                                </div>
+                            </div>
+                            
+                            <!-- Normal Widget Header (Draggable) -->
+                            <div class="conversation-header">
+                                <div class="conversation-header-left">
+                                    <i class="fa fa-arrows drag-handle" title="Kéo để di chuyển"></i>
+                                    <i class="fa fa-comments conversation-header-icon"></i>
+                                    <span class="conversation-header-title">Tin nhắn Pancake</span>
+                                    <span class="conversation-header-count">
+                                        <field name="conversation_count"/>
+                                    </span>
+                                </div>
+                                <div class="conversation-header-right">
+                                    <i class="fa fa-compress bubble-toggle-btn" 
+                                       title="Chuyển sang bubble mode"
+                                       style="margin-right: 8px; cursor: pointer;"></i>
+                                    <i class="fa fa-chevron-down conversation-toggle" 
+                                       title="Thu gọn/Mở rộng"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Content (Collapsible) -->
+                            <div class="conversation-content">
+                                <field name="conversation_buttons_html" nolabel="1"/>
+                                
+                                <!-- Quick Actions -->
+                                <div class="conversation-quick-actions">
+                                    <button name="action_view_conversations"
+                                            type="object"
+                                            class="btn btn-sm btn-outline-primary conversation-view-all-btn"
+                                            invisible="conversation_count &lt;= 5">
+                                        <i class="fa fa-list"></i>Xem tất cả
+                                    </button>
+                                    <span class="conversation-hint">
+                                        Click để mở Pancake
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Notification badge for bubble mode -->
+                            <div class="bubble-notification" style="display: none;">
+                                <field name="conversation_count"/>
+                            </div>
+                            
+                            <!-- Expand button for bubble mode -->
+                            <div class="bubble-toggle" style="display: none;">
+                                <i class="fa fa-expand"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- View để ẩn button tự động của Odoo -->
+        <record id="dac_sale_order_hide_auto_buttons" model="ir.ui.view">
+            <field name="name">sale.order.hide.auto.buttons</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_invoice']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- List view cho Sale users - không cho delete -->
+        <record id="dac_sale_order_custom_view_list_sale" model="ir.ui.view">
+            <field name="name">sale.order.custom.list.sale</field>
+            <field name="model">sale.order</field>
+            <field name="priority">2</field>
+            <field name="groups_id" eval="[(6, 0, [ref('dac_erp.group_dac_erp_sale')])]"/>
+            <field name="arch" type="xml">
+                <list string="Báo giá" 
+                      default_order="date desc" 
+                      delete="false" 
+                      create="true" 
+                      edit="true"
+                      decoration-warning="partner_vip_class == 'vip'"
+                      decoration-info="partner_vip_class == 'loyal'"
+                      decoration-danger="partner_vip_class == 'premium'"
+                      decoration-bf="partner_vip_class">
+                    <field name="partner_vip_class" invisible="1" optional="hide"/>
+                    <field name="latest_quotation_info" string="Báo giá mới nhất" readonly="1" optional="hide"/>
+                    <field name="name" optional="hide"/>
+                    <field name="company_id" invisible="1" optional="hide"/>
+                    <field name="currency_id" invisible="1" optional="hide"/>
+                    <field name="pricelist_id" invisible="1" optional="hide"/>
+                    <field name="create_date" string="Ngày tạo đơn (hệ thống)" optional="hide"/>
+                    <field name="order_number" string="Số đặt hàng"/>
+                    <field name="date" string="Ngày đơn hàng"/>
+                    <field name="partner_id" widget="many2one"/>
+                    <field name="user_id" widget="many2one_avatar_user" string="Sale phụ trách"/>
+                    <field name="user_id_design" widget="many2one_avatar_user" string="Người thiết kế"/>
+                    <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất"/>
+                    <field name="amount_total" sum="Total" widget="monetary"/>
+                    <field name="order_state_badge" widget="html" string="Trạng thái"/>
+                    <field name="is_priority" string="Ưu tiên"/>
+                    <field name="is_priority_today" string="Trong ngày"/>
+                    <field name="production_deadline" string="Ngày hoàn tất sản xuất"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- List view cho Manager - có full quyền -->
+        <record id="dac_sale_order_custom_view_list" model="ir.ui.view">
+            <field name="name">sale.order.custom.list</field>
+            <field name="model">sale.order</field>
+            <field name="priority">1</field>
+            <field name="groups_id" eval="[(6, 0, [ref('dac_erp.group_dac_erp_manager')])]"/>
+            <field name="arch" type="xml">
+                <list string="Báo giá" 
+                      default_order="date desc" 
+                      delete="true" 
+                      create="true" 
+                      edit="true"
+                      decoration-warning="partner_vip_class == 'vip'"
+                      decoration-info="partner_vip_class == 'loyal'"
+                      decoration-danger="partner_vip_class == 'premium'"
+                      decoration-bf="partner_vip_class">
+                    <field name="partner_vip_class" invisible="1" optional="hide"/>
+                    <field name="latest_quotation_info" string="Báo giá mới nhất" readonly="1" optional="hide"/>
+                    <field name="name" optional="hide"/>
+                    <field name="company_id" invisible="1" optional="hide"/>
+                    <field name="currency_id" invisible="1" optional="hide"/>
+                    <field name="pricelist_id" invisible="1" optional="hide"/>
+                    <field name="create_date" string="Ngày tạo đơn (hệ thống)" optional="hide"/>
+                    <field name="order_number" string="Số đặt hàng"/>
+                    <field name="date" string="Ngày đơn hàng"/>
+                    <field name="partner_id" widget="many2one"/>
+                    <field name="user_id" widget="many2one_avatar_user" string="Sale phụ trách"/>
+                    <field name="user_id_design" widget="many2one_avatar_user" string="Người thiết kế"/>
+                    <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất"/>
+                    <field name="amount_total" sum="Total" widget="monetary"/>
+                    <field name="order_state_badge" widget="html" string="Trạng thái"/>
+                    <field name="is_priority" string="Ưu tiên"/>
+                    <field name="is_priority_today" string="Trong ngày"/>
+                    <field name="production_deadline" string="Ngày hoàn tất sản xuất"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="dac_sale_order_custom_search" model="ir.ui.view">
+            <field name="name">sale.order.custom.search</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm báo giá">
+                    <field name="partner_id"/>
+                    <field name="order_number"/>
+                    <field name="order_state_custom"/>
+                    <filter string="Cơ hội" name="opportunity" domain="[('is_zero_amount', '=', True)]"/>
+                    <filter string="Báo giá" name="quotation" domain="[('order_state_custom', '=', 'quotation'), ('is_zero_amount', '=', False)]"/>
+                    <filter string="Đặt cọc" name="deposit" domain="[('order_state_custom', '=', 'deposit')]"/>
+                    <filter string="Sản xuất" name="production" domain="[('order_state_custom', '=', 'production')]"/>
+                    <filter string="Thi công - lắp đặt" name="installation" domain="[('order_state_custom','=','installation')]"/>
+                    <filter string="Giao hàng" name="delivery" domain="[('order_state_custom', '=', 'delivery')]"/>
+                    <filter string="Thu tiền" name="payment" domain="[('order_state_custom', '=', 'payment')]"/>
+                    <filter string="Hủy" name="cancel" domain="[('order_state_custom', '=', 'cancel')]"/>
+                    <separator/>
+                    <filter string="Đã hoàn thành" name="completed" domain="[('is_order_completed', '=', True)]"/>
+                    <filter string="Chưa hoàn thành" name="not_completed" domain="[('is_order_completed', '=', False)]"/>
+                    <filter string="Số đặt hàng" name="order_number" domain="[('order_number', '!=', False)]"/>
+                    <filter name="quote_or_deposit"
+                            string="Đã báo giá"
+                            domain="[('order_state_custom','in',['quotation','deposit']), ('is_zero_amount', '=', False)]" invisible="1"/>
+                    <group expand="1" string="Nhóm theo">
+                        <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'order_state_custom'}"/>
+                        <filter string="Sale phụ trách" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                        <filter string="Người thiết kế" name="group_by_user_design" context="{'group_by': 'user_id_design'}"/>
+                        <filter string="Người sản xuất" name="group_by_user_production" context="{'group_by': 'user_id_production'}"/>
+                        <filter string="Khách hàng" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Thời gian tạo" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="dac_sale_order_custom_action" model="ir.actions.act_window">
+            <field name="name">Đơn hàng</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_sale_order_custom_view_list_sale"/>
+            <field name="search_view_id" ref="dac_sale_order_custom_search"/>
+            <field name="context">{}</field>
+            <field name="domain">[('user_id', '=', uid)]</field>
+            <field name="groups_id" eval="[(6, 0, [ref('dac_erp.group_dac_erp_sale')])]"/>
+        </record>
+
+        <!-- Action riêng cho Manager - xem tất cả đơn hàng -->
+        <record id="dac_sale_order_manager_action" model="ir.actions.act_window">
+            <field name="name">Đơn hàng</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_sale_order_custom_view_list"/>
+            <field name="search_view_id" ref="dac_sale_order_custom_search"/>
+            <field name="context">{}</field>
+            <field name="groups_id" eval="[(6, 0, [ref('dac_erp.group_dac_erp_manager')])]"/>
+        </record>
+
+
+        <!-- View riêng cho sale.order.line với khả năng import -->
+        <record id="sale_order_line_tree_import" model="ir.ui.view">
+            <field name="name">sale.order.line.tree.import</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <list string="Dòng đơn hàng" create="true" import="true">
+                    <field name="order_id" string="Đơn hàng"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="product_id" string="Sản phẩm"/>
+                    <field name="name" string="Mô tả"/>
+                    <field name="product_uom_qty" string="Số lượng"/>
+                    <field name="price_unit" string="Đơn giá"/>
+                    <field name="product_uom" string="Đơn vị tính"/>
+                    <field name="price_subtotal" string="Thành tiền" sum="Tổng"/>
+                    <field name="display_type" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Action để import Sale Order Lines -->
+        <record id="action_sale_order_line_import" model="ir.actions.act_window">
+            <field name="name">Dòng đơn hàng</field>
+            <field name="res_model">sale.order.line</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="sale_order_line_tree_import"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Không có dòng đơn hàng nào!
+                </p>
+                <p>
+                    Bạn có thể import dữ liệu bằng cách nhấn nút "Import" ở trên.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

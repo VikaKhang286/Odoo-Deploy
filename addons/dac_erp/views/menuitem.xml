@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ========================================================
+             1. KHAI BÁO CÁC TOP-LEVEL APPS (NAVBAR MAIN APPS)
+             ======================================================== -->
+        
+        <!-- App 1: Bán Hàng & CRM -->
+        <menuitem id="dac_sale_crm_root"
+                  name="DAC Bán Hàng &amp; CRM"
+                  sequence="10"
+                  web_icon="sale_management,static/description/icon.png"
+                  groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"/>
+
+        <!-- App 2: Sản Xuất & Vận Hành -->
+        <menuitem id="dac_operations_root"
+                  name="DAC Sản Xuất &amp; Vận Hành"
+                  sequence="20"
+                  web_icon="mrp,static/description/icon.png"
+                  groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production,dac_erp.group_dac_erp_manager"/>
+
+        <!-- App 3: Tài Chính & Công Nợ -->
+        <menuitem id="dac_finance_root"
+                  name="DAC Tài Chính &amp; Công Nợ"
+                  sequence="30"
+                  web_icon="account,static/description/icon.png"
+                  groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- App 5: Cấu Hình & Hệ Thống -->
+        <menuitem id="dac_system_settings_root"
+                  name="DAC Cấu Hình Hệ Thống"
+                  sequence="100"
+                  web_icon="base,static/description/settings.png"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- ========================================================
+             2. DI CHUYỂN HOẶC ẨN CÁC MENU KỸ THUẬT / HR CHUẨN
+             ======================================================== -->
+
+        <!-- Ẩn menu HR chuẩn của Odoo (hr.menu_hr_root) khỏi DAC users.
+             Menu này mặc định hiện cho tất cả Internal User, gây trùng với
+             menu Nhân viên DAC bên dưới. Chỉ giữ lại cho admin kỹ thuật. -->
+        <record id="hr.menu_hr_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+        </record>
+
+        <!-- Nhân viên (User admin settings) - thuộc Cấu Hình Hệ Thống -->
+        <menuitem id="dac_sale_manage_users_menu_root"
+                  name="Quản trị Người dùng"
+                  parent="dac_system_settings_root"
+                  sequence="60"
+                  action="dac_res_users_action"
+                  groups="dac_erp.group_dac_erp_manager"/>
+
+        <!-- Menu cho Sale Order Lines - thuộc Cấu Hình Hệ Thống -->
+        <menuitem id="menu_sale_order_line_import"
+                  name="Dòng đơn hàng (Import)"
+                  parent="dac_system_settings_root"
+                  action="action_sale_order_line_import"
+                  sequence="70"
+                  groups="dac_erp.group_dac_erp_manager"/>
+
+    </data>
+</odoo>

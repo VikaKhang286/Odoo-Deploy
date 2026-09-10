@@ -1,0 +1,684 @@
+/* =========================================================
+   DAC Dashboard – chỉ cuộn DỌC, 3 KPI cùng chiều cao gọn
+   ========================================================= */
+
+/* Chiều cao list KPI (mặc định cho màn 1366x768) */
+:root {
+  --kpi-list-h: 500px; /* Tăng từ 450px lên 500px để chứa ticket cao hơn khi có icon VIP */
+}
+
+/* Tự co giãn theo chiều cao màn hình */
+@media (max-height: 750px) {
+  :root {
+    --kpi-list-h: 320px;
+  }
+}
+@media (max-height: 700px) {
+  :root {
+    --kpi-list-h: 300px;
+  }
+}
+@media (min-height: 900px) {
+  :root {
+    --kpi-list-h: 420px;
+  }
+}
+
+/* cho phép cuộn dọc tự nhiên của Odoo */
+.dac-dashboard-open .o_action .o_content {
+  padding: 0 !important;
+  overflow: auto !important; /* để Odoo làm scroll-host */
+  height: auto !important;
+  flex: 1 1 auto !important; /* co giãn đúng trong layout flex */
+  min-height: 0 !important; /* QUAN TRỌNG: cho phép con bên trong cuộn */
+}
+.dac-dashboard-open .o_action .o_controller_with_control_panel,
+.dac-dashboard-open .o_action .o_view_controller {
+  padding: 0 !important;
+}
+
+.dac-dashboard-open .o_action,
+.dac-dashboard-open .o_action .o_controller_with_control_panel,
+.dac-dashboard-open .o_action .o_view_controller {
+  min-height: 0 !important; /* QUAN TRỌNG: nếu cha không nhả, con sẽ không có scrollbar */
+}
+
+/* Viewport ngoài cùng: cuộn DỌC, ẩn NGANG, sát mép */
+.dac-dashboard-open .o_action .dac-viewport {
+  position: static; /* để .o_content quản lý cuộn */
+  overflow: visible; /* không tự làm scroll host */
+}
+
+/* Bỏ gutter trái/phải để scrollbar sát mép; GIỮ max-width của Bootstrap */
+.dac-dashboard-open .o_action .dac-viewport > .container-xxl {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Nội dung dashboard: compact nhẹ */
+.o_dac_dashboard {
+  padding: 12px 16px;
+}
+
+.o_dac_dashboard .dac-card {
+  background: var(--o-view-background, #fff);
+  border-radius: 12px;
+  padding: 10px 12px; /* gọn hơn */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column; /* Để title và content chia đều */
+  height: 100%; /* Chiếm toàn bộ chiều cao của column */
+}
+
+/* Đảm bảo 3 cột KPI có cùng chiều cao */
+.o_dac_dashboard .row.g-3 .col-lg-4 {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content area trong card tự giãn */
+.o_dac_dashboard .dac-card .list-scroll {
+  flex: 1; /* Chiếm phần còn lại của card */
+  max-height: var(--kpi-list-h);
+  min-height: var(--kpi-list-h); /* Cố định chiều cao */
+  overflow: auto;
+  padding-right: 2px; /* chừa rãnh cho scrollbar nội bộ */
+}
+
+/* Typography gọn lại để nhìn thoáng */
+.o_dac_dashboard .k-label {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 12px;
+}
+.o_dac_dashboard .k-value {
+  font-size: 22px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.o_dac_dashboard .k-sub {
+  font-size: 12px;
+  color: #6b7280;
+}
+.o_dac_dashboard .sec-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.o_dac_dashboard .ticket {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: transform 0.05s ease;
+}
+.o_dac_dashboard .ticket:hover {
+  background: rgba(0, 0, 0, 0.02);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.o_dac_dashboard .ticket-title,
+.o_dac_dashboard .ticket-amount {
+  font-size: 0.95rem;
+}
+
+/* 3 list KPI: cùng 1 chiều cao, cuộn nội bộ, size cố định */
+.o_dac_dashboard .dac-card .list-scroll {
+  max-height: var(--kpi-list-h);
+  min-height: var(--kpi-list-h); /* Cố định chiều cao */
+  overflow: auto;
+  padding-right: 2px; /* chừa rãnh cho scrollbar nội bộ */
+}
+.o_dac_dashboard .dac-card .no-data {
+  min-height: var(--kpi-list-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa0a6;
+  text-align: center;
+}
+
+/* Scrollbar mini cho list nội bộ */
+.o_dac_dashboard .dac-card .list-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.o_dac_dashboard .dac-card .list-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+/* (Tuỳ chọn) Nếu một ngày muốn bật cuộn ngang:
+   chỉ cần thêm class "dac-wide--force" cho wrapper trong XML */
+.o_dac_dashboard .dac-wide--force {
+  min-width: 1600px;
+}
+
+/* ====== Hai bảng cuối: card có chiều cao cố định + thân cuộn ====== */
+:root {
+  /* tổng chiều cao của mỗi card phía dưới (điều chỉnh theo ý bạn) */
+  --bottom-card-h: 200px; /* ví dụ 240/260/280… */
+}
+
+/* card phía dưới dùng flex để chia: header cố định, body chiếm phần còn lại */
+.o_dac_dashboard .dac-card.bottom-card {
+  display: flex;
+  flex-direction: column;
+  height: var(--bottom-card-h);
+}
+
+/* tiêu đề + hàng header giữ cố định */
+.o_dac_dashboard .dac-card.bottom-card .sec-title,
+.o_dac_dashboard .dac-card.bottom-card .bottom-head {
+  flex: 0 0 auto;
+}
+
+/* phần thân cuộn trong phần còn lại của card */
+.o_dac_dashboard .dac-card.bottom-card .bottom-scroll {
+  flex: 1 1 auto;
+  min-height: 0; /* QUAN TRỌNG: để con flex được cuộn */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+}
+
+/* không có dữ liệu vẫn căn giữa trong khung cố định */
+.o_dac_dashboard .dac-card.bottom-card .bottom-scroll .no-data {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa0a6;
+}
+
+/* (tuỳ chọn) scrollbar nhỏ gọn */
+.o_dac_dashboard .dac-card.bottom-card .bottom-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.o_dac_dashboard .dac-card.bottom-card .bottom-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+/* (tuỳ chọn) nếu đang bật .dac-compact thì có thể hạ nhẹ chiều cao */
+.dac-compact {
+  --bottom-card-h: 240px;
+}
+
+/* Progress full-width trong header */
+.dac-card .dac-progress {
+  border-radius: 8px;
+  overflow: hidden; /* bo tròn phần bar */
+}
+.dac-card .dac-progress .progress-bar {
+  /* bạn có thể đổi màu theo theme Odoo: bg-primary/bg-success... */
+  background-color: #ffa220; /* cam nhẹ, tuỳ chọn */
+}
+
+.badge-status {
+  font-weight: 600;
+}
+.badge-status.badge-new,
+.badge-status.badge-recontact {
+  background: #dc2626 !important; /* Đỏ đậm hơn */
+  color: white !important;
+  font-weight: 700 !important; /* In đậm */
+}
+.badge-status.badge-waiting {
+  background: #d97706 !important; /* Vàng đậm hơn */
+  color: white !important;
+  font-weight: 700 !important; /* In đậm */
+}
+.badge-status.badge-done {
+  background: #059669 !important; /* Xanh đậm hơn */
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Styling cho conversation cards */
+.o_dac_dashboard .ticket__state {
+  font-weight: 700 !important; /* In đậm cho trạng thái */
+}
+
+/* Màu đậm cho trạng thái trong conversation cards */
+.o_dac_dashboard .ticket__state.text-danger {
+  color: #dc2626 !important; /* Đỏ đậm */
+  font-weight: 700 !important;
+}
+
+.o_dac_dashboard .ticket__state.text-warning {
+  color: #d97706 !important; /* Vàng đậm */
+  font-weight: 700 !important;
+}
+
+.o_dac_dashboard .ticket__state.text-success {
+  color: #059669 !important; /* Xanh đậm */
+  font-weight: 600 !important;
+}
+
+/* Styling đặc biệt cho items trễ hạn (manufacturing) */
+.o_dac_dashboard .ticket-late {
+  border-left: 4px solid #dc2626 !important; /* Viền trái đỏ đậm */
+  background: rgba(220, 38, 38, 0.05) !important; /* Nền đỏ nhạt */
+}
+
+.o_dac_dashboard .ticket-late .ticket-title {
+  color: #dc2626 !important; /* Chữ đỏ đậm */
+  font-weight: 700 !important;
+}
+
+/* Badge cho số ngày trễ */
+.o_dac_dashboard .badge-late {
+  background: #dc2626 !important;
+  color: white !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* ========== VIP CUSTOMER HIGHLIGHTING ========== */
+/* Khách lớn (VIP) - Viền vàng kim, nền gradient sang trọng */
+.o_dac_dashboard .ticket.vip-customer,
+.o_dac_dashboard .dac-ticket.vip-customer {
+  border-left: 4px solid #f59e0b !important; /* Vàng kim */
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.08) 0%,
+    rgba(251, 191, 36, 0.05) 100%
+  ) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15) !important;
+}
+
+.o_dac_dashboard .ticket.vip-customer:hover,
+.o_dac_dashboard .dac-ticket.vip-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.12) 0%,
+    rgba(251, 191, 36, 0.08) 100%
+  ) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.o_dac_dashboard .ticket.vip-customer .ticket-title,
+.o_dac_dashboard .dac-ticket.vip-customer .dac-ticket__title {
+  color: #d97706 !important; /* Cam đậm */
+  font-weight: 700 !important;
+}
+
+/* Thêm icon VIP */
+.o_dac_dashboard .ticket.vip-customer::before,
+.o_dac_dashboard .dac-ticket.vip-customer::before {
+  content: "👑 ";
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* Khách quen (Loyal) - Viền xanh dương, nền nhẹ nhàng */
+.o_dac_dashboard .ticket.loyal-customer,
+.o_dac_dashboard .dac-ticket.loyal-customer {
+  border-left: 4px solid #3b82f6 !important; /* Xanh dương */
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.06) 0%,
+    rgba(96, 165, 250, 0.04) 100%
+  ) !important;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1) !important;
+}
+
+.o_dac_dashboard .ticket.loyal-customer:hover,
+.o_dac_dashboard .dac-ticket.loyal-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(96, 165, 250, 0.06) 100%
+  ) !important;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2) !important;
+  transform: translateY(-2px);
+  transition: all 0.2s ease;
+}
+
+.o_dac_dashboard .ticket.loyal-customer .ticket-title,
+.o_dac_dashboard .dac-ticket.loyal-customer .dac-ticket__title {
+  color: #2563eb !important; /* Xanh đậm */
+  font-weight: 600 !important;
+}
+
+/* Thêm icon Loyal */
+.o_dac_dashboard .ticket.loyal-customer::before,
+.o_dac_dashboard .dac-ticket.loyal-customer::before {
+  content: "⭐ ";
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* ========== CẢ VIP + LOYAL (Class kép) ========== */
+/* Khi có CẢ 2 class: vip-customer loyal-customer */
+.o_dac_dashboard .ticket.vip-customer.loyal-customer,
+.o_dac_dashboard .dac-ticket.vip-customer.loyal-customer {
+  /* Viền gradient vàng-xanh */
+  border-left: 4px solid transparent !important;
+  border-image: linear-gradient(180deg, #f59e0b 0%, #3b82f6 100%) 1 !important;
+  /* Nền kết hợp vàng + xanh */
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.1) 0%,
+    rgba(59, 130, 246, 0.08) 100%
+  ) !important;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.2),
+    0 3px 10px rgba(59, 130, 246, 0.15) !important;
+}
+
+.o_dac_dashboard .ticket.vip-customer.loyal-customer:hover,
+.o_dac_dashboard .dac-ticket.vip-customer.loyal-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(59, 130, 246, 0.12) 100%
+  ) !important;
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3),
+    0 5px 15px rgba(59, 130, 246, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.o_dac_dashboard .ticket.vip-customer.loyal-customer .ticket-title,
+.o_dac_dashboard .dac-ticket.vip-customer.loyal-customer .dac-ticket__title {
+  /* Gradient text vàng → xanh */
+  background: linear-gradient(90deg, #d97706 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700 !important;
+}
+
+/* Icon kép: Vương miện + Ngôi sao */
+.o_dac_dashboard .ticket.vip-customer.loyal-customer::before,
+.o_dac_dashboard .dac-ticket.vip-customer.loyal-customer::before {
+  content: "👑⭐ ";
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* ========== ĐƠN GIÁ TRỊ CAO (≥5M) ========== */
+/* Highlight nhẹ cho đơn ≥5M (không có VIP tag) để manager dễ nhận biết */
+.o_dac_dashboard .ticket.high-value:not(.vip-customer):not(.loyal-customer) {
+  border-left: 3px solid #10b981 !important; /* Xanh lá nhạt */
+  background: rgba(16, 185, 129, 0.03) !important;
+}
+
+.o_dac_dashboard
+  .ticket.high-value:not(.vip-customer):not(.loyal-customer)
+  .ticket-amount {
+  color: #059669 !important; /* Xanh lá đậm */
+  font-weight: 600 !important;
+}
+
+/* MARK: DAC-TICKET-H — đặt chiều cao cố định cho mọi ticket */
+:root {
+  --ticket-h: 96px; /* chiều cao ticket thường */
+  --ticket-lg-h: 120px; /* chiều cao ticket lớn (Đang tư vấn) - tăng để chứa icon VIP */
+}
+
+/* Ticket thường (Đã báo giá, Đang sản xuất) - mặc định 96px */
+.o_dac_dashboard .ticket {
+  min-height: var(--ticket-h) !important;
+  max-height: var(--ticket-h) !important;
+  overflow: hidden;
+}
+
+/* Ticket lớn (Đang tư vấn) - mặc định 96px cho khách thường */
+.o_dac_dashboard .ticket--lg {
+  min-height: var(--ticket-h) !important;
+  max-height: var(--ticket-h) !important;
+  overflow: hidden;
+}
+
+/* 🆕 Tự động tăng chiều cao lên 120px KHI có VIP/Loyal class */
+.o_dac_dashboard .ticket--lg.vip-customer,
+.o_dac_dashboard .ticket--lg.loyal-customer {
+  min-height: var(--ticket-lg-h) !important;
+  max-height: var(--ticket-lg-h) !important;
+}
+
+.ticket__row {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  min-height: 0; /* Cho phép flex item co lại */
+}
+.ticket__main {
+  flex: 1;
+  min-width: 0; /* Cho phép text truncate */
+  overflow: hidden;
+}
+.ticket__title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ticket__state {
+  font-weight: 600;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ticket__snippet {
+  font-size: 13px;
+  line-height: 1.4;
+  color: #555;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Giới hạn 2 dòng */
+  -webkit-box-orient: vertical;
+  word-wrap: break-word;
+}
+
+.ticket__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  flex-shrink: 0; /* Không cho phép actions bị co lại */
+  min-width: 40px; /* Đảm bảo có đủ chỗ cho nút */
+}
+
+/* Màu nút checklist theo trạng thái xử lý - CHỈ 2 TRẠNG THÁI */
+.btn-checklist-pending {
+  background-color: #28a745 !important; /* Màu xanh lá - Chưa xử lý */
+  color: white !important;
+  border: none !important;
+}
+
+.btn-checklist-done {
+  background-color: #6c757d !important; /* Màu xám - Đã xử lý */
+  color: white !important;
+  border: none !important;
+}
+
+.btn.btn-primary.btn-icon.text-white {
+  background-color: #007bff !important; /* Màu xanh Bootstrap */
+  color: #fff !important; /* Icon trắng */
+  border-color: #007bff !important;
+}
+
+/* =========================================================
+   CONVERSATION FORM VIEW - Text area styling
+   ========================================================= */
+
+/* Đảm bảo text area trong form conversation hiển thị đầy đủ */
+.o_form_view .o_field_widget[name="last_message_snippet"] textarea,
+.o_form_view .o_field_widget[name="last_message_snippet_clean"] textarea,
+.o_form_view .o_field_widget[name="suggestion_note"] textarea {
+  min-height: 80px !important; /* Chiều cao tối thiểu */
+  max-height: 200px !important; /* Chiều cao tối đa */
+  resize: vertical !important; /* Cho phép kéo dãn theo chiều dọc */
+  overflow-y: auto !important; /* Cuộn khi nội dung dài */
+  white-space: pre-wrap !important; /* Giữ nguyên xuống dòng */
+  word-wrap: break-word !important; /* Xuống dòng khi từ quá dài */
+}
+
+/* Text field readonly trong form - hiển thị đầy đủ tin nhắn gốc */
+.o_form_view .o_field_widget[name="last_message_snippet"] .o_field_text,
+.o_form_view .o_field_widget[name="last_message_snippet_clean"] .o_field_text {
+  max-height: none !important; /* Không giới hạn chiều cao */
+  overflow: visible !important; /* Hiển thị đầy đủ */
+  white-space: pre-wrap !important; /* Giữ nguyên xuống dòng và format */
+  word-wrap: break-word !important; /* Xuống dòng khi từ quá dài */
+  border: 1px solid #ccc !important; /* Thêm viền để dễ nhận biết */
+  padding: 8px !important; /* Thêm padding cho dễ đọc */
+  background-color: #f8f9fa !important; /* Nền nhạt để phân biệt */
+  border-radius: 4px !important; /* Bo góc nhẹ */
+}
+
+/* =========================================================
+   MESSAGE LIST VIEW - Hiển thị đầy đủ nội dung tin nhắn
+   ========================================================= */
+
+/* Đảm bảo cột nội dung tin nhắn hiển thị đầy đủ trong list view */
+.o_list_view .o_field_widget[name="name"] {
+  max-width: none !important; /* Không giới hạn độ rộng */
+  width: auto !important; /* Tự động điều chỉnh độ rộng */
+  white-space: pre-wrap !important; /* Giữ nguyên xuống dòng */
+  word-wrap: break-word !important; /* Xuống dòng khi từ quá dài */
+  overflow: visible !important; /* Hiển thị đầy đủ */
+}
+
+/* Styling cho text widget trong message list */
+.o_list_view .o_field_widget[name="name"] .o_field_text {
+  max-height: none !important; /* Không giới hạn chiều cao */
+  white-space: pre-wrap !important; /* Giữ nguyên format */
+  word-wrap: break-word !important; /* Xuống dòng */
+  overflow: visible !important; /* Hiển thị đầy đủ */
+  line-height: 1.4 !important; /* Tăng khoảng cách dòng cho dễ đọc */
+}
+
+/* Tăng chiều cao của các dòng trong message list để chứa nội dung dài */
+.o_list_view[data-name="page.fm.message"] .o_data_row {
+  min-height: auto !important; /* Cho phép dòng giãn theo nội dung */
+}
+
+/* Đặc biệt cho cột nội dung tin nhắn - làm cho rộng hơn */
+.o_list_view[data-name="page.fm.message"] th:nth-child(5),
+.o_list_view[data-name="page.fm.message"] td:nth-child(5) {
+  width: 40% !important; /* Chiếm 40% độ rộng bảng */
+  min-width: 300px !important; /* Tối thiểu 300px */
+}
+
+.badge-priority {
+  background: #29cb00 !important; /* xanh lá */
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Badge đỏ (trễ) đã có: badge-late */
+/* Thêm badge cho NGÀY 0 (Đến hạn) - màu cam đậm */
+.badge-due {
+  background: #d97706 !important; /* cam đậm */
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.badge-today {
+  background: #e80000 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* Mở khoá cha trực tiếp để trang được cuộn */
+.dac-dashboard-open .o_action_manager {
+  overflow: auto !important; /* QUAN TRỌNG: nếu hidden sẽ kẹt */
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+/* Phòng xa: container shell tuỳ biến của Odoo 18 */
+.dac-dashboard-open .o_main_components_container,
+.dac-dashboard-open .o_main-components-container {
+  min-height: 0 !important;
+}
+
+/* === MỞ KHÓA CUỘN THEO ACTION ĐANG HIỂN THỊ (không phụ thuộc <body>) === */
+
+/* .o_action hiện tại (được JS gắn class dac-host) */
+.o_action.dac-host .o_content {
+  padding: 0 !important;
+  overflow: auto !important;
+  height: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+.o_action.dac-host,
+.o_action.dac-host .o_controller_with_control_panel,
+.o_action.dac-host .o_view_controller {
+  min-height: 0 !important;
+}
+
+/* Cha trực tiếp .o_action: nếu chứa action đang active thì mở khóa cuộn */
+.o_action_manager:has(.o_action.dac-host) {
+  overflow: auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+/* Wrapper dashboard: không tạo scroll host lồng */
+.o_action.dac-host .dac-viewport {
+  position: static !important;
+  overflow: visible !important;
+}
+
+/* Giữ khung rộng của Bootstrap, chỉ bỏ padding/margin rìa */
+.o_action.dac-host .dac-viewport > .container-xxl {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Hover raise cho card được đánh dấu is-hoverable */
+.o_dac_dashboard .dac-card.is-hoverable {
+  transition: transform 0.06s ease, box-shadow 0.06s ease,
+    background-color 0.06s ease;
+  cursor: default; /* không đổi thành bàn tay */
+}
+.o_dac_dashboard .dac-card.is-hoverable:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.836);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* MARK: DAC-ORDERNO-COLORS — màu riêng cho “Số ĐH” */
+:root {
+  /* chỉ đổi 2 mã màu này là toàn bộ UI đổi theo */
+  --dac-orderno-has: #1b6eff; /* xanh dương riêng */
+  --dac-orderno-none: #ffb020; /* vàng riêng   */
+}
+
+.o_dac_dashboard .dac-orderno {
+  font-weight: 700 !important;
+}
+
+.o_dac_dashboard .dac-orderno--has {
+  color: var(--dac-orderno-has) !important;
+}
+
+.o_dac_dashboard .dac-orderno--none {
+  color: var(--dac-orderno-none) !important;
+}

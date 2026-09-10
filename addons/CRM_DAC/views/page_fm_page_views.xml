@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- VIEWS CHO PAGE.FM.PAGE (TRANG ĐÃ ĐỒNG BỘ) -->
+    <!-- ============================================ -->
+
+    <record id="view_page_fm_page_simplified_search" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.search</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <search string="Search Synced Pages">
+                <field name="name"/>
+                <field name="page_fm_id_str" string="Page.fm ID"/>
+                <field name="sync_enabled"/>
+                <field name="catalog_status"/>
+                <filter string="Đang đồng bộ" name="sync_enabled" domain="[('sync_enabled','=',True)]"/>
+                <filter string="Chưa đồng bộ" name="sync_disabled" domain="[('sync_enabled','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_page_fm_page_simplified_list" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.list</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <list string="Page.fm Pages (Synced IDs)">
+                <header>
+                    <button name="action_load_page_catalog"
+                            string="Tải Page và tạo token trang"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_generate_access_token"
+                            string="Chuẩn bị token trang"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_enable_sync"
+                            string="Chọn đồng bộ"
+                            type="object"
+                            class="btn-primary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_disable_sync"
+                            string="Bỏ chọn đồng bộ"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="perform_full_sync"
+                            string="🔄 Đồng Bộ Toàn Bộ"
+                            type="object"
+                            class="btn-primary" 
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_sync_tags"
+                            string="🏷️ Đồng bộ Tag"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_refresh_page"
+                            string="🔃 Đồng bộ page đã chọn"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                </header>
+                <field name="sync_enabled" widget="boolean_toggle" class="o_pancake_sync_toggle"/>
+                <field name="name"/>
+                <field name="page_fm_id_str" string="Page.fm ID"/>
+                <field name="catalog_status"/>
+                <field name="last_catalog_sync_at"/>
+                <field name="page_token_cached"/>
+                <field name="page_token_cached_at"/>
+                <field name="last_message_sync_at"/>
+                <field name="conversation_count" string="Conversations"/>
+                <field name="active" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_page_fm_page_simplified_form" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.form</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <form string="Page.fm Page (Synced ID)">
+                <header>
+                    <button name="action_enable_sync"
+                            string="Bật đồng bộ"
+                            type="object"
+                            class="btn-primary"
+                            invisible="sync_enabled"/>
+                    <button name="action_disable_sync"
+                            string="Tắt đồng bộ"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="not sync_enabled"/>
+                    <button name="action_refresh_page"
+                            string="🔄 Đồng bộ các page đã chọn"
+                            type="object"
+                            class="oe_highlight"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_generate_access_token"
+                            string="Chuẩn bị token trang"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_view_conversations"
+                            string="👥 Xem Conversations"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="conversation_count == 0"
+                            groups="dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_sale"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_view_conversations"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-comments"
+                                invisible="conversation_count == 0">
+                            <field name="conversation_count" widget="statinfo" string="Conversations"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active == True"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Page Name (from API)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="page_fm_id_str" string="Page.fm External ID" readonly="1" />
+                            <field name="sync_enabled" class="o_pancake_sync_toggle"/>
+                            <field name="catalog_status" readonly="1"/>
+                            <field name="last_catalog_sync_at" readonly="1"/>
+                            <field name="page_token_cached" readonly="1"/>
+                            <field name="page_token_cached_at" readonly="1"/>
+                            <field name="last_message_sync_at" readonly="1"/>
+                            <field name="active" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_page_fm_page_simplified" model="ir.actions.act_window">
+        <field name="name">Quản lý Trang Đồng bộ</field>
+        <field name="res_model">page.fm.page</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_page_fm_page_simplified_search"/>
+        <field name="domain">[('active', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có Page.fm active nào trong danh mục.
+            </p>
+            <p>
+                Danh sách này chỉ hiển thị <strong>page active</strong>. Hãy nhấn <strong>"Tải Page và tạo token trang"</strong> để lấy page từ Pancake, sau đó bật cờ <strong>"Đồng bộ"</strong> cho các page muốn đưa vào toàn bộ luồng sync. Khi chạy sync tay hoặc cron, hệ thống sẽ chạy cho <strong>toàn bộ page active đã bật Đồng bộ</strong>.
+            </p>
+        </field>
+    </record>
+</odoo>

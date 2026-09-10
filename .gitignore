@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Odoo runtime
+backups/
+logs/
+*.log
+
+# Backup files
+*.bak
+*.bak-*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Secrets
+config/odoo.conf

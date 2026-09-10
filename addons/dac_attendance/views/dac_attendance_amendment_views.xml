@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_dac_attendance_amendment_list" model="ir.ui.view">
+        <field name="name">dac.attendance.amendment.list</field>
+        <field name="model">dac.attendance.amendment</field>
+        <field name="arch" type="xml">
+            <list string="Đơn điều chỉnh chấm công"
+                  decoration-success="state == 'approved'"
+                  decoration-warning="state == 'pending'"
+                  decoration-muted="state in ('cancelled','refused')">
+                <field name="employee_id"/>
+                <field name="target_date"/>
+                <field name="amendment_type"/>
+                <field name="actual_check_in"/>
+                <field name="actual_check_out"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-warning="state == 'pending'"
+                       decoration-danger="state == 'refused'"
+                       decoration-muted="state == 'cancelled'"/>
+                <button name="action_approve" string="Duyệt" type="object"
+                        icon="fa-check" class="btn-success"
+                        groups="hr_attendance.group_hr_attendance_manager"
+                        invisible="state != 'pending'"/>
+                <button name="action_refuse" string="Từ chối" type="object"
+                        icon="fa-times" class="btn-danger"
+                        groups="hr_attendance.group_hr_attendance_manager"
+                        invisible="state != 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dac_attendance_amendment_form" model="ir.ui.view">
+        <field name="name">dac.attendance.amendment.form</field>
+        <field name="model">dac.attendance.amendment</field>
+        <field name="arch" type="xml">
+            <form string="Đơn điều chỉnh chấm công">
+                <header>
+                    <button name="action_approve" string="Duyệt" type="object"
+                            class="btn-primary"
+                            groups="hr_attendance.group_hr_attendance_manager"
+                            invisible="state != 'pending'"/>
+                    <button name="action_refuse" string="Từ chối" type="object"
+                            groups="hr_attendance.group_hr_attendance_manager"
+                            invisible="state != 'pending'"/>
+                    <button name="action_cancel" string="Hủy đơn" type="object"
+                            invisible="state != 'pending'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending,approved,refused"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Thông tin">
+                            <field name="employee_id"/>
+                            <field name="target_date"/>
+                            <field name="amendment_type" widget="radio"/>
+                        </group>
+                        <group string="Giờ thực tế">
+                            <field name="actual_check_in"/>
+                            <field name="actual_check_out"/>
+                        </group>
+                    </group>
+                    <group string="Lý do">
+                        <field name="reason" nolabel="1"
+                               placeholder="Mô tả lý do quên/sai chấm công..."/>
+                    </group>
+                    <group string="Kết quả" invisible="state not in ('approved','refused')">
+                        <field name="approved_by" readonly="1"/>
+                        <field name="approved_date" readonly="1"/>
+                        <field name="attendance_id" readonly="1"
+                               invisible="state != 'approved'"/>
+                        <field name="refuse_reason" readonly="1"
+                               invisible="state != 'refused'"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_dac_attendance_amendment_search" model="ir.ui.view">
+        <field name="name">dac.attendance.amendment.search</field>
+        <field name="model">dac.attendance.amendment</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm đơn điều chỉnh">
+                <field name="employee_id"/>
+                <field name="target_date"/>
+                <filter name="pending" string="Chờ duyệt" domain="[('state','=','pending')]"/>
+                <filter name="approved" string="Đã duyệt" domain="[('state','=','approved')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_employee" string="Nhân viên"
+                            context="{'group_by':'employee_id'}"/>
+                    <filter name="group_type" string="Loại điều chỉnh"
+                            context="{'group_by':'amendment_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dac_attendance_amendment" model="ir.actions.act_window">
+        <field name="name">Đơn điều chỉnh chấm công</field>
+        <field name="res_model">dac.attendance.amendment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_dac_attendance_amendment_search"/>
+        <field name="context">{'search_default_pending': 1}</field>
+    </record>
+
+</odoo>

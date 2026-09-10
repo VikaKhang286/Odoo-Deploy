@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Seed data: OpenClaw User Mapping
+        Dùng noupdate="0" để <function> được gọi khi cả install lẫn upgrade.
+        Hàm _install_seed_data() tự kiểm tra idempotency — không tạo thêm nếu đã có.
+    -->
+    <data>
+        <function model="dac.openclaw.user.mapping" name="_install_seed_data"/>
+    </data>
+</odoo>

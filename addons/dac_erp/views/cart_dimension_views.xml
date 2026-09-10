@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cart_dimension_list" model="ir.ui.view">
+        <field name="name">dac.cart.dimension.list</field>
+        <field name="model">dac.cart.dimension</field>
+        <field name="arch" type="xml">
+            <list string="Kích thước" create="false" edit="true" delete="false">
+                <field name="length"/>
+                <field name="width"/>
+                <field name="height"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cart_dimension_form" model="ir.ui.view">
+        <field name="name">dac.cart.dimension.form</field>
+        <field name="model">dac.cart.dimension</field>
+        <field name="arch" type="xml">
+            <form string="Tạo kích thước">
+                <sheet>
+                    <field name="id" invisible="1"/>
+                    <group>
+                        <field name="length"/>
+                        <field name="width"/>
+                        <field name="height"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

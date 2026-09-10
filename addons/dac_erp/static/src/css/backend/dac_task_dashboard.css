@@ -1,0 +1,89 @@
+/* ===== TASK DASHBOARD & KANBAN ===== */
+
+/* Kanban card: priority left-border */
+.o_dac_task_kanban .o_kanban_record {
+    border-left: 3px solid #dee2e6;
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+.o_dac_task_kanban .o_kanban_record:hover {
+    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Priority badge in kanban card */
+.o_dac_priority_normal {
+    background: #6c757d;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.o_dac_priority_high {
+    background: #f59e0b;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+.o_dac_priority_urgent {
+    background: #dc2626;
+    color: #fff;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Kanban card order link */
+.o_dac_task_card_order {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+/* ===== EMPLOYEE STATS TABLE ===== */
+.o_dac_task_employee_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+.o_dac_task_employee_table thead th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+    padding: 10px 14px;
+}
+.o_dac_task_employee_table td {
+    padding: 9px 14px;
+    vertical-align: middle;
+    border-top: 1px solid #f3f4f6;
+}
+.o_dac_task_employee_table tbody tr:hover {
+    background: #f9fafb;
+}
+.o_dac_tbl_name {
+    font-weight: 500;
+    color: #111827;
+}
+.o_dac_state_draft   { color: #6b7280; font-weight: 600; }
+.o_dac_state_inprogress { color: #2563eb; font-weight: 600; }
+.o_dac_state_done    { color: #16a34a; font-weight: 600; }
+
+/* Highlight nhân viên có nhiều task đang mở */
+.o_dac_task_row_busy {
+    background: rgba(220, 38, 38, 0.04) !important;
+}
+.o_dac_task_row_busy .o_dac_tbl_name {
+    color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .o_dac_task_employee_table { font-size: 12px; }
+    .o_dac_task_employee_table thead th,
+    .o_dac_task_employee_table td { padding: 7px 8px; }
+}

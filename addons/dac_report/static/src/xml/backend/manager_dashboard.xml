@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dac_report.ManagerDashboard">
+        <div class="dac-manager-dashboard dac-viewport">
+            <div t-if="state.loading" class="dac-dashboard-loading">
+                <i class="fa fa-spinner fa-spin fa-3x"/>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+
+            <div t-else="" class="container-fluid p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="h3 mb-0">Điều phối CRM</h1>
+                        <p class="text-muted mb-0">Ưu tiên việc cần can thiệp, đơn chậm và công nợ trong ngày</p>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="btn-group week-quick-filters" role="group">
+                            <button class="btn btn-sm btn-outline-primary"
+                                    t-att-class="state.filterMode === 'week' and state.selectedWeek === getCurrentWeekInMonth() ? 'active' : ''"
+                                    t-on-click="selectThisWeek">
+                                <i class="fa fa-calendar-day me-1"/>Tuần này
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    t-on-click="selectLastWeek">
+                                <i class="fa fa-calendar-minus me-1"/>Tuần trước
+                            </button>
+                        </div>
+
+                        <div class="dropdown week-dropdown">
+                            <button class="btn btn-sm btn-outline-info dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fa fa-list me-1"/>
+                                <t t-if="state.filterMode === 'week'">
+                                    Tuần <t t-esc="state.selectedWeek"/>
+                                </t>
+                                <t t-else="">
+                                    Chọn tuần
+                                </t>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <t t-foreach="getWeeksInMonth()" t-as="week" t-key="week.number">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           t-att-class="state.filterMode === 'week' and state.selectedWeek === week.number ? 'active' : ''"
+                                           t-on-click="() => this.selectWeekNumber(week.number)">
+                                            <i class="fa fa-calendar-week me-2"/>
+                                            <t t-esc="week.label"/>
+                                            <small class="text-muted ms-1">(<t t-esc="week.range"/>)</small>
+                                        </a>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+
+                        <div class="period-selector-container">
+                            <div class="period-display" t-on-click="togglePeriodPicker">
+                                <i class="fa fa-calendar me-2"/>
+                                <span class="period-text" t-esc="getPeriodDisplayText()"/>
+                                <i class="fa fa-chevron-down ms-2"/>
+                            </div>
+
+                            <div t-if="state.showPeriodPicker" class="period-picker-dropdown">
+                                <div class="period-picker-header">
+                                    <button class="period-nav-btn" t-on-click="() => this.navigateYear(-1)">
+                                        <i class="fa fa-chevron-left"/>
+                                    </button>
+                                    <span class="period-year" t-esc="state.pickerYear"/>
+                                    <button class="period-nav-btn" t-on-click="() => this.navigateYear(1)">
+                                        <i class="fa fa-chevron-right"/>
+                                    </button>
+                                </div>
+
+                                <div class="period-picker-body">
+                                    <div class="period-months-grid">
+                                        <t t-foreach="getMonthsList()" t-as="month" t-key="month.value">
+                                            <button class="period-month-btn"
+                                                    t-att-class="isMonthSelected(month.value) ? 'active' : ''"
+                                                    t-on-click="() => this.selectMonth(month.value)">
+                                                <t t-esc="month.label"/>
+                                            </button>
+                                        </t>
+                                    </div>
+
+                                    <button class="period-year-btn"
+                                            t-att-class="state.filterMode === 'year' ? 'active' : ''"
+                                            t-on-click="selectYear">
+                                        <i class="fa fa-calendar-check me-1"/>
+                                        Cả năm <t t-esc="state.pickerYear"/>
+                                    </button>
+
+                                    <button class="period-custom-btn" t-on-click="openCustomRange">
+                                        <i class="fa fa-calendar-alt me-1"/>
+                                        Tùy chỉnh
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div t-if="state.showCustomRange" class="custom-range-modal">
+                                <div class="custom-range-content">
+                                    <div class="custom-range-header">
+                                        <h6 class="mb-0">Chọn khoảng thời gian</h6>
+                                        <button class="btn-close-custom" t-on-click="closeCustomRange">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
+                                    <div class="custom-range-body">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Từ ngày:</label>
+                                            <input type="date" class="form-control" t-model="state.customDateFrom"/>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Đến ngày:</label>
+                                            <input type="date" class="form-control" t-model="state.customDateTo"/>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-success flex-fill" t-on-click="applyCustomRange">
+                                                <i class="fa fa-check me-1"/>Áp dụng
+                                            </button>
+                                            <button class="btn btn-secondary flex-fill" t-on-click="closeCustomRange">
+                                                <i class="fa fa-times me-1"/>Hủy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" t-on-click="exportReport">Xuất báo cáo</button>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card kpi-card p-3">
+                            <div class="kpi-label">Việc cần can thiệp</div>
+                            <div class="kpi-value text-danger"><t t-esc="state.data.alerts.length"/></div>
+                            <span class="text-muted small">Cảnh báo và nghẽn luồng</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card kpi-card p-3">
+                            <div class="kpi-label">Công nợ cần thu</div>
+                            <div class="kpi-value text-warning"><t t-esc="formatCurrency(state.data.total_debt)"/></div>
+                            <span class="text-muted small">Chưa thanh toán</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card kpi-card p-3">
+                            <div class="kpi-label">Đơn đang theo dõi</div>
+                            <div class="kpi-value" style="color: #0f766e;"><t t-esc="state.data.active_orders"/></div>
+                            <span class="text-muted small">Chưa hoàn thành</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="dashboard-card kpi-card p-3">
+                            <div class="kpi-label">Doanh thu đã chốt</div>
+                            <div class="kpi-value text-success"><t t-esc="formatCurrency(state.data.total_revenue)"/></div>
+                            <span class="text-muted small">Đơn hoàn thành trong kỳ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="dashboard-card">
+                            <div class="card-body p-4">
+                                <h5 class="card-title mb-4">Đơn hàng theo trạng thái</h5>
+
+                                <div class="pipeline-group">
+                                    <div class="pipeline-group-title">Đầu phễu</div>
+                                    <div class="pipeline-stages">
+                                        <div class="stage-card stage-quotation" t-on-click="() => this.openOrdersByState('quotation')">
+                                            <h6>Báo giá</h6>
+                                            <div class="stage-value"><t t-esc="state.data.quotation_count"/></div>
+                                            <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.quotation_amount)"/></div>
+                                        </div>
+                                        <div class="stage-card stage-deposit" t-on-click="() => this.openOrdersByState('deposit')">
+                                            <h6>Đặt cọc</h6>
+                                            <div class="stage-value"><t t-esc="state.data.deposit_count"/></div>
+                                            <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.deposit_amount)"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pipeline-group">
+                                    <div class="pipeline-group-title">Thực thi</div>
+                                    <div class="execution-group">
+                                        <div class="stage-card stage-production" t-on-click="() => this.openOrdersByState('production')">
+                                            <h6>Sản xuất</h6>
+                                            <div class="stage-value"><t t-esc="state.data.production_count"/></div>
+                                            <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.production_amount)"/></div>
+                                        </div>
+                                        <div class="execution-branches">
+                                            <div class="stage-card stage-installation" t-on-click="() => this.openOrdersByState('installation')">
+                                                <h6>Thi công</h6>
+                                                <div class="stage-value"><t t-esc="state.data.installation_count"/></div>
+                                                <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.installation_amount)"/></div>
+                                            </div>
+                                            <div class="stage-card stage-delivery" t-on-click="() => this.openOrdersByState('delivery')">
+                                                <h6>Giao hàng</h6>
+                                                <div class="stage-value"><t t-esc="state.data.delivery_count"/></div>
+                                                <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.delivery_amount)"/></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pipeline-group">
+                                    <div class="pipeline-group-title">Hoàn tất</div>
+                                    <div class="pipeline-stages">
+                                        <div class="stage-card stage-payment" t-on-click="() => this.openOrdersByState('payment')">
+                                            <h6>Thu tiền</h6>
+                                            <div class="stage-value"><t t-esc="state.data.payment_count"/></div>
+                                            <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.payment_amount)"/></div>
+                                        </div>
+                                        <div class="stage-card stage-completed" t-on-click="() => this.openOrdersByState('completed')">
+                                            <h6>Hoàn thành</h6>
+                                            <div class="stage-value"><t t-esc="state.data.completed_count"/></div>
+                                            <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.completed_amount)"/></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="dashboard-card action-center">
+                            <div class="card-header bg-white border-0 pt-3">
+                                <h5 class="card-title mb-0">Việc cần can thiệp hôm nay</h5>
+                                <ul class="nav nav-tabs card-header-tabs mt-2">
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           t-att-class="state.activeTab === 'alerts' ? 'active' : ''"
+                                           t-on-click="() => this.switchTab('alerts')"
+                                           href="#">
+                                            Đơn chậm / nghẽn
+                                            <t t-if="state.data.alerts.length > 0">
+                                                <span class="badge bg-danger text-white ms-1"><t t-esc="state.data.alerts.length"/></span>
+                                            </t>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link"
+                                           t-att-class="state.activeTab === 'performance' ? 'active' : ''"
+                                           t-on-click="() => this.switchTab('performance')"
+                                           href="#">
+                                            Hiệu suất
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body p-2">
+                                <div t-if="state.activeTab === 'alerts'">
+                                    <table t-if="state.data.alerts.length > 0" class="table table-borderless table-hover align-middle mb-0">
+                                        <tbody>
+                                            <t t-foreach="state.data.alerts" t-as="alert" t-key="alert.id">
+                                                <tr t-on-click="() => this.openOrder(alert.order_id)"
+                                                    style="cursor: pointer;"
+                                                    t-att-class="alert.vip_class ? 'alert-row ' + alert.vip_class : 'alert-row'">
+                                                    <td>
+                                                        <span t-att-class="'badge bg-' + alert.priority"><t t-esc="alert.label"/></span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-bold alert-order-number">
+                                                            <t t-if="alert.order_number"><t t-esc="alert.order_number"/></t>
+                                                            <t t-else="">Chưa có số ĐH</t>
+                                                        </div>
+                                                        <small class="text-muted alert-customer-name"><t t-esc="alert.customer_name"/></small>
+                                                    </td>
+                                                    <td class="text-end"><i class="fa fa-chevron-right text-muted"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                    <div t-else="" class="text-center text-muted py-4">
+                                        <i class="fa fa-check-circle fa-3x mb-2"/>
+                                        <p>Không có cảnh báo nào</p>
+                                    </div>
+                                </div>
+
+                                <div t-if="state.activeTab === 'performance'" class="performance-all-in-one">
+                                    <div class="performance-section mb-4">
+                                        <h6 class="text-muted mb-3">Kinh doanh</h6>
+                                        <t t-if="state.data.sales_performance.length > 0">
+                                            <t t-foreach="state.data.sales_performance" t-as="user" t-key="user.id">
+                                                <div class="performance-item mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <strong><t t-esc="user.name"/></strong>
+                                                        <span class="text-success"><t t-esc="formatCurrency(user.revenue)"/></span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-success"
+                                                             role="progressbar"
+                                                             t-att-style="'width: ' + user.progress + '%'"
+                                                             t-att-aria-valuenow="user.progress"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100"/>
+                                                    </div>
+                                                    <small class="text-muted"><t t-esc="user.orders_count"/> đơn hàng</small>
+                                                </div>
+                                            </t>
+                                        </t>
+                                        <div t-else="" class="text-center text-muted py-2"><small>Chưa có dữ liệu</small></div>
+                                    </div>
+
+                                    <div class="performance-section mb-4">
+                                        <h6 class="text-muted mb-3">Thiết kế</h6>
+                                        <t t-if="state.data.design_performance.length > 0">
+                                            <t t-foreach="state.data.design_performance" t-as="user" t-key="user.id">
+                                                <div class="performance-item mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <strong><t t-esc="user.name"/></strong>
+                                                        <span class="text-info"><t t-esc="user.completed"/> / <t t-esc="user.total"/></span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-info"
+                                                             role="progressbar"
+                                                             t-att-style="'width: ' + user.progress + '%'"
+                                                             t-att-aria-valuenow="user.progress"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100"/>
+                                                    </div>
+                                                    <small class="text-muted">Tỷ lệ hoàn thành: <t t-esc="user.progress"/>%</small>
+                                                </div>
+                                            </t>
+                                        </t>
+                                        <div t-else="" class="text-center text-muted py-2"><small>Chưa có dữ liệu</small></div>
+                                    </div>
+
+                                    <div class="performance-section">
+                                        <h6 class="text-muted mb-3">Sản xuất</h6>
+                                        <t t-if="state.data.production_performance.length > 0">
+                                            <t t-foreach="state.data.production_performance" t-as="user" t-key="user.id">
+                                                <div class="performance-item mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <strong><t t-esc="user.name"/></strong>
+                                                        <span class="text-warning"><t t-esc="user.completed"/> / <t t-esc="user.total"/></span>
+                                                    </div>
+                                                    <div class="progress" style="height: 8px;">
+                                                        <div class="progress-bar bg-warning"
+                                                             role="progressbar"
+                                                             t-att-style="'width: ' + user.progress + '%'"
+                                                             t-att-aria-valuenow="user.progress"
+                                                             aria-valuemin="0"
+                                                             aria-valuemax="100"/>
+                                                    </div>
+                                                    <small class="text-muted">Tỷ lệ hoàn thành: <t t-esc="user.progress"/>%</small>
+                                                </div>
+                                            </t>
+                                        </t>
+                                        <div t-else="" class="text-center text-muted py-2"><small>Chưa có dữ liệu</small></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

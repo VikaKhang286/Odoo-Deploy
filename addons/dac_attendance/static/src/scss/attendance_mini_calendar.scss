@@ -1,0 +1,110 @@
+// Mini Calendar Styles
+
+.o_dac_mini_calendar {
+    width: 100%;
+}
+
+.o_dac_mini_calendar_header {
+    margin-bottom: 10px;
+}
+
+.o_dac_mini_calendar_month {
+    font-weight: 700;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.o_dac_mini_calendar_weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 4px;
+
+    span {
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #94a3b8;
+        padding: 2px 0;
+
+        &.o_dac_weekend { color: #f87171; }
+    }
+}
+
+.o_dac_mini_calendar_grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+}
+
+.o_dac_cal_empty {
+    // placeholder for leading blanks
+}
+
+.o_dac_cal_day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: default;
+    position: relative;
+    transition: background 0.15s;
+
+    &--on_time {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    &--late {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    &--absent {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    &--leave {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    &--weekend {
+        color: #cbd5e1;
+        background: transparent;
+    }
+
+    &--future {
+        color: #e2e8f0;
+        background: transparent;
+    }
+}
+
+.o_dac_mini_calendar_legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    font-size: 11px;
+    color: #64748b;
+    align-items: center;
+}
+
+.o_dac_legend_dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    vertical-align: middle;
+    margin-right: 2px;
+
+    &--on_time { background: #dcfce7; border: 1.5px solid #86efac; }
+    &--late    { background: #fef3c7; border: 1.5px solid #fcd34d; }
+    &--absent  { background: #fee2e2; border: 1.5px solid #fca5a5; }
+    &--leave   { background: #dbeafe; border: 1.5px solid #93c5fd; }
+}

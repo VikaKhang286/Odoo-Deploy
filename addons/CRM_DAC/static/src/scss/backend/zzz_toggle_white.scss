@@ -1,0 +1,55 @@
+/* CRM toggle override: checked = green, unchecked = gray */
+.o_pancake_sync_toggle input[type="checkbox"],
+.o_list_view td[name="sync_enabled"] input[type="checkbox"],
+.o_form_view div[name="sync_enabled"] input[type="checkbox"],
+.dac-toggle-field input[type="checkbox"] {
+  accent-color: #9ca3af !important;
+  background-color: #9ca3af !important;
+  border-color: #9ca3af !important;
+  cursor: pointer;
+}
+
+.o_pancake_sync_toggle .form-check-input:checked,
+.o_list_view td[name="sync_enabled"] .form-check-input:checked,
+.o_form_view div[name="sync_enabled"] .form-check-input:checked,
+.dac-toggle-field .form-check-input:checked,
+.o_pancake_sync_toggle input[type="checkbox"]:checked,
+.o_list_view td[name="sync_enabled"] input[type="checkbox"]:checked,
+.o_form_view div[name="sync_enabled"] input[type="checkbox"]:checked,
+.dac-toggle-field input[type="checkbox"]:checked,
+.o_pancake_sync_toggle .form-check-input:checked:disabled,
+.o_list_view td[name="sync_enabled"] .form-check-input:checked:disabled,
+.o_form_view div[name="sync_enabled"] .form-check-input:checked:disabled,
+.dac-toggle-field .form-check-input:checked:disabled,
+.o_pancake_sync_toggle input[type="checkbox"]:checked:disabled,
+.o_list_view td[name="sync_enabled"] input[type="checkbox"]:checked:disabled,
+.o_form_view div[name="sync_enabled"] input[type="checkbox"]:checked:disabled,
+.dac-toggle-field input[type="checkbox"]:checked:disabled {
+  accent-color: #22c55e !important;
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.24) inset;
+}
+
+.o_pancake_sync_toggle .form-check-input:not(:checked),
+.o_list_view td[name="sync_enabled"] .form-check-input:not(:checked),
+.o_form_view div[name="sync_enabled"] .form-check-input:not(:checked),
+.dac-toggle-field .form-check-input:not(:checked),
+.o_pancake_sync_toggle input[type="checkbox"]:not(:checked),
+.o_list_view td[name="sync_enabled"] input[type="checkbox"]:not(:checked),
+.o_form_view div[name="sync_enabled"] input[type="checkbox"]:not(:checked),
+.dac-toggle-field input[type="checkbox"]:not(:checked) {
+  accent-color: #9ca3af !important;
+  background-color: #9ca3af !important;
+  border-color: #9ca3af !important;
+}
+
+.o_list_view td[name="sync_enabled"]:has(input[type="checkbox"]:checked),
+.o_form_view div[name="sync_enabled"]:has(input[type="checkbox"]:checked) {
+  color: #0f172a;
+}
+
+.o_list_view .o_data_row:has(td[name="sync_enabled"] input[type="checkbox"]:checked) {
+  background:
+    linear-gradient(90deg, rgba(240, 253, 244, 0.96) 0, rgba(236, 253, 245, 0.96) 140px, transparent 280px);
+}

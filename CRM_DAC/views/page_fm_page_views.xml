@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- VIEWS CHO PAGE.FM.PAGE (TRANG ĐÃ ĐỒNG BỘ) -->
+    <!-- ============================================ -->
+
+    <record id="view_page_fm_page_simplified_search" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.search</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <search string="Search Synced Pages">
+                <field name="name"/>
+                <field name="page_fm_id_str" string="Page.fm ID"/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_page_fm_page_simplified_list" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.list</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <list string="Page.fm Pages (Synced IDs)">
+                <header>
+                    <button name="perform_full_sync"
+                            string="🔄 Đồng Bộ Toàn Bộ"
+                            type="object"
+                            class="btn-primary" 
+                            context="{'load_all': True}"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_sync_tags"
+                            string="🏷️ Đồng bộ Tag"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_refresh_page"
+                            string="🔃 Làm Mới Page"
+                            type="object"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                </header>
+                <field name="name"/>
+                <field name="page_fm_id_str" string="Page.fm ID"/>
+                <field name="conversation_count" string="Conversations"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_page_fm_page_simplified_form" model="ir.ui.view">
+        <field name="name">page.fm.page.simplified.form</field>
+        <field name="model">page.fm.page</field>
+        <field name="arch" type="xml">
+            <form string="Page.fm Page (Synced ID)">
+                <header>
+                    <button name="perform_full_sync"
+                            string="🔄 Đồng Bộ Page Này"
+                            type="object"
+                            class="oe_highlight"
+                            context="{'load_all': True}"
+                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_view_conversations"
+                            string="👥 Xem Conversations"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="conversation_count == 0"
+                            groups="dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_sale"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_view_conversations"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-comments"
+                                invisible="conversation_count == 0">
+                            <field name="conversation_count" widget="statinfo" string="Conversations"/>
+                        </button>
+                    </div>
+
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active == True"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Page Name (from API)"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="page_fm_id_str" string="Page.fm External ID" readonly="1" />
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_page_fm_page_simplified" model="ir.actions.act_window">
+        <field name="name">Quản Lý Pages Đã Đồng Bộ</field>
+        <field name="res_model">page.fm.page</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_page_fm_page_simplified_search"/>
+        <field name="context">{'trigger_page_fm_sync_on_search_read': True}</field> 
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có Page.fm nào được đồng bộ.
+            </p>
+            <p>
+                Để bắt đầu, hãy nhấn nút <strong>"🔄 Đồng Bộ Toàn Bộ"</strong> để tải các trang từ Pages.fm.
+            </p>
+        </field>
+    </record>
+</odoo>

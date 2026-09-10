@@ -1,0 +1,70 @@
+<odoo>
+    <data>
+        <!-- Kế thừa base.view_users_form:
+             - Thêm dropdown "Vai trò DAC" ngay đầu form (trước notebook)
+             - Thêm số điện thoại bên cạnh email -->
+        <record id="view_dac_user_form_inherit" model="ir.ui.view">
+            <field name="name">dac.user.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Số điện thoại ngay dưới email -->
+                <xpath expr="//div[hasclass('oe_title')]" position="after">
+                    <group>
+                        <field name="mobile" string="Số điện thoại"/>
+                    </group>
+                </xpath>
+
+                <!-- Dropdown Vai trò DAC — đặt trước notebook -->
+                <xpath expr="//notebook" position="before">
+                    <group string="Vai trò DAC">
+                        <field name="dac_role"
+                               string="Vai trò"
+                               required="0"
+                               options="{'no_open': True}"/>
+                    </group>
+                    <group string="Thông tin nhân viên">
+                        <field name="employee_id" invisible="1"/>
+                        <field name="department_id" string="Phòng ban"
+                               readonly="not employee_id"/>
+                        <field name="dac_job_id" readonly="not employee_id"/>
+                        <div class="text-muted" invisible="employee_id">
+                            Tạo hoặc liên kết nhân viên trong công ty hiện tại để cập nhật phòng ban và vị trí công việc.
+                        </div>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- List view gọn cho menu Nhân viên -->
+        <record id="view_dac_user_list" model="ir.ui.view">
+            <field name="name">dac.user.list</field>
+            <field name="model">res.users</field>
+            <field name="arch" type="xml">
+                <list string="Nhân viên DAC" default_order="name">
+                    <field name="image_128" widget="image"
+                           options="{'img_class': 'rounded-circle'}" optional="show"/>
+                    <field name="name" string="Họ và tên"/>
+                    <field name="login" string="Email đăng nhập"/>
+                    <field name="mobile" string="Số điện thoại" optional="show"/>
+                    <field name="dac_role" string="Vai trò DAC" optional="show"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Action cho menu Nhân viên (chỉ internal users) -->
+        <record id="dac_res_users_action" model="ir.actions.act_window">
+            <field name="name">Nhân viên</field>
+            <field name="res_model">res.users</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('share', '=', False)]</field>
+            <field name="view_ids" eval="[
+                (5,),
+                (0, 0, {'view_mode': 'list', 'view_id': ref('view_dac_user_list')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_users_form')}),
+            ]"/>
+        </record>
+    </data>
+</odoo>

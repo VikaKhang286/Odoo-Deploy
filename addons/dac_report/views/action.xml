@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Dashboard cho Sale users -->
+    <record id="dac_sale_dashboard_action" model="ir.actions.client">
+      <field name="name">Dashboard Sale</field>
+      <field name="tag">dac_sale_dashboard</field>
+      <field name="target">current</field>
+    </record>
+
+    <!-- Dashboard cho Manager -->
+    <record id="dac_manager_dashboard_action" model="ir.actions.client">
+      <field name="name">Dashboard Quản Lý</field>
+      <field name="tag">dac_manager_dashboard</field>
+      <field name="target">current</field>
+    </record>
+  </data>
+</odoo>

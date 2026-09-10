@@ -1,0 +1,98 @@
+/* Conversation Buttons Widget Styling */
+.o_conversation_buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 450px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.o_conversation_buttons::-webkit-scrollbar {
+  height: 4px;
+}
+
+.o_conversation_buttons::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 2px;
+}
+
+.o_conversation_buttons::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 2px;
+}
+
+.o_conversation_buttons::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.conversation-btn {
+  white-space: nowrap;
+  min-width: 120px;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.conversation-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.conversation-btn .fa {
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+.conversation-btn .badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #dc3545 !important;
+  color: white;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  font-size: 8px;
+  line-height: 8px;
+}
+
+/* Button states */
+.conversation-btn.btn-outline-primary {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.conversation-btn.btn-outline-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.conversation-btn.btn-outline-warning {
+  border-color: #ffc107;
+  color: #856404;
+}
+
+.conversation-btn.btn-outline-danger {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .o_conversation_buttons {
+    max-width: 100%;
+  }
+
+  .conversation-btn {
+    min-width: 100px;
+    max-width: 150px;
+    font-size: 11px;
+  }
+}

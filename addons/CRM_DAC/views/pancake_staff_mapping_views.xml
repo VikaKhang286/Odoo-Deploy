@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- ============================================================
+         ACTION
+         ============================================================ -->
+    <record id="action_pancake_staff_mapping" model="ir.actions.act_window">
+      <field name="name">Nhân viên Pancake</field>
+      <field name="res_model">pancake.staff.mapping</field>
+      <field name="view_mode">list,form</field>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+          Chưa có nhân viên Pancake nào.
+        </p>
+        <p>
+          Nhấn <strong>Thu thập nhân viên</strong> để tải danh sách từ tin nhắn đã đồng bộ.
+        </p>
+      </field>
+    </record>
+
+    <!-- ============================================================
+         LIST VIEW
+         ============================================================ -->
+    <record id="view_pancake_staff_mapping_list" model="ir.ui.view">
+      <field name="name">pancake.staff.mapping.list</field>
+      <field name="model">pancake.staff.mapping</field>
+      <field name="arch" type="xml">
+        <list string="Nhân viên Pancake"
+              editable="bottom"
+              decoration-success="already_mapped"
+              decoration-muted="not already_mapped">
+
+          <!-- Toolbar buttons -->
+          <header>
+            <button name="action_collect_from_messages"
+                    type="object"
+                    string="Thu thập nhân viên từ tin nhắn"
+                    class="btn-primary"
+                    icon="fa-download"
+                    title="Quét tin nhắn đã đồng bộ và bổ sung nhân viên Pancake chưa có trong danh sách"/>
+            <button name="action_apply_mapping"
+                    type="object"
+                    string="Áp dụng mapping"
+                    class="btn-secondary"
+                    icon="fa-link"
+                    title="Ghi pancake_id vào tài khoản Odoo đã chọn"/>
+          </header>
+
+          <field name="name" readonly="1" string="Tên nhân viên Pancake"/>
+          <field name="pancake_staff_id" readonly="1" string="Pancake ID" optional="show"/>
+          <field name="email" readonly="1" string="Email" optional="show"/>
+          <field name="message_count" readonly="1" string="Tin nhắn" optional="show"/>
+          <field name="odoo_user_id"
+                 string="Tài khoản Odoo"
+                 options="{'no_create': True, 'no_quick_create': True}"
+                 placeholder="-- Chọn tài khoản Odoo --"/>
+          <field name="already_mapped" column_invisible="1"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- ============================================================
+         FORM VIEW
+         ============================================================ -->
+    <record id="view_pancake_staff_mapping_form" model="ir.ui.view">
+      <field name="name">pancake.staff.mapping.form</field>
+      <field name="model">pancake.staff.mapping</field>
+      <field name="arch" type="xml">
+        <form string="Nhân viên Pancake">
+          <sheet>
+            <group>
+              <group string="Thông tin từ Pancake">
+                <field name="name" readonly="1" string="Tên nhân viên"/>
+                <field name="pancake_staff_id" readonly="1" string="Pancake Staff ID"/>
+                <field name="email" readonly="1" string="Email"/>
+                <field name="message_count" readonly="1" string="Số tin nhắn đã gửi"/>
+              </group>
+              <group string="Mapping Odoo">
+                <field name="odoo_user_id"
+                       string="Tài khoản Odoo"
+                       options="{'no_create': True, 'no_quick_create': True}"
+                       help="Chọn tài khoản Odoo tương ứng với nhân viên Pancake này"/>
+                <field name="already_mapped" readonly="1" string="Đã mapping"/>
+              </group>
+            </group>
+          </sheet>
+          <footer>
+            <button name="action_apply_mapping"
+                    type="object"
+                    string="Áp dụng mapping"
+                    class="btn-primary"
+                    title="Ghi pancake_id vào tài khoản Odoo này"/>
+            <button special="cancel" string="Đóng" class="btn-secondary"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- ============================================================
+         SEARCH VIEW
+         ============================================================ -->
+    <record id="view_pancake_staff_mapping_search" model="ir.ui.view">
+      <field name="name">pancake.staff.mapping.search</field>
+      <field name="model">pancake.staff.mapping</field>
+      <field name="arch" type="xml">
+        <search string="Tìm nhân viên Pancake">
+          <field name="name" string="Tên"/>
+          <field name="pancake_staff_id" string="Pancake ID"/>
+          <field name="email" string="Email"/>
+          <field name="odoo_user_id" string="Tài khoản Odoo"/>
+          <filter name="mapped" string="Đã mapping" domain="[('odoo_user_id', '!=', False)]"/>
+          <filter name="not_mapped" string="Chưa mapping" domain="[('odoo_user_id', '=', False)]"/>
+          <group expand="0" string="Nhóm theo">
+            <filter name="group_by_odoo_user" string="Tài khoản Odoo" context="{'group_by': 'odoo_user_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+  </data>
+</odoo>

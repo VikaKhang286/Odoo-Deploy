@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Custom List View cho Phiếu thu -->
+        <record id="dac_account_payment_custom_view_list" model="ir.ui.view">
+            <field name="name">account.payment.custom.list</field>
+            <field name="model">account.payment</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <list string="Phiếu thu" default_order="create_date desc" create="0" edit="0">
+                    <field name="name"/>
+                    <field name="create_date"/>
+                    <field name="date" optional="hide"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="dac_user_id" string="Người phụ trách" widget="many2one_avatar_user"/>
+                    <field name="amount" sum="Tổng" widget="monetary"/>
+                    <field name="currency_id" invisible="1" optional="hide"/>
+                    <field name="state" string="Trạng thái" widget="badge"
+                        decoration-info="state == 'draft'"
+                        decoration-success="state == 'paid'"
+                        decoration-danger="state == 'cancelled' or state == 'rejected'"/>
+                    <field name="payment_method_line_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Custom Search View cho Phiếu thu -->
+        <record id="dac_account_payment_custom_search" model="ir.ui.view">
+            <field name="name">account.payment.custom.search</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm phiếu thu">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="dac_user_id"/>
+                    <filter string="Của tôi" name="my_payments" domain="[('dac_user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Đã xác nhận" name="paid" domain="[('state', '=', 'paid')]"/>
+                    <filter string="Đã hủy" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <separator/>
+                    <group expand="1" string="Nhóm theo">
+                        <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                        <filter string="Sổ nhật ký" name="group_by_journal" context="{'group_by': 'journal_id'}"/>
+                        <filter string="Khách hàng" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Ngày thanh toán" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Window cho Phiếu thu -->
+        <record id="dac_account_payment_custom_action" model="ir.actions.act_window">
+            <field name="name">Phiếu thu</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_account_payment_custom_view_list"/>
+            <field name="search_view_id" ref="dac_account_payment_custom_search"/>
+        </record>
+
+
+        <!-- Custom List View cho Phiếu chi -->
+        <record id="dac_account_payment_outbound_view_list" model="ir.ui.view">
+            <field name="name">account.payment.outbound.list</field>
+            <field name="model">account.payment</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <list string="Phiếu chi" default_order="create_date desc" create="0" edit="0">
+                    <field name="name"/>
+                    <field name="create_date"/>
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="dac_user_id" string="Người phụ trách" widget="many2one_avatar_user"/>
+                    <field name="amount" sum="Tổng" widget="monetary"/>
+                    <field name="currency_id" invisible="1" optional="hide"/>
+                    <field name="state" string="Trạng thái" widget="badge"
+                        decoration-info="state == 'draft'"
+                        decoration-success="state == 'paid'"
+                        decoration-danger="state == 'cancelled' or state == 'rejected'"/>
+                    <field name="payment_method_line_id"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Custom Search View cho Phiếu chi -->
+        <record id="dac_account_payment_outbound_search" model="ir.ui.view">
+            <field name="name">account.payment.outbound.search</field>
+            <field name="model">account.payment</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm phiếu chi">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="journal_id"/>
+                    <field name="dac_user_id"/>
+                    <filter string="Của tôi" name="my_payments" domain="[('dac_user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Đã xác nhận" name="paid" domain="[('state', '=', 'paid')]"/>
+                    <filter string="Đã hủy" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    <separator/>
+                    <group expand="1" string="Nhóm theo">
+                        <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                        <filter string="Sổ nhật ký" name="group_by_journal" context="{'group_by': 'journal_id'}"/>
+                        <filter string="Đối tác" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Ngày thanh toán" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Window cho Phiếu chi -->
+        <record id="dac_account_payment_outbound_action" model="ir.actions.act_window">
+            <field name="name">Phiếu chi</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_account_payment_outbound_view_list"/>
+            <field name="search_view_id" ref="dac_account_payment_outbound_search"/>
+        </record>
+
+        <!-- Inherit form view for account.payment to add custom buttons and hide header buttons -->
+        <record id="account_payment_form_inherit_dac" model="ir.ui.view">
+            <field name="name">account.payment.form.inherit.dac</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <!-- Ẩn các nút trong header bằng invisible - ẩn tất cả các nút có thể có -->
+                <xpath expr="//button[@name='action_post']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_validate']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_reject']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_draft']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_request_cancel']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='mark_as_sent']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='unmark_as_sent']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+
+                <!-- Thêm các nút xuống phía dưới cuối sheet giống sale order view -->
+                <xpath expr="//notebook[@name='payment_notebook']" position="after">
+                    <div style="display: flex; gap: 16px; justify-content: flex-end; margin-top: 16px;">
+                        <!-- Nút Quay về đơn hàng - màu vàng -->
+                        <button name="action_back_to_sale_order" 
+                                type="object"
+                                class="btn btn-warning"
+                                string="Quay về đơn hàng"
+                                help="Quay về đơn hàng"
+                                invisible="not memo"/><!-- Hiện khi có memo -->
+                        
+                        <!-- Nút Quay về nháp - chỉ hiện khi không phải draft -->
+                        <button name="action_back_to_draft_custom" 
+                                string="Đặt lại thành nháp" 
+                                type="object" 
+                                class="btn btn-secondary"
+                                invisible="state == 'draft'"/><!-- Ẩn khi đã là draft -->
+                        
+                        <!-- Nút Xác nhận - chỉ hiện khi draft -->
+                        <button name="action_confirm_payment_custom" 
+                                string="Xác nhận" 
+                                type="object" 
+                                class="btn btn-primary oe_highlight"
+                                invisible="state != 'draft'"/><!-- Chỉ hiện khi draft -->
+                        
+                        <!-- Nút Thanh toán - chỉ hiện khi posted -->
+                        <button name="action_mark_as_paid_custom" 
+                                string="Thanh toán" 
+                                type="object" 
+                                class="btn btn-success oe_highlight"
+                                invisible="state in ('paid','draft')"/><!-- Chỉ hiện khi paid  -->
+                        
+                        <!-- Nút Hủy -->
+                        <button string="Hủy" 
+                                class="btn btn-secondary" 
+                                special="cancel"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Manager: thấy tất cả task -->
+        <record id="dac_work_task_rule_manager" model="ir.rule">
+            <field name="name">DAC Work Task: Manager All Access</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Sale: thấy task của đơn hàng mình phụ trách hoặc task được assign cho mình -->
+        <record id="dac_work_task_rule_sale" model="ir.rule">
+            <field name="name">DAC Work Task: Sale Own Tasks</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+            <field name="domain_force">['|', ('order_id.user_id', '=', user.id), ('assigned_user_id', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Sale All: xem TOÀN BỘ task (read-only) để nắm lịch & phân bổ.
+             Không cho sửa/xóa task thiết kế/sản xuất của người khác. -->
+        <record id="dac_work_task_rule_sale_all" model="ir.rule">
+            <field name="name">DAC Work Task: Sale All - View All Tasks</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_sale_all'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Sale: chỉ được xóa task do mình tạo và còn ở trạng thái draft -->
+        <record id="dac_work_task_rule_sale_unlink" model="ir.rule">
+            <field name="name">DAC Work Task: Sale Delete Own Draft Tasks</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+            <field name="domain_force">[('create_uid', '=', user.id), ('state', '=', 'draft')]</field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Design: thấy task được assign cho mình hoặc task trên đơn hàng mình thiết kế -->
+        <record id="dac_work_task_rule_design" model="ir.rule">
+            <field name="name">DAC Work Task: Design Own Tasks</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_design'))]"/>
+            <field name="domain_force">['|', ('assigned_user_id', '=', user.id), ('order_id.user_id_design', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- Production: thấy task được assign cho mình hoặc task trên đơn hàng mình sản xuất -->
+        <record id="dac_work_task_rule_production" model="ir.rule">
+            <field name="name">DAC Work Task: Production Own Tasks</field>
+            <field name="model_id" ref="model_dac_work_task"/>
+            <field name="groups" eval="[(4, ref('dac_erp.group_dac_erp_production'))]"/>
+            <field name="domain_force">['|', ('assigned_user_id', '=', user.id), '|', ('order_id.user_id_production', '=', user.id), ('order_id.production_group_ids', 'in', [user.id])]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

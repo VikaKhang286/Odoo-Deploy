@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Di chuyển và gom OpenClaw vào Cấu Hồi Hệ Thống -->
+        <menuitem id="menu_dac_openclaw_root"
+                  name="OpenClaw AI Gateway"
+                  parent="dac_erp.dac_system_settings_root"
+                  sequence="20"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+                  
+        <menuitem id="menu_dac_openclaw_webhook_log"
+                  name="Webhook Log"
+                  parent="menu_dac_openclaw_root"
+                  action="action_outbound_webhook_log"
+                  sequence="10"/>
+    </data>
+</odoo>

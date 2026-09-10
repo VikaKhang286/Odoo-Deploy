@@ -1,0 +1,29 @@
+<odoo>
+    <data>
+        <record id="view_welcome_home_menu" model="ir.ui.view">
+            <field name="name">Trang chủ</field>
+            <field name="model">home.menu</field>
+            <field name="arch" type="xml">
+                <form string="Trang chủ" create="0" edit="0" delete="0">
+                    <sheet>
+                        <div style="text-align: center; margin-top: 10px;">
+                            <h1>Chào mừng đến với Duy An Company</h1>
+                            <img src="/home_menu/static/src/img/DAC_logo.png" style="width: 200px; margin-bottom: 30px; margin-top: 30px;"/>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="home_menu_record" model="home.menu">
+            <field name="name">Trang chủ</field>
+        </record> 
+
+        <record id="home_menu_action" model="ir.actions.act_window">
+            <field name="name">Trang chủ</field>
+            <field name="res_model">home.menu</field>
+            <field name="view_mode">form</field>
+            <field name="res_id" ref="home_menu_record"/>
+        </record>
+    </data>
+</odoo>

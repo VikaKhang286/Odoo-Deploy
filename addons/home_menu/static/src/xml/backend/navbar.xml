@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//nav" position="attributes">
+            <t t-if="state.isMenuBlocked || state.inventory">
+                <attribute name="class">o_main_navbar d-flex align-items-center position-relative</attribute>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
+            <t t-if="state.isMenuBlocked || state.inventory">
+                <!-- Home Button: icon only, no label -->
+                <div class="o-dropdown dropdown o_navbar_apps_menu o-dropdown--no-caret">
+                    <button t-if="homeButton"
+                            t-att-id="homeButton.id"
+                            t-att-title="homeButton.title"
+                            t-on-click="homeButton.callback"
+                            class="dropdown-toggle o_home_menu_button">
+                        <i t-att-class="homeButton.icon"/>
+                    </button>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-call="web.NavBar.AppsMenu">
+                    <t t-set="apps" t-value="menuService.getApps()"  />
+                </t>
+            </t>
+        </xpath>
+        <!-- Ẩn tên app (App Brand) khi menu bị khoá theo role -->
+        <xpath expr="//DropdownItem[contains(@class,'o_menu_brand')]" position="replace">
+            <DropdownItem
+                t-if="!env.isSmall and currentApp and !state.isMenuBlocked"
+                t-esc="currentApp.name"
+                class="'o_menu_brand d-flex'"
+                onSelected="() => this.onNavBarDropdownItemSelection(currentApp)"
+                attrs="{ href: getMenuItemHref(currentApp), 'data-menu-xmlid': currentApp.xmlid, 'data-section': currentApp.id }"
+            />
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <record id="view_welcome_home_menu" model="ir.ui.view">
+            <field name="name">Trang chủ</field>
+            <field name="model">home.menu</field>
+            <field name="arch" type="xml">
+                <form string="Trang chủ" class="o_home_menu_form" create="0" edit="0" delete="0">
+                    <sheet class="o_home_menu_sheet">
+                        <div class="dac-home-shell">
+                            <div class="dac-home-hero">
+                                <div class="dac-home-copy">
+                                    <div class="dac-home-eyebrow">Duy An ERP</div>
+                                    <h1>Không gian làm việc đơn giản, rõ ràng và hiện đại</h1>
+                                    <p class="dac-home-lead">
+                                        Theo dõi bán hàng, thiết kế và sản xuất trong một giao diện gọn gàng,
+                                        dễ đọc và giảm thao tác thừa cho đội ngũ vận hành hằng ngày.
+                                    </p>
+                                    <div class="dac-home-pill-row">
+                                        <span class="dac-home-pill">Ưu tiên công việc rõ ràng</span>
+                                        <span class="dac-home-pill">Dễ theo dõi tiến độ</span>
+                                        <span class="dac-home-pill">Tập trung vào thao tác chính</span>
+                                    </div>
+                                </div>
+                                <div class="dac-home-brand-card">
+                                    <img src="/home_menu/static/src/img/DAC_logo.png" alt="DAC logo" class="dac-home-logo" style="max-width:176px;width:100%;height:auto;"/>
+                                    <div class="dac-home-brand-title">Duy An Company</div>
+                                    <div class="dac-home-brand-caption">ERP workspace</div>
+                                </div>
+                            </div>
+
+                            <div class="dac-home-grid">
+                                <div class="dac-home-card">
+                                    <div class="dac-home-card-title">Bắt đầu nhanh</div>
+                                    <p>Mở dashboard theo vai trò từ thanh điều hướng để xem ngay phần việc quan trọng nhất trong ngày.</p>
+                                </div>
+                                <div class="dac-home-card">
+                                    <div class="dac-home-card-title">Quản lý dễ nhìn</div>
+                                    <p>Thông tin được nhóm lại theo mức ưu tiên, tiến độ và hạn xử lý để tránh bỏ sót đơn hàng.</p>
+                                </div>
+                                <div class="dac-home-card">
+                                    <div class="dac-home-card-title">Làm việc nhất quán</div>
+                                    <p>Form, bảng và dashboard dùng cùng một ngôn ngữ thiết kế để nhân sự mới làm quen nhanh hơn.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="home_menu_record" model="home.menu">
+            <field name="name">Trang chủ</field>
+        </record>
+
+        <record id="home_menu_action" model="ir.actions.act_window">
+            <field name="name">Trang chủ</field>
+            <field name="res_model">home.menu</field>
+            <field name="view_mode">form</field>
+            <field name="res_id" ref="home_menu_record"/>
+        </record>
+    </data>
+</odoo>

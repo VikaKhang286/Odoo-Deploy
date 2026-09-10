@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pancake_message_sync_job_tree" model="ir.ui.view">
+            <field name="name">pancake.message.sync.job.tree</field>
+            <field name="model">pancake.message.sync.job</field>
+            <field name="arch" type="xml">
+                <list string="Job đồng bộ toàn bộ Pancake" create="false" delete="false">
+                    <field name="name"/>
+                    <field name="state"/>
+                    <field name="engine_mode"/>
+                    <field name="sync_scope"/>
+                    <field name="phase"/>
+                    <field name="progress_percent" widget="progressbar"/>
+                    <field name="phase_progress_percent" widget="progressbar"/>
+                    <field name="selected_page_count"/>
+                    <field name="completed_page_count"/>
+                    <field name="completed_task_count"/>
+                    <field name="failed_task_count"/>
+                    <field name="requested_by_id"/>
+                    <field name="started_at"/>
+                    <field name="finished_at"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_pancake_message_sync_job_search" model="ir.ui.view">
+            <field name="name">pancake.message.sync.job.search</field>
+            <field name="model">pancake.message.sync.job</field>
+            <field name="arch" type="xml">
+                <search string="Tìm job đồng bộ toàn bộ Pancake">
+                    <field name="name"/>
+                    <field name="requested_by_id"/>
+                    <field name="state"/>
+                    <field name="phase"/>
+                    <filter name="running" string="Đang chạy" domain="[('state', 'in', ['running', 'stopping'])]"/>
+                    <filter name="done" string="Hoàn tất" domain="[('state', '=', 'done')]"/>
+                    <filter name="done_with_warnings" string="Hoàn tất có cảnh báo" domain="[('state', '=', 'done_with_warnings')]"/>
+                    <filter name="failed" string="Lỗi / Dừng" domain="[('state', 'in', ['failed', 'cancelled'])]"/>
+                    <filter name="recovered" string="Đã phục hồi" domain="[('resume_count', '&gt;', 0)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_pancake_message_sync_log_tree" model="ir.ui.view">
+            <field name="name">pancake.message.sync.log.tree</field>
+            <field name="model">pancake.message.sync.log</field>
+            <field name="arch" type="xml">
+                <list string="Log đồng bộ Pancake" create="false" delete="false">
+                    <field name="logged_at"/>
+                    <field name="source_type"/>
+                    <field name="continuous_layer" optional="show"/>
+                    <field name="level"/>
+                    <field name="phase"/>
+                    <field name="event_code"/>
+                    <field name="job_id" optional="show"/>
+                    <field name="page_id"/>
+                    <field name="conversation_id"/>
+                    <field name="resume_marker"/>
+                    <field name="message"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_pancake_message_sync_log_search" model="ir.ui.view">
+            <field name="name">pancake.message.sync.log.search</field>
+            <field name="model">pancake.message.sync.log</field>
+            <field name="arch" type="xml">
+                <search string="Tìm log đồng bộ Pancake">
+                    <field name="message"/>
+                    <field name="event_code"/>
+                    <field name="level"/>
+                    <field name="source_type"/>
+                    <field name="continuous_layer"/>
+                    <field name="job_id"/>
+                    <field name="page_id"/>
+                    <field name="conversation_id"/>
+                    <field name="stats_json"/>
+                    <filter name="errors" string="Lỗi" domain="[('level', '=', 'error')]"/>
+                    <filter name="warnings" string="Cảnh báo" domain="[('level', '=', 'warning')]"/>
+                    <filter name="continuous" string="Đồng bộ liên tục" domain="[('source_type', '=', 'continuous')]"/>
+                    <filter name="manual_window" string="Quét tay" domain="[('source_type', '=', 'manual_window')]"/>
+                    <filter name="full_sync" string="Đồng bộ toàn bộ" domain="[('source_type', '=', 'full_sync')]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_pancake_message_sync_job_form" model="ir.ui.view">
+            <field name="name">pancake.message.sync.job.form</field>
+            <field name="model">pancake.message.sync.job</field>
+            <field name="arch" type="xml">
+                <form string="Job đồng bộ toàn bộ Pancake" create="false" edit="false" delete="false">
+                    <header>
+                        <button name="action_request_stop"
+                                type="object"
+                                string="Yêu cầu dừng"
+                                class="btn-warning"
+                                invisible="state not in ('running', 'stopping')"/>
+                        <button name="action_open_monitor"
+                                type="object"
+                                string="Mở màn Đồng bộ toàn bộ"
+                                class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Trạng thái">
+                                <field name="state" readonly="1"/>
+                                <field name="engine_mode" readonly="1"/>
+                                <field name="sync_scope" readonly="1"/>
+                                <field name="phase" readonly="1"/>
+                                <field name="progress_percent" widget="progressbar" readonly="1"/>
+                                <field name="phase_progress_percent" widget="progressbar" readonly="1"/>
+                                <field name="phase_done_count" readonly="1"/>
+                                <field name="phase_total_count" readonly="1"/>
+                                <field name="requested_by_id" readonly="1"/>
+                                <field name="started_at" readonly="1"/>
+                                <field name="finished_at" readonly="1"/>
+                                <field name="last_heartbeat_at" readonly="1"/>
+                                <field name="resume_count" readonly="1"/>
+                                <field name="last_checkpoint_at" readonly="1"/>
+                                <field name="last_recovery_reason" readonly="1" widget="text"/>
+                            </group>
+                            <group string="Tham số chạy">
+                                <field name="batch_size" readonly="1"/>
+                                <field name="smart_recent_days" readonly="1"/>
+                                <field name="deep_recent_days" readonly="1"/>
+                                <field name="circuit_breaker_pause_minutes" readonly="1"/>
+                                <field name="stale_timeout_minutes" readonly="1"/>
+                                <field name="token_status" readonly="1"/>
+                                <field name="catalog_page_count" readonly="1"/>
+                                <field name="selected_page_count" readonly="1"/>
+                                <field name="skipped_page_count" readonly="1"/>
+                                <field name="selected_page_snapshot" readonly="1" widget="text"/>
+                                <field name="runner_claim_token" readonly="1"/>
+                                <field name="runner_claimed_at" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Tiến độ queue">
+                                <field name="total_page_count" readonly="1"/>
+                                <field name="processed_page_count" readonly="1"/>
+                                <field name="completed_page_count" readonly="1"/>
+                                <field name="pending_task_count" readonly="1"/>
+                                <field name="running_task_count" readonly="1"/>
+                                <field name="completed_task_count" readonly="1"/>
+                                <field name="failed_task_count" readonly="1"/>
+                                <field name="processed_batch_count" readonly="1"/>
+                            </group>
+                            <group string="Kết quả đồng bộ">
+                                <field name="total_conversation_count" readonly="1"/>
+                                <field name="synced_conversation_count" readonly="1"/>
+                                <field name="failed_conversation_count" readonly="1"/>
+                                <field name="total_messages_created" readonly="1"/>
+                                <field name="total_messages_seen" readonly="1"/>
+                                <field name="total_existing_messages" readonly="1"/>
+                                <field name="last_log_message" readonly="1" widget="text"/>
+                                <field name="error_message" readonly="1" widget="text"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Tasks">
+                                <field name="task_ids" readonly="1" nolabel="1">
+                                    <list create="false" delete="false">
+                                        <field name="task_type"/>
+                                        <field name="page_id"/>
+                                        <field name="conversation_id"/>
+                                        <field name="state"/>
+                                        <field name="priority"/>
+                                        <field name="attempt_count"/>
+                                        <field name="max_attempts"/>
+                                        <field name="next_run_at"/>
+                                        <field name="claimed_at"/>
+                                        <field name="finished_at"/>
+                                        <field name="duration_ms"/>
+                                        <field name="last_error"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Logs">
+                                <field name="log_ids" readonly="1" context="{'list_view_ref': 'CRM_DAC.view_pancake_message_sync_log_tree'}">
+                                    <list create="false" delete="false">
+                                        <field name="logged_at"/>
+                                        <field name="level"/>
+                                        <field name="phase"/>
+                                        <field name="event_code"/>
+                                        <field name="page_id"/>
+                                        <field name="conversation_id"/>
+                                        <field name="resume_marker"/>
+                                        <field name="message"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pancake_message_sync_jobs" model="ir.actions.act_window">
+            <field name="name">Lịch sử job đồng bộ toàn bộ Pancake</field>
+            <field name="res_model">pancake.message.sync.job</field>
+            <field name="view_mode">list,form</field>
+            <field name="views" eval="[(ref('CRM_DAC.view_pancake_message_sync_job_tree'), 'list'), (ref('CRM_DAC.view_pancake_message_sync_job_form'), 'form')]"/>
+            <field name="search_view_id" ref="CRM_DAC.view_pancake_message_sync_job_search"/>
+            <field name="target">current</field>
+        </record>
+
+        <record id="action_pancake_message_sync_logs" model="ir.actions.act_window">
+            <field name="name">Lịch sử và lỗi đồng bộ Pancake</field>
+            <field name="res_model">pancake.message.sync.log</field>
+            <field name="view_mode">list</field>
+            <field name="views" eval="[(ref('CRM_DAC.view_pancake_message_sync_log_tree'), 'list')]"/>
+            <field name="search_view_id" ref="CRM_DAC.view_pancake_message_sync_log_search"/>
+            <field name="target">current</field>
+        </record>
+    </data>
+</odoo>

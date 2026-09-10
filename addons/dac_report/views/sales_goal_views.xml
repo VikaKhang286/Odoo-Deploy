@@ -1,0 +1,111 @@
+<odoo>
+  <data>
+    <record id="view_dac_sales_goal_list" model="ir.ui.view">
+      <field name="name">dac.sales.goal.list</field>
+      <field name="model">dac.sales.goal</field>
+      <field name="arch" type="xml">
+        <list string="Mục tiêu/KPI (cá nhân)" create="true" edit="true">
+          <field name="user_id"/>
+          <field name="company_id"/>
+          <field name="year"/>
+          <field name="month"/>
+          <!-- GIỮ ĐÚNG TÊN FIELD: target_amount -->
+          <field name="target_amount"/>
+          <field name="kpi_cared_count" optional="hide"/>
+          <field name="kpi_quotation_count" optional="hide"/>
+          <field name="kpi_closed_count" optional="hide"/>
+          <field name="kpi_completed_customer_count" optional="hide"/>
+          <field name="active"/>
+          <field name="note" optional="hide"/>
+          <field name="company_id" invisible="1" optional="hide"/>
+          <field name="currency_id" invisible="1" optional="hide"/>
+        </list>
+      </field>
+    </record>
+
+      <!-- ===== LIST/FORM (dac.sales.goal.member) – view riêng ===== 
+      <record id="view_dac_sales_goal_member_list" model="ir.ui.view">
+          <field name="name">dac.sales.goal.member.list</field>
+          <field name="model">dac.sales.goal.member</field>
+          <field name="arch" type="xml">
+            <list string="Phân bổ thành viên" editable="bottom">
+              <field name="user_id"/>
+              <field name="member_target_amount"/>
+              <field name="note" optional="hide"/>
+            </list>
+          </field>
+      </record>
+
+      <record id="view_dac_sales_goal_member_form" model="ir.ui.view">
+          <field name="name">dac.sales.goal.member.form</field>
+          <field name="model">dac.sales.goal.member</field>
+          <field name="arch" type="xml">
+            <form string="Phân bổ thành viên">
+              <group>
+                <field name="user_id"/>
+                <field name="member_target_amount"/>
+                <field name="note"/>
+              </group>
+            </form>
+          </field>
+      </record> -->
+
+
+
+
+    <!-- ===== FORM VIEW (KHÔNG team, KHÔNG phân bổ) ===== -->
+    <record id="view_dac_sales_goal_form" model="ir.ui.view">
+      <field name="name">dac.sales.goal.form</field>
+      <field name="model">dac.sales.goal</field>
+      <field name="arch" type="xml">
+        <form string="Mục tiêu doanh thu / KPI (cá nhân)">
+          <sheet>
+            <group>
+              <group>
+                <field name="user_id"/>
+                <field name="company_id"/>
+                <field name="year"/>
+                <field name="month"/>
+                <field name="active"/>
+              </group>
+              <group string="Mục tiêu chính">
+                <!-- GIỮ ĐÚNG TÊN FIELD: target_amount -->
+                <field name="target_amount"/>
+                <field name="note"/>
+                <field name="company_id" invisible="1" optional="hide"/>
+                <field name="currency_id" invisible="1" optional="hide"/>
+              </group>
+            </group>
+
+            <notebook>
+              <page string="KPI (chỉ tiêu số lượng)">
+                <group>
+                  <field name="kpi_cared_count"/>
+                  <field name="kpi_quotation_count"/>
+                  <field name="kpi_closed_count"/>
+                  <field name="kpi_completed_customer_count"/>
+                </group>
+              </page>
+
+              <page string="Trọng số KPI">
+                <group>
+                  <field name="weight_revenue" help="VD: 1.0 = 100%; 0.5 = 50%"/>
+                  <field name="weight_cared"/>
+                  <field name="weight_quotation"/>
+                  <field name="weight_closed"/>
+                  <field name="weight_completed"/>
+                </group>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_dac_sales_goal" model="ir.actions.act_window">
+      <field name="name">Mục tiêu doanh thu</field>
+      <field name="res_model">dac.sales.goal</field>
+      <field name="view_mode">list,form</field>
+    </record>
+  </data>
+</odoo>

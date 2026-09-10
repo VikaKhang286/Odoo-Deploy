@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- LƯU Ý: Tạo Group mới không được trùng lặp id và ghi đè lên gourp cũ
+        ID group quyền (parent) phải khác nhau khi thêm mới.
+
+        GỘP UI: các nhóm DAC KHÔNG gắn category_id. Lý do — Odoo render một
+        "user-type selector" trong tab Quyền truy cập cho mỗi category; với các
+        combo group (implied dạng nhánh) nó hiện thành nhiều checkbox gây rối.
+        Bỏ category để dropdown "Vai trò DAC" (res_users.py) là nơi gán role
+        DUY NHẤT. (Dev mode vẫn thấy group dạng technical checkbox — chấp nhận.)
+        -->
+
+        <!-- Nhóm quản lý -->
+        <record id="group_dac_erp_manager" model="res.groups">
+            <field name="name">DAC Manager</field>
+        </record>
+
+        <!-- Nhóm bán hàng: chỉ thấy đơn của mình -->
+        <record id="group_dac_erp_sale" model="res.groups">
+            <field name="name">DAC Sale</field>
+        </record>
+
+        <!-- Nhóm bán hàng: xem tất cả đơn (implied group_dac_erp_sale) -->
+        <record id="group_dac_erp_sale_all" model="res.groups">
+            <field name="name">DAC Sale (Xem tất cả đơn)</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+        </record>
+
+        <!-- Nhóm sản xuất -->
+        <record id="group_dac_erp_production" model="res.groups">
+            <field name="name">DAC Production</field>
+        </record>
+
+        <!-- Nhóm thiết kế -->
+        <record id="group_dac_erp_design" model="res.groups">
+            <field name="name">DAC Design</field>
+        </record>
+
+        <!-- Nhóm vừa thiết kế vừa sản xuất (implied: design + production) -->
+        <record id="group_dac_erp_design_production" model="res.groups">
+            <field name="name">DAC Design + Production</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_design')), (4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <!-- Nhóm full-stack: vừa sale (xem tất cả) vừa thiết kế vừa sản xuất.
+             implied sale_all → tự kéo theo sale; design; production. -->
+        <record id="group_dac_erp_full_stack" model="res.groups">
+            <field name="name">DAC Full-stack (Sale + Thiết kế + Sản xuất)</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_sale_all')), (4, ref('dac_erp.group_dac_erp_design')), (4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+    </data>
+</odoo>

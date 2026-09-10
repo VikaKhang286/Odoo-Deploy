@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_deposit_confirm_wizard_form" model="ir.ui.view">
+            <field name="name">deposit.confirm.wizard.form</field>
+            <field name="model">deposit.confirm.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Xác nhận đặt cọc">
+                    <field name="currency_id" invisible="1"/>
+
+                    <p class="text-muted mb-3">Chọn phương thức thanh toán để xác nhận khoản cọc.</p>
+
+                    <group>
+                        <field name="deposit_amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                        <field name="journal_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="payment_date"/>
+                    </group>
+
+                    <footer>
+                        <button string="Xác nhận cọc" type="object" name="action_confirm" class="btn-primary" invisible="not journal_id or not payment_date"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+
+        <menuitem id="dac_sale_manage_users_menu_root"
+                  name="Quản lý người dùng"
+                  parent="home_menu.home_root"
+                  sequence="190"
+                  action="dac_res_users_action"
+                  groups="dac_erp.group_dac_erp_manager"/>
+
+
+        <!-- Menu cho Sale Order Lines -->
+        <menuitem id="menu_sale_order_line_import"
+                  name="Dòng đơn hàng"
+                  parent="home_menu.home_root"
+                  action="action_sale_order_line_import"
+                  sequence="200"
+                  groups="dac_erp.group_dac_erp_manager"/>
+                  
+        <!-- Menu cho Phiếu chi -->
+        <!-- <menuitem id="dac_account_payment_outbound_menu"
+            name="Phiếu chi"
+            parent="dac_sale_order_customer_menu_root"
+            action="dac_account_payment_outbound_action"
+            sequence="31"/> -->
+
+    </data>
+</odoo>

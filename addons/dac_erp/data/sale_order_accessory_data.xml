@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="sale_order_accessory_hiflex_16" model="dac.sale.order.accessory"><field name="name">Dù 1m6</field><field name="sequence">10</field><field name="price">220000</field></record>
+    <record id="sale_order_accessory_hiflex_18" model="dac.sale.order.accessory"><field name="name">Dù 1m8</field><field name="sequence">20</field><field name="price">300000</field></record>
+    <record id="sale_order_accessory_wing_1" model="dac.sale.order.accessory"><field name="name">1 cánh gà</field><field name="sequence">30</field><field name="price">180000</field></record>
+    <record id="sale_order_accessory_wing_2" model="dac.sale.order.accessory"><field name="name">2 cánh gà</field><field name="sequence">40</field><field name="price">360000</field></record>
+    <record id="sale_order_accessory_roof" model="dac.sale.order.accessory"><field name="name">1 mái che trên</field><field name="sequence">50</field><field name="price">200000</field></record>
+    <record id="sale_order_accessory_inner_cabinet" model="dac.sale.order.accessory"><field name="name">1 hộc tủ trong</field><field name="sequence">60</field><field name="price">180000</field></record>
+    <record id="sale_order_accessory_stone_shelf" model="dac.sale.order.accessory"><field name="name">1 kệ đá</field><field name="sequence">70</field><field name="price">120000</field></record>
+    <record id="sale_order_accessory_display_shelf_1" model="dac.sale.order.accessory"><field name="name">1 kệ trưng bày</field><field name="sequence">80</field><field name="price">240000</field></record>
+    <record id="sale_order_accessory_display_shelf_2" model="dac.sale.order.accessory"><field name="name">2 kệ trưng bày</field><field name="sequence">90</field><field name="price">480000</field></record>
+    <record id="sale_order_accessory_rounded_model" model="dac.sale.order.accessory"><field name="name">Mẫu bo tròn</field><field name="sequence">100</field><field name="price">50000</field></record>
+</odoo>

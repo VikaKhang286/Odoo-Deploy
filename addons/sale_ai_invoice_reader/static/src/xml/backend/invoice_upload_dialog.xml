@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="sale_ai_invoice_reader.InvoiceUploadDialog">
+        <Dialog title="'Nhập hóa đơn bằng ảnh'" size="'md'">
+            <div class="p-3">
+                <!-- Drop zone: desktop = drag-drop + Ctrl+V | mobile = camera + gallery buttons -->
+                <div class="dac-invoice-drop-zone"
+                     t-att-class="{
+                         'dac-invoice-drop-zone--dragging': state.isDragging,
+                         'dac-invoice-drop-zone--has-file': state.filename
+                     }"
+                     t-on-dragover="onDragOver"
+                     t-on-dragleave="onDragLeave"
+                     t-on-drop="onDrop">
+
+                    <t t-if="state.filename">
+                        <!-- Preview ảnh / PDF — giống nhau trên cả desktop và mobile -->
+                        <t t-if="state.isImage">
+                            <img t-att-src="'data:image/jpeg;base64,' + state.fileData"
+                                 class="dac-invoice-preview mb-2 rounded border shadow-sm"/>
+                        </t>
+                        <t t-else="">
+                            <i class="fa fa-file-pdf-o fa-3x text-success d-block mb-2"/>
+                        </t>
+                        <div class="fw-bold" t-esc="state.filename"/>
+
+                        <!-- Desktop: nhấn để đổi file -->
+                        <div class="text-muted small mt-1 d-none d-md-block"
+                             style="cursor:pointer"
+                             t-on-click="onClickZone">
+                            Nhấn để đổi file
+                        </div>
+
+                        <!-- Mobile: nút chụp lại / đổi ảnh -->
+                        <div class="d-flex d-md-none gap-2 mt-2">
+                            <button class="btn btn-sm btn-outline-primary dac-camera-retake-btn"
+                                    t-on-click="onClickCamera">
+                                <i class="fa fa-camera me-1"/>Chụp lại
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    t-on-click="onClickZone">
+                                <i class="fa fa-image me-1"/>Đổi ảnh
+                            </button>
+                        </div>
+                    </t>
+
+                    <t t-else="">
+                        <!-- Desktop: drag-drop + click + Ctrl+V -->
+                        <div class="d-none d-md-flex flex-column align-items-center w-100"
+                             style="cursor:pointer"
+                             t-on-click="onClickZone">
+                            <i class="fa fa-cloud-upload fa-3x text-muted d-block mb-2"/>
+                            <div class="fs-6">Kéo thả ảnh hoặc PDF vào đây</div>
+                            <div class="text-muted small mt-1">
+                                hoặc nhấn để chọn file · <kbd>Ctrl+V</kbd> để paste ảnh từ clipboard
+                            </div>
+                        </div>
+
+                        <!-- Mobile: nút chụp ảnh + chọn từ thư viện -->
+                        <div class="d-flex d-md-none flex-column align-items-center gap-3 py-2 w-100">
+                            <button class="btn btn-primary dac-camera-main-btn"
+                                    t-on-click="onClickCamera">
+                                <i class="fa fa-camera fa-2x d-block mb-2 mx-auto"/>
+                                <span class="fs-6 fw-bold">Chụp ảnh hoá đơn</span>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    t-on-click="onClickZone">
+                                <i class="fa fa-image me-1"/>Chọn từ thư viện / PDF
+                            </button>
+                        </div>
+                    </t>
+
+                    <!-- Input chọn file thông thường (desktop + gallery mobile) -->
+                    <input type="file"
+                           t-ref="fileInput"
+                           accept="image/*,application/pdf"
+                           class="d-none"
+                           t-on-change="onFileChange"/>
+                    <!-- Input camera (mobile, capture=environment mở camera trực tiếp) -->
+                    <input type="file"
+                           t-ref="cameraInput"
+                           accept="image/*"
+                           capture="environment"
+                           class="d-none"
+                           t-on-change="onFileChange"/>
+                </div>
+
+                <t t-if="state.errorMsg">
+                    <div class="alert alert-danger mt-3 mb-0">
+                        <i class="fa fa-exclamation-triangle me-1"/>
+                        <t t-esc="state.errorMsg"/>
+                    </div>
+                </t>
+            </div>
+
+            <t t-set-slot="footer">
+                <button class="btn btn-primary"
+                        t-on-click="onReadInvoice"
+                        t-att-disabled="!state.fileData || state.isLoading">
+                    <i class="me-1"
+                       t-att-class="state.isLoading ? 'fa fa-spinner fa-spin' : 'fa fa-magic'"/>
+                    <t t-if="state.isLoading">Đang đọc hóa đơn...</t>
+                    <t t-else="">Đọc hóa đơn bằng AI</t>
+                </button>
+                <button class="btn btn-secondary" t-on-click="() => props.close()">Đóng</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

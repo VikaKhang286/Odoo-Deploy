@@ -1,0 +1,430 @@
+:root {
+  --dac-ui-bg: #f8fafc;
+  --dac-ui-surface: rgba(255, 255, 255, 0.94);
+  --dac-ui-surface-strong: #ffffff;
+  --dac-ui-border: rgba(148, 163, 184, 0.2);
+  --dac-ui-text: #1e293b;
+  --dac-ui-muted: #475569;
+  --dac-ui-primary: #2563eb;
+  --dac-ui-accent: #f97316;
+  --dac-ui-shadow-sm: 0 12px 28px rgba(15, 23, 42, 0.06);
+  --dac-ui-shadow-md: 0 20px 44px rgba(15, 23, 42, 0.08);
+  --dac-ui-radius-lg: 8px;
+}
+
+html,
+body,
+.o_web_client {
+  font-family: "Open Sans", "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.o_main_navbar,
+.o_control_panel,
+.o_dac_dashboard .k-value,
+.o_dac_dashboard .task-card-header,
+.o_dac_dashboard .ticket__title,
+.dac-home-copy h1,
+.dac-home-card-title,
+.dac-home-brand-title {
+  font-family: "Poppins", "Open Sans", sans-serif;
+}
+
+.o_web_client {
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 38%, var(--dac-ui-bg) 100%);
+  color: var(--dac-ui-text);
+  overflow-x: hidden;
+}
+
+body .o_main_navbar {
+  min-height: 58px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--dac-ui-text) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18) !important;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08) !important;
+}
+
+html body .o_main_navbar .o_menu_sections .o_nav_entry,
+html body .o_main_navbar .o_menu_sections .dropdown-toggle,
+html body .o_main_navbar .o_menu_systray .dropdown-toggle,
+html body .o_main_navbar .o_navbar_apps_menu .dropdown-toggle,
+html body .o_main_navbar .o_menu_brand,
+html body .o_main_navbar .o_nav_entry,
+html body .o_main_navbar .dropdown-toggle {
+  background: transparent !important;
+  color: var(--dac-ui-text) !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+html body .o_main_navbar .o_menu_sections .o_nav_entry:hover,
+html body .o_main_navbar .o_menu_sections .dropdown-toggle:hover,
+html body .o_main_navbar .o_menu_systray .dropdown-toggle:hover,
+html body .o_main_navbar .o_navbar_apps_menu .dropdown-toggle:hover,
+html body .o_main_navbar .dropdown-toggle:hover {
+  background: rgba(37, 99, 235, 0.08) !important;
+  color: var(--dac-ui-primary) !important;
+  transform: translateY(-1px);
+}
+
+body .o_main_navbar .o_menu_systray .badge {
+  background: var(--dac-ui-primary) !important;
+  color: #ffffff !important;
+}
+
+body .o_control_panel {
+  margin: 16px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.78) !important;
+  color: var(--dac-ui-text) !important;
+  border: 1px solid var(--dac-ui-border);
+  border-radius: var(--dac-ui-radius-lg);
+  box-shadow: var(--dac-ui-shadow-sm);
+}
+
+body .o_control_panel .breadcrumb {
+  margin-bottom: 0;
+}
+
+.breadcrumb-item,
+.breadcrumb-item a {
+  color: var(--dac-ui-muted) !important;
+}
+
+.breadcrumb-item.active {
+  color: var(--dac-ui-text) !important;
+  font-weight: 600;
+}
+
+.o_web_client .btn-primary,
+.o_web_client .btn-info,
+.o_web_client .btn-outline-primary,
+.o_web_client .btn-outline-primary:hover,
+.o_web_client .btn-outline-primary.active,
+.o_web_client .btn-outline-primary.dropdown-toggle.show {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+.o_web_client .btn-secondary,
+.o_web_client .btn-outline-secondary {
+  background: #ffffff !important;
+  color: var(--dac-ui-text) !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+}
+
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-outline-primary,
+.btn-outline-secondary {
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  box-shadow: none;
+}
+
+.btn-primary,
+.btn-outline-primary.active,
+.btn-outline-primary.dropdown-toggle.show {
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+}
+
+body .o_searchview {
+  border: 1px solid rgba(148, 163, 184, 0.26) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-radius: 8px !important;
+  box-shadow: inset 0 1px 1px rgba(15, 23, 42, 0.03);
+}
+
+body .o_form_view .o_form_sheet_bg {
+  background: transparent;
+}
+
+body .o_form_view .o_form_sheet {
+  border: 1px solid var(--dac-ui-border);
+  border-radius: 8px;
+  box-shadow: var(--dac-ui-shadow-md);
+}
+
+.o_notebook .nav {
+  gap: 6px;
+}
+
+.o_notebook .nav-link {
+  border-radius: 8px 8px 0 0;
+  font-weight: 600;
+}
+
+.o_list_renderer .o_list_table {
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  box-shadow: var(--dac-ui-shadow-sm);
+}
+
+.o_list_renderer .o_list_table thead th {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.o_list_renderer .o_list_table tbody td {
+  border-color: rgba(148, 163, 184, 0.12);
+}
+
+.o_kanban_renderer .o_kanban_group,
+.o_kanban_renderer .o_kanban_record > div:not(.o_dropdown_kanban),
+.o_kanban_renderer .o_kanban_quick_create,
+.modal-content,
+.dropdown-menu,
+.o-dropdown--menu {
+  border: 1px solid var(--dac-ui-border);
+  border-radius: 8px;
+  box-shadow: var(--dac-ui-shadow-md);
+}
+.o_kanban_renderer.o_renderer.o_kanban_ungrouped {
+  background: transparent !important;
+}
+.o_field_widget input:focus,
+.o_input:focus,
+.form-control:focus,
+.form-select:focus {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+body .o_home_menu_form .o_form_sheet_bg,
+body .o_home_menu_form .o_form_sheet {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+body .o_home_menu_form .o_form_sheet {
+  max-width: 1220px;
+}
+
+body .dac-home-shell,
+body .dac-home-hero,
+body .dac-home-grid {
+  max-width: 100%;
+}
+
+body .dac-home-shell {
+  display: grid;
+  gap: 22px;
+  padding: 6px 0 32px;
+}
+
+body .dac-home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 32%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #eff6ff 100%);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
+}
+
+body .dac-home-copy {
+  min-width: 0;
+}
+
+body .dac-home-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body .dac-home-copy h1 {
+  max-width: 12ch;
+  margin: 16px 0 14px;
+  color: #0f172a;
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1.04;
+  font-weight: 700;
+}
+
+body .dac-home-lead {
+  max-width: 68ch;
+  margin: 0;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+body .dac-home-pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+body .dac-home-pill {
+  padding: 10px 14px;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 8px;
+  background: rgba(37, 99, 235, 0.06);
+  color: #1e293b;
+  font-weight: 600;
+}
+
+body .dac-home-brand-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 24px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.24);
+  text-align: center;
+  color: #ffffff;
+}
+
+body .dac-home-logo {
+  width: 100% !important;
+  max-width: 176px !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+body .dac-home-brand-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+body .dac-home-brand-caption {
+  color: rgba(255, 255, 255, 0.82);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 12px;
+}
+
+body .dac-home-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+body .dac-home-card {
+  padding: 22px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.06);
+}
+
+body .dac-home-card-title {
+  margin-bottom: 10px;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+body .dac-home-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.75;
+}
+
+body #home-menu-button.o_home_menu_button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--dac-ui-text) !important;
+}
+
+body .o_home_menu_button_label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 991.98px) {
+  .o_control_panel {
+    margin: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+  }
+
+  .o_form_view .o_form_sheet {
+    border-radius: 8px;
+  }
+
+  body .dac-home-hero,
+  body .dac-home-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body .dac-home-hero {
+    padding: 22px;
+  }
+
+  body .dac-home-copy h1 {
+    max-width: 100%;
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body .dac-home-shell {
+    gap: 18px;
+    padding-bottom: 20px;
+  }
+
+  body .dac-home-hero,
+  body .dac-home-card {
+    padding: 18px;
+    border-radius: 8px;
+  }
+
+  body .dac-home-copy h1 {
+    font-size: 29px;
+  }
+
+  body .dac-home-pill-row {
+    gap: 8px;
+  }
+
+  body .dac-home-pill {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  body .dac-home-logo {
+    max-width: 140px !important;
+  }
+}

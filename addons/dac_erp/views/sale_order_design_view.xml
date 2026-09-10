@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_dac_sale_order_list_design" model="ir.ui.view">
+            <field name="name">dac.sale.order.list.design</field>
+            <field name="model">sale.order</field>
+            <field name="priority">3</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_design')), (4, ref('dac_erp.group_dac_erp_production')), (4, ref('base.group_system'))]"/>
+            <field name="arch" type="xml">
+                <list string="Báo giá"
+                      default_order="date desc"
+                      delete="false"
+                      create="false"
+                      edit="true"
+                      decoration-warning="partner_vip_class == 'vip'"
+                      decoration-info="partner_vip_class == 'loyal'"
+                      decoration-danger="partner_vip_class == 'premium'"
+                      decoration-bf="partner_vip_class">
+                    <field name="partner_vip_class" invisible="1" optional="hide"/>
+                    <field name="latest_quotation_info" string="Báo giá mới nhất" readonly="1" optional="hide"/>
+                    <field name="name" optional="hide"/>
+                    <field name="company_id" invisible="1" optional="hide"/>
+                    <field name="currency_id" invisible="1" optional="hide"/>
+                    <field name="pricelist_id" invisible="1" optional="hide"/>
+                    <field name="create_date" string="Ngày tạo đơn (hệ thống)" optional="hide"/>
+                    <field name="order_number" string="Số phiếu ĐH"/>
+                    <field name="date" string="Ngày đơn hàng"/>
+                    <field name="partner_id" widget="many2one" options="{'no_open': True}"/>
+                    <field name="user_id" widget="many2one_avatar_user" string="Sale phụ trách"/>
+                    <field name="user_id_design" widget="many2one_avatar_user" string="Người thiết kế"/>
+                    <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất"/>
+                    <field name="amount_total" sum="Total" widget="monetary"
+                           groups="dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_sale"/>
+                    <field name="order_state_badge" widget="html" string="Trạng thái"/>
+                    <field name="is_priority" string="Ưu tiên"/>
+                    <field name="is_priority_today" string="Trong ngày"/>
+                    <field name="production_deadline" string="Ngày hoàn tất sản xuất"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="dac_sale_order_action_design_only" model="ir.actions.act_window">
+            <field name="name">Đơn hàng - Thiết kế</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_dac_sale_order_list_design"/>
+            <field name="search_view_id" ref="dac_sale_order_custom_search"/>
+            <field name="context">{}</field>
+            <field name="domain">
+                [
+                    ('order_state_custom', 'in', ['quotation', 'deposit', 'production']),
+                    ('user_id_design', '=', uid),
+                    '|',
+                        ('design_link', '=', False),
+                        ('design_done', '=', False)
+                ]
+            </field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_design'))]"/>
+        </record>
+
+        <record id="dac_sale_order_action_production_only" model="ir.actions.act_window">
+            <field name="name">Đơn hàng - Sản xuất</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_dac_sale_order_list_design"/>
+            <field name="search_view_id" ref="dac_sale_order_custom_search"/>
+            <field name="context">{}</field>
+            <field name="domain">
+                [
+                    ('order_state_custom', 'in', ['deposit', 'production', 'installation', 'delivery', 'payment', 'completed']),
+                    ('user_id_production', '=', uid)
+                ]
+            </field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <record id="dac_design_root_menu" model="ir.ui.menu">
+            <field name="name">Thiết kế</field>
+            <field name="action" ref="dac_design_dashboard_action"/>
+            <field name="sequence">30</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_design'))]"/>
+        </record>
+
+        <record id="dac_production_root_menu" model="ir.ui.menu">
+            <field name="name">Sản xuất</field>
+            <field name="action" ref="dac_production_dashboard_action"/>
+            <field name="sequence">31</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <record id="dac_design_dashboard_child_menu" model="ir.ui.menu">
+            <field name="name">Dashboard</field>
+            <field name="action" ref="dac_design_dashboard_action"/>
+            <field name="parent_id" ref="dac_design_root_menu"/>
+            <field name="sequence">5</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_design'))]"/>
+        </record>
+
+        <record id="dac_production_dashboard_child_menu" model="ir.ui.menu">
+            <field name="name">Dashboard</field>
+            <field name="action" ref="dac_production_dashboard_action"/>
+            <field name="parent_id" ref="dac_production_root_menu"/>
+            <field name="sequence">5</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_design_only" model="ir.ui.menu">
+            <field name="name">Đơn hàng</field>
+            <field name="action" ref="dac_sale_order_action_design_only"/>
+            <field name="parent_id" ref="dac_design_root_menu"/>
+            <field name="sequence">10</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_design'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_production_only" model="ir.ui.menu">
+            <field name="name">Đơn hàng</field>
+            <field name="action" ref="dac_sale_order_action_production_only"/>
+            <field name="parent_id" ref="dac_production_root_menu"/>
+            <field name="sequence">10</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <record id="dac_design_production_admin_menu" model="ir.ui.menu">
+            <field name="name">CAC DASHBOARD</field>
+            <field name="parent_id" ref="home_menu.home_root"/>
+            <field name="sequence">32</field>
+            <field name="active" eval="False"/>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_manager_admin" model="ir.ui.menu">
+            <field name="name">Dashboard - Manager</field>
+            <field name="action" ref="dac_report.dac_manager_dashboard_action"/>
+            <field name="parent_id" ref="dac_design_production_admin_menu"/>
+            <field name="sequence">3</field>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_sale_admin" model="ir.ui.menu">
+            <field name="name">Dashboard - Sale</field>
+            <field name="action" ref="dac_report.dac_sale_dashboard_action"/>
+            <field name="parent_id" ref="dac_design_production_admin_menu"/>
+            <field name="sequence">5</field>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_design_admin" model="ir.ui.menu">
+            <field name="name">Dashboard - Thiết kế</field>
+            <field name="action" ref="dac_design_dashboard_action"/>
+            <field name="parent_id" ref="dac_design_production_admin_menu"/>
+            <field name="sequence">10</field>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+
+        <record id="dac_sale_order_menu_production_admin" model="ir.ui.menu">
+            <field name="name">Dashboard - Sản xuất</field>
+            <field name="action" ref="dac_production_dashboard_action"/>
+            <field name="parent_id" ref="dac_design_production_admin_menu"/>
+            <field name="sequence">11</field>
+            <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+        </record>
+    </data>
+</odoo>

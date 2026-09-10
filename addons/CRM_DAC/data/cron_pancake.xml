@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cron_pancake_full_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Retired Legacy Full Sync (Disabled)</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_page"/>
+            <field name="state">code</field>
+            <field name="code">model.perform_full_sync()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active">False</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_pancake_quick_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Pancake Continuous Sync - Cập nhật hội thoại mới</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_page"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_quick_sync_conversations()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="active">False</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_pancake_smart_message_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Pancake Continuous Sync - Quét tin nhắn trong ngày</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_conversation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_smart_message_sync()</field>
+            <field name="interval_number">10</field>
+            <field name="interval_type">minutes</field>
+            <field name="active">False</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_pancake_deep_sync_continuous" model="ir.cron">
+            <field name="name">CRM_DAC: Pancake Continuous Sync - Quét cuối ngày 2 ngày gần nhất</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_conversation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_conversations_batch_with_circuit_breaker()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">False</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_pancake_full_message_sync_job_runner" model="ir.cron">
+            <field name="name">CRM_DAC: Pancake Manual Full Sync Job Runner</field>
+            <field name="model_id" ref="CRM_DAC.model_pancake_message_sync_job"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_run_active_jobs()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_pancake_message_sync_log_cleanup" model="ir.cron">
+            <field name="name">CRM_DAC: Pancake Message Sync Log Cleanup</field>
+            <field name="model_id" ref="CRM_DAC.model_pancake_message_sync_log"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_cleanup_old_logs()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

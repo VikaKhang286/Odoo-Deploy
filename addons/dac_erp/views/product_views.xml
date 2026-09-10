@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_search_view_inherit_cart" model="ir.ui.view">
+        <field name="name">product.template.search.inherit.cart</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="combo" position="after">
+                <filter string="Xe đẩy" name="cart"
+                        domain="['|', ('type', 'in', ['cart', 'cart_accessory']), ('categ_id', 'child_of', %(dac_erp.product_category_cart)d)]"/>
+                <filter string="Xe gấp gọn" name="cart_foldable"
+                        domain="[('categ_id', 'child_of', %(dac_erp.product_category_cart_foldable)d)]"/>
+                <filter string="Phụ kiện" name="cart_accessory"
+                        domain="[('categ_id', 'child_of', %(dac_erp.product_category_cart_accessory)d)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="product_product_search_inherit_cart" model="ir.ui.view">
+        <field name="name">product.product.search.inherit.cart</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_search_form_view"/>
+        <field name="arch" type="xml">
+            <filter name="combo" position="after">
+                <filter string="Xe đẩy" name="cart"
+                        domain="['|', ('type', 'in', ['cart', 'cart_accessory']), ('categ_id', 'child_of', %(dac_erp.product_category_cart)d)]"/>
+                <filter string="Xe gấp gọn" name="cart_foldable"
+                        domain="[('categ_id', 'child_of', %(dac_erp.product_category_cart_foldable)d)]"/>
+                <filter string="Phụ kiện" name="cart_accessory"
+                        domain="[('categ_id', 'child_of', %(dac_erp.product_category_cart_accessory)d)]"/>
+            </filter>
+        </field>
+    </record>
+</odoo>

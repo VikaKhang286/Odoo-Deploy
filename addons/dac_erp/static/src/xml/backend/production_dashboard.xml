@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="dac_erp.ProductionDashboard" owl="1">
+    <div class="dac-viewport">
+      <div class="o_dac_dashboard container-xxl p-3 dac-theme-production">
+
+        <div class="dac-dashboard-header d-flex justify-content-between align-items-center mb-3">
+          <h3 class="m-0 fw-bold">Dashboard Sản xuất</h3>
+          <button class="btn btn-primary" t-on-click="_load">
+            <i class="fa fa-refresh me-1"/> Làm mới
+          </button>
+        </div>
+
+        <t t-if="state.loading">
+          <div class="d-flex align-items-center justify-content-center py-5">
+            <i class="fa fa-spinner fa-pulse fa-2x"/><span class="ms-2">Đang tải…</span>
+          </div>
+        </t>
+        <t t-elif="state.error">
+          <div class="alert alert-danger"><t t-esc="state.error"/></div>
+        </t>
+        <t t-else="">
+
+          <!-- KPI row: task overview -->
+          <div class="row g-3 mb-3 kpi-row">
+            <div class="col-md col-6">
+              <div t-attf-class="dac-card is-hoverable h-100 #{state.filter === null ? 'kpi-filter-active' : ''}"
+                   style="cursor:pointer"
+                   t-on-click="() => this.setFilter('total')">
+                <div class="k-label">Tổng công việc</div>
+                <div class="k-value"><t t-esc="taskStats.total or 0"/></div>
+              </div>
+            </div>
+            <div class="col-md col-6">
+              <div t-attf-class="dac-card is-hoverable h-100 #{state.filter === 'overdue' ? 'kpi-filter-active' : ''}"
+                   style="border-left:3px solid #dc3545; cursor:pointer"
+                   t-on-click="() => this.setFilter('overdue')">
+                <div class="k-label">Quá hạn</div>
+                <div class="k-value text-danger"><t t-esc="taskStats.overdue or 0"/></div>
+              </div>
+            </div>
+            <div class="col-md col-6">
+              <div t-attf-class="dac-card is-hoverable h-100 #{state.filter === 'due_soon' ? 'kpi-filter-active' : ''}"
+                   style="border-left:3px solid #ffc107; cursor:pointer"
+                   t-on-click="() => this.setFilter('due_soon')">
+                <div class="k-label">Sắp đến hạn</div>
+                <div class="k-value text-warning"><t t-esc="taskStats.due_soon or 0"/></div>
+              </div>
+            </div>
+            <div class="col-md col-6">
+              <div class="dac-card h-100" style="border-left:3px solid #198754; cursor:default">
+                <div class="k-label">Hoàn thành (tuần)</div>
+                <div class="k-value text-success"><t t-esc="taskStats.done_week or 0"/></div>
+              </div>
+            </div>
+            <div class="col-md col-6">
+              <div t-attf-class="dac-card is-hoverable h-100 #{state.filter === 'urgent' ? 'kpi-filter-active' : ''}"
+                   style="border-left:3px solid #7c3aed; cursor:pointer"
+                   t-on-click="() => this.setFilter('urgent')">
+                <div class="k-label">Khẩn cấp</div>
+                <div class="k-value kpi-urgent-value"><t t-esc="taskStats.urgent or 0"/></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter indicator -->
+          <t t-if="state.filter">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <span class="kpi-active-filter-badge"
+                    t-on-click="() => this.setFilter('total')">
+                <i class="fa fa-filter me-1"/>Đang lọc: <t t-esc="filterLabel"/>
+                <i class="fa fa-times ms-2"/>
+              </span>
+            </div>
+          </t>
+
+          <!-- 2 cột: Thiết kế + Thi công -->
+          <div class="row g-3">
+
+            <!-- Cột 1: Công việc thiết kế - chỉ hiện nếu user có role design hoặc manager -->
+            <t t-if="state.data.is_design_user">
+              <div class="col-lg-6">
+                <div class="dac-card h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="sec-title mb-0">
+                      <i class="fa fa-paint-brush me-2"/>Công việc thiết kế
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                      <span class="badge bg-secondary">
+                        <t t-esc="filteredDesignTasks.length"/>
+                        <t t-if="state.filter"> / <t t-esc="designTasks.length"/></t>
+                        việc
+                      </span>
+                      <t t-if="overdueDesignCount and !state.filter">
+                        <span class="badge bg-danger">
+                          <t t-esc="overdueDesignCount"/> quá hạn
+                        </span>
+                      </t>
+                    </div>
+                  </div>
+
+                  <div class="list-scroll" t-ref="designScroll">
+                    <t t-if="filteredDesignTasks.length">
+                      <t t-foreach="filteredDesignTasks" t-as="task" t-key="task.id">
+                        <div t-attf-class="ticket #{task.is_overdue ? 'ticket-late' : task.priority === 'urgent' ? 'ticket-urgent' : ''}">
+                          <div class="d-flex justify-content-between align-items-start">
+                            <div class="ticket__title"
+                                 style="cursor:pointer;flex:1"
+                                 t-on-click.stop.prevent="() => this.openTaskOrOrder(task)">
+                              <div>
+                                <t t-esc="task.name"/>
+                                <t t-if="task.order_number or task.order_name">
+                                  <span class="text-muted small ms-1">
+                                    (<t t-esc="task.order_number or task.order_name"/>)
+                                  </span>
+                                </t>
+                              </div>
+                              <t t-if="task.order_title">
+                                <div class="text-muted small fst-italic">
+                                  <t t-esc="task.order_title"/>
+                                </div>
+                              </t>
+                            </div>
+                            <div class="d-flex gap-1 ms-2 align-items-center flex-wrap justify-content-end">
+                              <t t-if="task.priority === 'urgent'">
+                                <span class="badge badge-today">KHẨN</span>
+                              </t>
+                              <t t-elif="task.priority === 'high'">
+                                <span class="badge badge-priority">ƯU TIÊN</span>
+                              </t>
+                              <t t-if="task.is_overdue">
+                                <span class="badge bg-danger">QUÁ HẠN</span>
+                              </t>
+                              <t t-elif="task.days_left === 0">
+                                <span class="badge badge-late">ĐẾN HẠN</span>
+                              </t>
+                              <t t-elif="task.days_left !== false">
+                                <span class="badge badge-due">Còn <t t-esc="task.days_left"/>ng</span>
+                              </t>
+                              <button class="btn btn-success px-3"
+                                      t-on-click.stop.prevent="() => this.markTaskDone(task)"
+                                      title="Đánh dấu xong">
+                                <i class="fa fa-check me-1"/>Xong
+                              </button>
+                            </div>
+                          </div>
+                          <div class="d-flex justify-content-between align-items-center text-muted small mt-1">
+                            <t t-if="task.partner_name">
+                              <div class="text-truncate">
+                                <i class="fa fa-user me-1"/><t t-esc="task.partner_name"/>
+                              </div>
+                            </t>
+                            <t t-if="task.deadline_str">
+                              <div class="ms-2 flex-shrink-0">
+                                <i class="fa fa-clock-o me-1"/>Hạn: <t t-esc="task.deadline_str"/>
+                              </div>
+                            </t>
+                          </div>
+                          <t t-if="task.description">
+                            <div class="text-muted small mt-1"
+                                 style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%">
+                              <i class="fa fa-align-left me-1"/>
+                              <t t-esc="task.description"/>
+                            </div>
+                          </t>
+                        </div>
+                      </t>
+                    </t>
+                    <t t-else="">
+                      <div class="no-data">
+                        <t t-if="state.filter">Không có công việc khớp bộ lọc</t>
+                        <t t-else="">Không có công việc thiết kế</t>
+                      </div>
+                    </t>
+                  </div>
+                </div>
+              </div>
+            </t>
+
+            <!-- Cột 2: Công việc thi công -->
+            <div t-attf-class="#{state.data.is_design_user ? 'col-lg-6' : 'col-lg-12'}">
+              <div class="dac-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="sec-title mb-0">
+                    <i class="fa fa-wrench me-2"/>Công việc thi công
+                  </div>
+                  <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-secondary">
+                      <t t-esc="filteredProductionTasks.length"/>
+                      <t t-if="state.filter"> / <t t-esc="productionTasks.length"/></t>
+                      việc
+                    </span>
+                    <t t-if="overdueProductionCount and !state.filter">
+                      <span class="badge bg-danger">
+                        <t t-esc="overdueProductionCount"/> quá hạn
+                      </span>
+                    </t>
+                  </div>
+                </div>
+
+                <div class="list-scroll" t-ref="productionScroll">
+                  <t t-if="filteredProductionTasks.length">
+                    <t t-foreach="filteredProductionTasks" t-as="task" t-key="task.id">
+                      <div t-attf-class="ticket #{task.is_overdue ? 'ticket-late' : task.priority === 'urgent' ? 'ticket-urgent' : ''}">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div class="ticket__title"
+                               style="cursor:pointer;flex:1"
+                               t-on-click.stop.prevent="() => this.openTaskOrOrder(task)">
+                            <div>
+                              <t t-esc="task.name"/>
+                              <t t-if="task.order_number or task.order_name">
+                                <span class="text-muted small ms-1">
+                                  (<t t-esc="task.order_number or task.order_name"/>)
+                                </span>
+                              </t>
+                            </div>
+                            <t t-if="task.order_title">
+                              <div class="text-muted small fst-italic">
+                                <t t-esc="task.order_title"/>
+                              </div>
+                            </t>
+                          </div>
+                          <div class="d-flex gap-1 ms-2 align-items-center flex-wrap justify-content-end">
+                            <t t-if="task.task_type === 'survey'">
+                              <span class="badge bg-info text-dark">Khảo sát</span>
+                            </t>
+                            <t t-elif="task.task_type === 'supplement'">
+                              <span class="badge bg-secondary">Bổ sung</span>
+                            </t>
+                            <t t-if="task.priority === 'urgent'">
+                              <span class="badge badge-today">KHẨN</span>
+                            </t>
+                            <t t-elif="task.priority === 'high'">
+                              <span class="badge badge-priority">ƯU TIÊN</span>
+                            </t>
+                            <t t-if="task.is_overdue">
+                              <span class="badge bg-danger">QUÁ HẠN</span>
+                            </t>
+                            <t t-elif="task.days_left === 0">
+                              <span class="badge badge-late">ĐẾN HẠN</span>
+                            </t>
+                            <t t-elif="task.days_left !== false">
+                              <span class="badge badge-due">Còn <t t-esc="task.days_left"/>ng</span>
+                            </t>
+                            <button class="btn btn-success px-3"
+                                    t-on-click.stop.prevent="() => this.markTaskDone(task)"
+                                    title="Đánh dấu xong">
+                              <i class="fa fa-check me-1"/>Xong
+                            </button>
+                          </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center text-muted small mt-1">
+                          <t t-if="task.partner_name">
+                            <div class="text-truncate">
+                              <i class="fa fa-user me-1"/><t t-esc="task.partner_name"/>
+                            </div>
+                          </t>
+                          <t t-if="task.deadline_str">
+                            <div class="ms-2 flex-shrink-0">
+                              <i class="fa fa-clock-o me-1"/>Hạn: <t t-esc="task.deadline_str"/>
+                            </div>
+                          </t>
+                        </div>
+                        <t t-if="task.description">
+                          <div class="text-muted small mt-1"
+                               style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;max-width:100%">
+                            <i class="fa fa-align-left me-1"/>
+                            <t t-esc="task.description"/>
+                          </div>
+                        </t>
+                      </div>
+                    </t>
+                  </t>
+                  <t t-else="">
+                    <div class="no-data">
+                      <t t-if="state.filter">Không có công việc khớp bộ lọc</t>
+                      <t t-else="">Không có công việc thi công</t>
+                    </div>
+                  </t>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+</templates>

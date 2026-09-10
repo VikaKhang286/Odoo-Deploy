@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="investor_point_of_sale.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+		<xpath expr="//img[@class='pos-logo pos-logo mw-100']" position="replace" >
+                <img class="pos-logo pos-logo mw-100" style="width: 70px; height: 70px; object-fit: contain;" t-on-click="() => debug.toggleWidget()" t-attf-src="/web/image?model=res.company&amp;id={{company.currentCompany.id}}&amp;field=logo" alt="Logo" />
+        </xpath>
+    </t>
+</templates>

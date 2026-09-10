@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree/List View for Daily Sales KPI -->
+    <record id="view_kpi_sale_daily_list" model="ir.ui.view">
+        <field name="name">kpi.sale.daily.list</field>
+        <field name="model">kpi.sale.daily</field>
+        <field name="arch" type="xml">
+            <list string="Daily Sales KPI" create="false" edit="false">
+                <field name="date" string="Ngày"/>
+                <field name="user_id" string="Nhân viên"/>
+                <field name="total_messages" string="Số tin nhắn"/>
+                <field name="messages_after_hours" string="Số tin nhắn sau giờ"/>
+                <field name="unreplied_conversations_count" string="Số tin nhắn không phản hồi trước 6h"/>
+                <!-- <field name="avg_response_time_bh" widget="float_time" string="Avg Resp Time (BH)" />
+                <field name="avg_response_time" widget="float_time" string="Avg Resp Time (Total)" /> -->
+                <field name="avg_response_time_bh_string" string="Phản hồi (hành chính)" />
+                <field name="avg_response_time_string" string="Phản hồi (Tổng)" />
+                <!-- <field name="avg_response_time_bh"  string="Avg Resp Time (BH)" group_operator="avg"/>
+                <field name="avg_response_time"  string="Avg Resp Time (Total)" group_operator="avg"/> -->
+                <!-- <field name="company_id" invisible="True"/> -->
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Daily Sales KPI -->
+    <record id="view_kpi_sale_daily_form" model="ir.ui.view">
+        <field name="name">kpi.sale.daily.form</field>
+        <field name="model">kpi.sale.daily</field>
+        <field name="arch" type="xml">
+            <form string="Daily Sales KPI" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date" />
+                            <field name="user_id" />
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Statistics">
+                        <field name="total_messages" />
+                        <field name="messages_after_hours" />
+                        <field name="unreplied_conversations_count" />
+                        <field name="avg_response_time_bh_string" string="Thời gian phản hồi trung bình trong giờ hành chính" />
+                        <field name="avg_response_time_string" string="Thời gian phản hồi trung bình" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Pivot View for Daily Sales KPI -->
+    <record id="view_kpi_sale_daily_pivot" model="ir.ui.view">
+        <field name="name">kpi.sale.daily.pivot</field>
+        <field name="model">kpi.sale.daily</field>
+        <field name="arch" type="xml">
+            <pivot string="Daily Sales KPI Analysis">
+                <field name="user_id" type="row"/>
+                <field name="date" type="col" interval="day"/>
+                <field name="total_messages" type="measure"/>
+                <field name="avg_response_time_bh" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View for Daily Sales KPI -->
+    <record id="view_kpi_sale_daily_graph" model="ir.ui.view">
+        <field name="name">kpi.sale.daily.graph</field>
+        <field name="model">kpi.sale.daily</field>
+        <field name="arch" type="xml">
+            <graph string="Daily Sales KPI Analysis">
+                <field name="user_id" type="row"/>
+                <field name="total_messages" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Search View for Daily Sales KPI -->
+    <record id="view_kpi_sale_daily_search" model="ir.ui.view">
+        <field name="name">kpi.sale.daily.search</field>
+        <field name="model">kpi.sale.daily</field>
+        <field name="arch" type="xml">
+            <search string="Search Daily KPI">
+                <field name="user_id"/>
+                <filter string="Today" name="filter_today" domain="[('date', '=', context_today())]"/>
+                <filter string="Yesterday" name="filter_yesterday" domain="[('date', '=', (datetime.date.today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="This Month" name="filter_this_month" domain="[('date', '&gt;=', context_today().strftime('%%Y-%%m-01'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Staff" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                    <filter string="Date" name="group_by_date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for Daily Sales KPI -->
+    <record id="action_kpi_sale_daily" model="ir.actions.act_window">
+        <field name="name">Daily Sales KPI</field>
+        <field name="res_model">kpi.sale.daily</field>
+        <field name="view_mode">list,pivot,graph,form</field>
+        <field name="search_view_id" ref="view_kpi_sale_daily_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No KPI data found.
+            </p><p>
+                The system automatically calculates daily KPIs for sales staff at the end of each day.
+                Check back tomorrow for new data!
+            </p>
+        </field>
+    </record>
+
+    <!-- Cron Job to run the calculation daily -->
+    <!-- <record id="ir_cron_calculate_daily_kpi" model="ir.cron">
+        <field name="name">KPI: Calculate Daily Sales Statistics</field>
+        <field name="model_id" ref="model_kpi_sale_daily"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_calculate_daily_kpi()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d 01:00:00')" />
+        <field name="doall" eval="False"/>
+    </record> -->
+
+
+     <!-- Server Action to manually trigger KPI calculation -->
+    <record id="action_server_recalculate_kpi" model="ir.actions.server">
+        <field name="name">Recalculate KPIs</field>
+        <field name="model_id" ref="model_kpi_sale_daily"/>
+        <field name="binding_model_id" ref="model_kpi_sale_daily"/>
+        <field name="state">code</field>
+        <field name="code">action = env['kpi.sale.daily'].action_run_kpi_calculation_manually()</field>
+    </record>
+
+    
+
+</odoo>

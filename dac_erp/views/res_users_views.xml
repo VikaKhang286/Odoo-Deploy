@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <!-- Action cho người dùng của Manager-->
+        <record id="dac_res_users_action" model="ir.actions.act_window">
+            <field name="name">Khách hàng</field>
+            <field name="res_model">res.users</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="domain">[]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,43 @@
+/* ==== Tuỳ biến nhanh qua biến CSS ==== */
+:root {
+  /* Đổi 1 dòng này là đổi toàn bộ màu bước hiện tại */
+  --dac-status-current: #1f6feb; /* màu chính mong muốn */
+  --dac-status-current-contrast: #fff; /* màu chữ trên nền */
+  --dac-status-inactive-opacity: 0.6; /* độ mờ của các bước không hiện tại */
+  /* Tự động tạo bản đậm hơn 20% (Chrome 111+ hỗ trợ color-mix) */
+  --dac-status-current-dark: color-mix(
+    in srgb,
+    var(--dac-status-current),
+    black 20%
+  );
+}
+
+/* NỔI BẬT BƯỚC HIỆN TẠI (dùng màu đậm) */
+.o_form_view .o_statusbar_status > .o_arrow_button.o_arrow_button_current,
+.o_form_view
+  .o_statusbar_status
+  > .o_arrow_button.o_arrow_button_current[disabled] {
+  opacity: 1 !important;
+  filter: none !important;
+  background: var(--dac-status-current-dark) !important; /* <-- đậm hơn */
+  color: var(--dac-status-current-contrast) !important;
+  font-weight: 600;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
+}
+
+/* LÀM MỜ CÁC BƯỚC KHÁC */
+.o_form_view .o_statusbar_status > .o_arrow_button:not(.o_arrow_button_current),
+.o_form_view
+  .o_statusbar_status
+  > .o_arrow_button:not(.o_arrow_button_current)[disabled] {
+  opacity: var(--dac-status-inactive-opacity) !important;
+  filter: grayscale(35%) saturate(0.75) brightness(0.92);
+  transition: opacity 0.15s ease;
+}
+
+/* (Tuỳ chọn) hover các bước còn lại */
+.o_form_view
+  .o_statusbar_status
+  > .o_arrow_button:not(.o_arrow_button_current):hover {
+  opacity: calc(var(--dac-status-inactive-opacity) + 0.25) !important;
+}

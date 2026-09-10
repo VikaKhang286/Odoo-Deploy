@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="course_list_template" name="Danh sách khoá học">
+        <div id="wrap" class="container">
+            <h1>Các khoá học</h1>
+            <t t-foreach="courses" t-as="course">
+                <div class="row">
+
+                    <t t-set="nameOfCourse" t-value="course.name" />
+                    <span t-out="nameOfCourse" />
+
+                    <!-- Hoặc -->
+                    <!-- <span t-esc="course.name" /> -->
+,
+                    
+                    <t t-set="is_active" t-value="course.is_active" />
+                    <span t-out="is_active" />
+
+                    <!-- Hoặc -->
+                    <!-- <span t-esc="course.is_active" /> -->
+                </div>
+            </t>
+        </div>
+    </template>
+</odoo>

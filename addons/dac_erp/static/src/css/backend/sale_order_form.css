@@ -1,0 +1,1026 @@
+/* DAC ERP - Sale Order Form polish.
+   Keep this file scoped to the sale order form and let conversation_widget.css
+   own the floating Pancake widget styling. */
+
+.dac-sale-form {
+  position: relative;
+}
+
+.o_control_panel.dac-sale-order-control-panel-active {
+  display: block !important;
+  overflow: visible !important;
+}
+
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_main,
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_actions,
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_navigation {
+  display: none !important;
+}
+
+.o_control_panel.dac-sale-order-control-panel-active .dac-sale-order-control-panel-slot {
+  width: 100%;
+  overflow: visible;
+}
+
+.dac-control-panel-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.dac-control-panel-main {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dac-control-panel-title {
+  margin-bottom: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dac-control-panel-title .o_field_widget {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dac-control-panel-progress {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 0;
+}
+
+.dac-control-panel-tools {
+  flex: 0 0 auto;
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.o_web_client .dac-control-panel-tools .dac-save-btn {
+  position: relative;
+  background: #ffffff !important;
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
+}
+
+.o_web_client .dac-control-panel-tools .dac-save-btn:hover,
+.o_web_client .dac-control-panel-tools .dac-save-btn:focus,
+.o_web_client .dac-control-panel-tools .dac-save-btn:active {
+  background: #2563eb !important;
+  background-image: none !important;
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
+.dac-control-panel-tools .dac-save-btn.dac-save-btn-dirty::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border-radius: 50%;
+  border: 2px solid white;
+  pointer-events: none;
+}
+
+.dac-control-panel-pancake {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 420px;
+  margin-left: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 999px;
+  background: #f8fbff;
+}
+
+.dac-control-panel-pancake-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dac-control-panel-pancake-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dac-control-panel-pancake-count .o_field_widget {
+  display: inline-flex;
+}
+
+.dac-control-panel-pancake-links {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dac-control-panel-pancake-links .o_field_widget,
+.dac-control-panel-pancake-links .o_readonly,
+.dac-control-panel-pancake-links .o_readonly > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dac-control-panel-pancake-links .o_readonly > div {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.dac-control-panel-pancake-links .conversation-btn {
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.dac-title-actions-toggle {
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.dac-title-actions-menu {
+  min-width: 220px;
+  padding: 8px;
+  overflow: visible;
+  right: 0;
+  left: auto;
+  z-index: 1100;
+}
+
+.dac-title-actions-menu--floating {
+  width: max-content;
+  min-width: 260px;
+  max-width: min(420px, calc(100vw - 32px));
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.16);
+}
+
+.dac-title-actions-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dac-control-panel-progress .o_field_statusbar {
+  justify-content: flex-end;
+}
+
+.dac-control-panel-progress .o_statusbar_status {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.dac-control-panel-progress .o_arrow_button {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.dac-control-panel-progress .dropdown-toggle.o_arrow_button.d-none,
+.dac-control-panel-progress .o_statusbar_status > .btn.d-none {
+  display: none !important;
+}
+
+.dac-sale-form > header {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dac-sale-form .oe_button_box {
+  margin-bottom: 12px;
+}
+
+.dac-sale-form .o_group {
+  margin-bottom: 0;
+}
+
+.dac-sale-form .o_notebook {
+  clear: both;
+}
+
+.dac-sale-form .o_notebook .tab-content {
+  background: #ffffff;
+}
+
+.dac-sale-form .o_notebook .tab-pane {
+  padding-top: 18px;
+}
+
+.dac-sale-form .o_field_x2many_list_row_add a,
+.dac-sale-form .o_list_button_add {
+  font-weight: 600;
+}
+
+.dac-order-lines-panel {
+  padding-top: 4px;
+}
+
+.dac-order-lines-panel .o_field_x2many .o_list_renderer {
+  margin-top: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table thead th {
+  border-bottom: 0;
+  background: #f8fafc;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody td {
+  background: #ffffff;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note) td:first-child {
+  border-left: 1px solid rgba(148, 163, 184, 0.22);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note) td:last-child {
+  border-right: 1px solid rgba(148, 163, 184, 0.22);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note):hover td {
+  background: #f8fbff;
+  border-color: rgba(96, 165, 250, 0.35);
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_is_line_section td,
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_is_line_note td {
+  background: transparent;
+}
+
+.dac-core-info-row {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.dac-box-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dac-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 0;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.dac-box-title i {
+  width: 18px;
+  color: #2563eb;
+  text-align: center;
+}
+
+.dac-box-client {
+  border-left: 0;
+}
+
+.dac-box-internal {
+  border-left: 0;
+}
+
+.dac-box-document {
+  border-left: 0;
+}
+
+.dac-title-client i,
+.dac-title-client {
+  color: #0f766e;
+}
+
+.dac-title-internal i,
+.dac-title-internal {
+  color: #b45309;
+}
+
+.dac-title-document i,
+.dac-title-document {
+  color: #be123c;
+}
+
+/* Task progress: stacked card layout.
+   Odoo 18 kanban mặc định flex-row với column-width cố định → phải clip overflow-x
+   ở toàn bộ chuỗi wrapper để tránh scroll ngang trống. */
+.dac-box-tasks,
+.dac-box-tasks .o_field_widget,
+.dac-box-tasks .o_view_controller,
+.dac-box-tasks .o_kanban_view {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.dac-box-tasks .o_kanban_view,
+.dac-box-tasks .o_view_controller {
+  padding: 0;
+  background: transparent;
+}
+
+.dac-box-tasks .o_pager,
+.dac-box-tasks .o_cp_pager,
+.dac-box-tasks .o_list_pagination {
+  display: none !important;
+}
+
+.dac-box-tasks .o_kanban_renderer {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 4px;
+  padding: 0;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  scrollbar-width: thin;
+}
+
+.dac-box-tasks .o_kanban_renderer.o_kanban_ungrouped {
+  flex-direction: row;
+  flex-wrap: wrap !important;
+}
+
+.dac-box-tasks .o_kanban_record:not(.o_kanban_ghost) {
+  margin: 0;
+  padding: 0;
+  flex: 0 0 calc(50% - 3px) !important;
+  width: calc(50% - 3px) !important;
+  max-width: calc(50% - 3px) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.09) !important;
+  background: #fff !important;
+  overflow: hidden;
+  transition: box-shadow 120ms ease, transform 120ms ease;
+}
+
+.o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    overflow: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    flex: 2 1 990px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  /* FormCompiler still emits flex-column below Odoo's native XXL breakpoint. */
+  .o_form_view.o_xxl_form_view .o_form_renderer {
+    flex-flow: row nowrap !important;
+    height: 100% !important;
+  }
+  .o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    overflow: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    flex: 2 1 990px;
+    flex-shrink: 0;
+}
+}
+
+.dac-box-tasks .o_kanban_record:not(.o_kanban_ghost):hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
+  transform: translateY(-1px);
+}
+
+.o_kanban_renderer.o_kanban_ungrouped .o_kanban_record:not(.o_legacy_kanban) {
+  flex-grow: 0 !important;
+}
+
+.dac-task-card-inner {
+  border-left: 3px solid #cbd5e1;
+  padding: 9px 10px;
+}
+
+.dac-task-priority-urgent { border-left-color: #dc2626; }
+.dac-task-priority-high   { border-left-color: #d97706; }
+.dac-task-priority-normal { border-left-color: #2563eb; }
+
+.dac-task-card-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.dac-task-name {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f172a;
+}
+
+.dac-task-assignee {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dac-task-assignee-name {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dac-task-edit-btn {
+  opacity: 0.4;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dac-task-edit-btn:hover { opacity: 1; }
+
+.dac-task-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dac-task-state-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.dac-state-draft       { background: #f1f5f9; color: #64748b; }
+.dac-state-in_progress { background: #dbeafe; color: #1d4ed8; }
+.dac-state-done        { background: #dcfce7; color: #166534; }
+.dac-state-cancelled   { background: #f1f5f9; color: #94a3b8; }
+
+.dac-task-days-left {
+  font-size: 11px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.dac-urgent-btn {
+  padding: 2px 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.dac-urgent-active   { background: #fef2f2; color: #dc2626; border-color: rgba(220, 38, 38, 0.22); }
+.dac-urgent-inactive { background: transparent; color: #cbd5e1; border-color: #e2e8f0; }
+.dac-urgent-btn:hover { opacity: 0.8; }
+
+.dac-action-bar-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 0px;
+  padding: 0px 0px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.o_form_view .o_inner_group {
+    --columns: 1;
+    gap: 8px 16px;
+    margin-bottom: 0px;
+}
+
+.dac-action-bar-flags,
+.dac-action-bar-money,
+.dac-action-bar-ai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  min-width: 0;
+}
+
+.dac-invoice-reader-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.dac-invoice-reader-inline .o_field_binary_file {
+  max-width: 200px;
+}
+
+.dac-ai-summarize-btn,
+.dac-ai-invoice-btn {
+  white-space: nowrap;
+}
+
+.dac-order-ai-panel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.dac-order-ai-title {
+  display: flex;
+  align-items: center;
+  margin: 0 0 8px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dac-order-ai-panel .dac-action-bar-ai {
+  justify-content: flex-end;
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.dac-order-ai-panel .dac-action-bar-ai .btn {
+  min-height: 32px;
+}
+
+.dac-action-bar-money {
+  justify-content: flex-start;
+}
+
+.dac-toggle-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(220, 38, 38, 0.16);
+  border-radius: 6px;
+  background: #fff7f7;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dac-deposit-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.dac-deposit-label {
+  color: #b45309;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dac-deposit-amount-field {
+  max-width: 132px;
+  min-width: 110px;
+  font-weight: 700;
+}
+
+.dac-deposit-currency {
+  color: #92400e;
+  font-weight: 700;
+}
+
+.dac-invoice-button {
+  margin-left: 2px;
+}
+
+.dac-deposit-cta {
+  position: relative;
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-inline,
+.o_action_manager.dac-order-state-deposit .dac-deposit-inline,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-inline {
+  border-color: rgba(220, 38, 38, 0.2);
+  background: #fff1f2;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.08);
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-label,
+.o_web_client.dac-order-state-deposit .dac-deposit-currency,
+.o_action_manager.dac-order-state-deposit .dac-deposit-label,
+.o_action_manager.dac-order-state-deposit .dac-deposit-currency,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-label,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-currency {
+  color: #b91c1c;
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-cta::after,
+.o_action_manager.dac-order-state-deposit .dac-deposit-cta::after,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-cta::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #dc2626;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.dac-workflow-panel,
+.dac-production-media-card {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.dac-workflow-panel {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.dac-workflow-panel-title {
+  display: block;
+  margin-bottom: 10px;
+  color: #475569;
+  font-weight: 700;
+}
+
+.dac-delay-date .o_input,
+.dac-delay-date input {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.dac-production-media-card {
+  padding: 16px;
+  text-align: center;
+}
+
+.dac-production-image {
+  width: 100%;
+  max-width: 250px;
+}
+
+.dac-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.dac-summary-container {
+  display: grid;
+  gap: 4px;
+  width: min(100%, 380px);
+  margin: 20px 0 0 auto;
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: #fbfcff;
+}
+
+.dac-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.dac-summary-row:last-child {
+  border-bottom: 0;
+}
+
+.dac-summary-label {
+  margin: 0;
+  color: #475569;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dac-summary-label--highlight {
+  color: #b91c1c;
+  font-weight: 800;
+}
+
+.dac-summary-value {
+  min-width: 0;
+  color: #0f172a;
+  font-weight: 700;
+  text-align: right;
+}
+
+.dac-summary-value--large {
+  font-size: 1.12rem;
+}
+
+/* Keep editable amounts and their currency in one normal-flow control. */
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) {
+  width: 160px;
+  max-width: 100%;
+  margin-bottom: 0;
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) > div:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) .position-absolute {
+  display: none !important;
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) > div > .opacity-0 {
+  opacity: 1 !important;
+  color: rgb(15, 23, 42);
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) input.o_input {
+  min-width: 0;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: #ffffff;
+  box-shadow: none;
+  text-align: right;
+  font-weight: 700;
+}
+
+.dac-summary-value--deposit {
+  color: #047857;
+}
+
+.dac-summary-value--highlight {
+  display: inline-flex;
+  justify-content: flex-end;
+  min-width: 130px;
+  padding: 5px 8px;
+  border: 1px solid rgba(220, 38, 38, 0.24);
+  border-radius: 6px;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-size: 1.08rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.dac-alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dac-alert--completed {
+  border-color: rgba(22, 163, 74, 0.22);
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.dac-alert--cancel {
+  border-color: rgba(220, 38, 38, 0.22);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.dac-action-buttons {
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.dac-action-buttons button {
+  min-width: 116px;
+  max-width: 100%;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  white-space: normal;
+}
+
+.dac-action-buttons button[name="action_cancel_order"],
+.dac-action-buttons button[name="action_back_custom_step"] {
+  margin-right: auto;
+}
+
+.conversation-bubble-icon {
+  font-size: 20px;
+}
+
+.conversation-bubble-count {
+  margin-top: 2px;
+  font-size: 10px;
+}
+
+.bubble-toggle-btn {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.dac-sale-form .conversation-widget-container {
+  top: 90px;
+  right: 20px;
+}
+
+@media (max-width: 991.98px) {
+  .dac-action-bar-top,
+  .dac-action-bar-flags,
+  .dac-action-bar-money {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .dac-action-bar-money {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .dac-summary-container {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .dac-box-tasks .o_kanban_record:not(.o_kanban_ghost) {
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .dac-control-panel-title {
+    font-size: 22px;
+  }
+
+  .dac-control-panel-main {
+    min-width: max-content;
+  }
+
+  .dac-control-panel-progress {
+    min-width: 240px;
+  }
+
+  .dac-control-panel-progress .o_field_statusbar,
+  .dac-control-panel-progress .o_statusbar_status {
+    justify-content: flex-end;
+  }
+
+  .dac-box-card,
+  .dac-action-bar-top,
+  .dac-workflow-panel,
+  .dac-production-media-card,
+  .dac-summary-container {
+    padding: 13px;
+  }
+
+  .dac-toggle-field,
+  .dac-deposit-inline,
+  .dac-action-buttons button,
+  .dac-summary-container {
+    width: 100%;
+  }
+
+  .dac-action-buttons {
+    align-items: stretch;
+  }
+
+  .dac-action-buttons button[name="action_cancel_order"],
+  .dac-action-buttons button[name="action_back_custom_step"] {
+    margin-right: 0;
+  }
+
+  .dac-summary-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .dac-summary-value,
+  .dac-summary-value--highlight {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .conversation-widget-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0;
+  }
+}
+
+@media print {
+  .conversation-widget-container,
+  .dac-action-buttons,
+  .oe_button_box {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-widget,
+  .conversation-toggle,
+  .dac-ticket {
+    transition: none !important;
+  }
+}

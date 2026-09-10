@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron job kiểm tra và đồng bộ dòng đặt cọc và trạng thái hoàn thành -->
+        <record id="ir_cron_check_all_orders_payment" model="ir.cron">
+            <field name="name">Kiểm tra trạng thái hoàn thành các đơn hàng</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_check_deposit_payments()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- Cron job để update missing dac_user_id cho hóa đơn cũ -->
+        <record id="ir_cron_update_missing_dac_user_id" model="ir.cron">
+            <field name="name">Cập nhật DAC User ID bị thiếu cho hóa đơn</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">model._update_missing_dac_user_id()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

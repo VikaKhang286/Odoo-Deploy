@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="navbar_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.navbar_background_color</field>
+            <field name="value">#a358fe</field>
+        </record>
+        <record id="navbar_text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.navbar_text_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.text_color</field>
+            <field name="value">#000000</field>
+        </record>
+        <record id="button_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.button_color</field>
+            <field name="value">#ff0a0a</field>
+        </record>
+        <record id="icon_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.icon_color</field>
+            <field name="value">#000000</field>
+        </record>
+        <record id="filter_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.filter_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="title_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.title_color</field>
+            <field name="value">#9e9e9e</field>
+        </record>
+        
+        <!-- <record id="image_128" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.image_128</field>
+            <field name="value"></field>
+        </record> -->
+
+        <record id="drop_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.drop_background_color</field>
+            <field name="value"></field>
+        </record>
+        <record id="drop_text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.drop_text_color</field>
+            <field name="value">#121212</field>
+        </record>
+        <!-- <record id="website_title" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.website_title</field>
+            <field name="value"> </field>
+        </record> -->
+
+        <record id="buble_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.buble_color</field>
+            <field name="value">#0fff3f</field>
+        </record>
+
+        <record id="sidebar_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_background</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="sidebar_chose_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_chose_background</field>
+            <field name="value">#a6a6a6</field>
+        </record>
+        <record id="sidebar_text" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_text</field>
+            <field name="value">#000000</field>
+        </record>
+    
+        <record id="search_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.search_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+
+        <record id="website_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.website_background_color</field>
+            <field name="value">#d6d6d6</field>
+        </record>
+        <record id="list_text_title" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_text_title</field>
+            <field name="value">#000000</field>
+        </record>
+        <!--Màu thanh tiêu đề table-->
+        <record id="list_title" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_title</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <!--Màu list table-->
+        <record id="list_table" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_table</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <!--Màu chữ list text table-->
+        <record id="list_text_table" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_text_table</field>
+            <field name="value">#000000</field>
+        </record>
+        <!-- Màu form kanban  -->
+        <record id="kanban_form" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_form</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <!-- Màu nền kanban -->
+        <record id="kanban_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_background</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <!-- Màu chữ kanban -->
+        <record id="kanban_text" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_text</field>
+            <field name="value">#000000</field>
+        </record>
+        <!-- Màu item kanban  -->
+        <record id="kanban_item" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_item</field>
+            <field name="value">#000000</field>
+        </record>
+        <record id="discuss_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.discuss_background</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="discuss_chose_sidebar" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.discuss_chose_sidebar</field>
+            <field name="value">#9e60fb</field>
+        </record>
+    </data>
+</odoo>

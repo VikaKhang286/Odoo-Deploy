@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- =============================================
+             TIER 1: FULL SYNC (Pages + Conversations)
+             Frequency: Every 1 hour
+             Purpose: Đảm bảo lấy được conversations MỚI từ Pancake
+             ============================================= -->
+        <record id="cron_pancake_full_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Tier 1 - Full Sync Pages &amp; Conversations</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_page"/>
+            <field name="state">code</field>
+            <field name="code">model.perform_full_sync()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- =============================================
+             TIER 2: QUICK METADATA SYNC (Conversations Only)
+             Frequency: Every 30 minutes
+             Purpose: Cập nhật metadata conversations (updated_at, is_unread, tags, assignees)
+             ============================================= -->
+        <record id="cron_pancake_quick_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Tier 2 - Quick Metadata Sync</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_page"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_quick_sync_conversations()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- =============================================
+             TIER 3: SMART MESSAGE SYNC (Priority-based)
+             Frequency: Every 30 minutes
+             Purpose: Sync tin nhắn theo priority:
+                      1. partner_id IS NULL (conversations mới)
+                      2. last_message_at_fm > last_message_sync_fm (có tin mới)
+                      3. last_update_at trong 3 ngày (hoạt động gần đây)
+                      4. require_processing = True (cờ xử lý thủ công)
+             ============================================= -->
+        <record id="cron_pancake_smart_message_sync" model="ir.cron">
+            <field name="name">CRM_DAC: Tier 3 - Smart Message Sync (Priority)</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_conversation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_smart_message_sync()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <!-- =============================================
+             TIER 4: DEEP BATCH SYNC (Backup/Recovery)
+             Frequency: Every 2 hours (continuous 1→N sync)
+             Purpose: Deep 1→N sync toàn bộ conversations (batch 50, ~3min)
+                      - Với 3429 conversations: ~69 batches × 3min = ~3.5 giờ
+                      - Chạy mỗi 2 giờ đảm bảo sync liên tục không bị gián đoạn
+             Note: Con trỏ tự động reset về 0 khi hết conversations để bắt đầu lại
+             ============================================= -->
+        <record id="cron_pancake_deep_sync_continuous" model="ir.cron">
+            <field name="name">CRM_DAC: Tier 4 - Deep Batch Sync (Continuous 1→N)</field>
+            <field name="model_id" ref="CRM_DAC.model_page_fm_conversation"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_sync_conversations_batch_with_circuit_breaker()</field>
+            <field name="interval_number">2</field>
+            <field name="interval_type">hours</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

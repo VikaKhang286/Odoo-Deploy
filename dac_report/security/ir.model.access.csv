@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_goal_manager,access_sales_goal_manager,model_dac_sales_goal,dac_erp.group_dac_erp_manager,1,1,1,1
+
+
+access_sales_goal_sale,access_sales_goal_sale,model_dac_sales_goal,dac_erp.group_dac_erp_sale,1,1,1,0

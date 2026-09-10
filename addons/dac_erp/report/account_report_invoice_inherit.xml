@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- A) Ẩn cột Thuế: PDF -->
+    <template id="dac_report_invoice_hide_tax_base" inherit_id="account.report_invoice_document">
+      <xpath expr="//div[contains(@class,'page')][1]" position="before">
+        <t>
+          <style type="text/css">
+            table[name="invoice_line_table"] thead th:nth-child(4),
+            table[name="invoice_line_table"] tbody td:nth-child(4) { display: none !important; }
+            table.o_main_table thead th:nth-child(4),
+            table.o_main_table tbody td:nth-child(4) { display: none !important; }
+            th[name="taxes"], td[name="taxes"] { display: none !important; }
+          </style>
+        </t>
+      </xpath>
+    </template>
+
+    <!-- B) Ẩn cột Thuế: Preview -->
+    <template id="dac_report_invoice_hide_tax_preview" inherit_id="account.report_invoice_document_preview">
+      <xpath expr="//div[contains(@class,'page')][1]" position="before">
+        <t>
+          <style type="text/css">
+            table[name="invoice_line_table"] thead th:nth-child(4),
+            table[name="invoice_line_table"] tbody td:nth-child(4) { display: none !important; }
+            table.o_main_table thead th:nth-child(4),
+            table.o_main_table tbody td:nth-child(4) { display: none !important; }
+            th[name="taxes"], td[name="taxes"] { display: none !important; }
+          </style>
+        </t>
+      </xpath>
+    </template>
+
+    <!-- Đổi tiêu đề cho PDF -->
+    <template id="dac_invoice_title_base" inherit_id="account.report_invoice_document">
+      <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+        <t t-set="layout_document_title">
+          <!-- <span t-if="not proforma"></span>
+          <span t-else="">PROFORMA</span> -->
+
+          <!-- Outbound invoice: đổi thành Hóa đơn bán hàng -->
+          <span t-if="o.move_type == 'out_invoice'">Hóa đơn bán hàng</span>
+
+          <!-- Giữ nguyên các loại chứng từ khác -->
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'posted'">Credit Note</span>
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'draft'">Draft Credit Note</span>
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'cancel'">Cancelled Credit Note</span>
+          <span t-elif="o.move_type == 'in_refund'">Vendor Credit Note</span>
+          <span t-elif="o.move_type == 'in_invoice'">Vendor Bill</span>
+
+          <!-- Số chứng từ -->
+          <span t-if="o.name != '/'" t-field="o.name"/>
+        </t>
+      </xpath>
+    </template>
+
+    <!-- Đổi tiêu đề cho Preview (kế thừa từ base, nhưng thêm cho chắc chắn) -->
+    <template id="dac_invoice_title_preview" inherit_id="account.report_invoice_document_preview">
+      <xpath expr="//t[@t-set='layout_document_title']" position="replace">
+        <t t-set="layout_document_title">
+          <!-- <span t-if="not proforma"></span>
+          <span t-else="">PROFORMA</span> -->
+          <span t-if="o.move_type == 'out_invoice'">Hóa đơn bán hàng</span>
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'posted'">Credit Note</span>
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'draft'">Draft Credit Note</span>
+          <span t-elif="o.move_type == 'out_refund' and o.state == 'cancel'">Cancelled Credit Note</span>
+          <span t-elif="o.move_type == 'in_refund'">Vendor Credit Note</span>
+          <span t-elif="o.move_type == 'in_invoice'">Vendor Bill</span>
+          <span t-if="o.name != '/'" t-field="o.name"/>
+        </t>
+      </xpath>
+    </template>
+
+
+    <!-- Hiển thị Số ĐH (PDF) -->
+    <template id="dac_invoice_show_so_number" inherit_id="account.report_invoice_document">
+      <!-- Chèn ngay sau cột Nguồn/Source -->
+      <xpath expr="//div[@id='informations']//div[@name='origin']" position="after">
+        <div class="col" name="so_order_number">
+          <strong>Số ĐH</strong>
+          <!-- Từ invoice_origin: có thể là 1 hoặc nhiều SO ngăn bởi dấu phẩy -->
+          <t t-set="so_names" t-value="[(s or '').strip() for s in (o.invoice_origin or '').split(',') if s]"/>
+          <t t-set="orders"
+            t-value="so_names and env['sale.order'].sudo().search([('name','in', so_names)]) or env['sale.order']"/>
+          <div t-esc="orders and ', '.join([so.order_number or so.name for so in orders]) or ''"/>
+        </div>
+      </xpath>
+    </template>
+
+    <!-- Hiển thị Số ĐH (Preview) -->
+    <template id="dac_invoice_show_so_number_preview" inherit_id="account.report_invoice_document_preview">
+      <xpath expr="//div[@id='informations']//div[@name='origin']" position="after">
+        <div class="col" name="so_order_number">
+          <strong>Số ĐH</strong>
+          <t t-set="so_names" t-value="[(s or '').strip() for s in (o.invoice_origin or '').split(',') if s]"/>
+          <t t-set="orders"
+            t-value="so_names and env['sale.order'].sudo().search([('name','in', so_names)]) or env['sale.order']"/>
+          <div t-esc="orders and ', '.join([so.order_number or so.name for so in orders]) or ''"/>
+        </div>
+      </xpath>
+    </template>
+
+
+    <!-- Thay ' on ' -> ' trên ' trong tổng thuế (mặc định) 
+    <template id="dac_tax_on_vi"
+              inherit_id="account.document_tax_totals_template">
+      <xpath expr="//span[normalize-space(text())='on']" position="replace">
+        <span> trên </span>
+      </xpath>
+    </template> -->
+
+    <!-- Và trong template tổng thuế hiển thị theo tiền công ty 
+    <template id="dac_tax_on_vi_company"
+              inherit_id="account.document_tax_totals_company_currency_template">
+      <xpath expr="//span[normalize-space(text())='on']" position="replace">
+        <span> trên </span>
+      </xpath>
+    </template> -->
+
+  </data>
+</odoo>

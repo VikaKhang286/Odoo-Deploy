@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Attendance Menu - Định vị làm App thứ 4 trên Navbar (sequence = 40) -->
+    <menuitem id="menu_dac_attendance_root"
+              name="DAC Chấm công"
+              sequence="40"
+              web_icon="hr_attendance,static/description/icon.png"/>
+
+    <!-- Employee Dashboard (all users) -->
+    <menuitem id="menu_dac_attendance_employee_dashboard"
+              name="Dashboard Chấm công"
+              parent="menu_dac_attendance_root"
+              action="dac_attendance_employee_dashboard_action"
+              groups="base.group_user"
+              sequence="1"/>
+
+    <!-- Manager Dashboard -->
+    <menuitem id="menu_dac_attendance_manager_dashboard"
+              name="Dashboard Quản lý"
+              parent="menu_dac_attendance_root"
+              action="dac_attendance_manager_dashboard_action"
+              groups="hr_attendance.group_hr_attendance_manager"
+              sequence="2"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_dac_attendance_config"
+              name="Cấu hình"
+              parent="menu_dac_attendance_root"
+              sequence="10"/>
+
+    <!-- Employee Attendance Config -->
+    <menuitem id="menu_hr_employee_attendance_config"
+              name="Cấu hình chấm công NV"
+              parent="menu_dac_attendance_config"
+              action="action_hr_employee_attendance_config"
+              sequence="10"/>
+
+    <!-- Attendance Reports Menu -->
+    <menuitem id="menu_dac_attendance_reports"
+              name="Báo cáo"
+              parent="menu_dac_attendance_root"
+              sequence="90"/>
+
+    <menuitem id="menu_dac_attendance_summary"
+              name="Tổng hợp chấm công"
+              parent="menu_dac_attendance_reports"
+              action="action_dac_attendance_summary"
+              sequence="10"/>
+
+    <menuitem id="menu_dac_attendance_report"
+              name="Chi tiết chấm công"
+              parent="menu_dac_attendance_reports"
+              action="action_dac_attendance_report"
+              sequence="20"/>
+
+    <menuitem id="menu_dac_attendance_leave_admin"
+              name="Đơn nghỉ phép"
+              parent="menu_dac_attendance_reports"
+              action="action_dac_attendance_leave"
+              groups="hr_attendance.group_hr_attendance_manager"
+              sequence="30"/>
+
+    <menuitem id="menu_dac_attendance_amendment_admin"
+              name="Đơn điều chỉnh chấm công"
+              parent="menu_dac_attendance_reports"
+              action="action_dac_attendance_amendment"
+              groups="hr_attendance.group_hr_attendance_manager"
+              sequence="40"/>
+</odoo>

@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <menuitem id="home_root"
+                    name="Home"
+                    sequence="-10"
+                    groups="base.group_user"
+                    action="home_menu_action"/>
+    </data>
+</odoo>

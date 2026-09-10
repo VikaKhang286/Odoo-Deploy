@@ -1,0 +1,481 @@
+/* ===================================================================
+   DAC ERP - Sale Order Form Stylesheet
+   File: sale_order_form.css
+   Description: Tổng hợp tất cả styles cho Sale Order Form để dễ bảo trì
+   =================================================================== */
+
+/* MARK: Import Base Styles từ dac_common.css */
+/* Các badge priority và state đã được định nghĩa trong dac_common.css */
+
+/* MARK: Sale Order Form Container */
+.dac-sale-form {
+  position: relative;
+}
+
+/* MARK: Deposit Section */
+.dac-deposit-container {
+  max-width: 500px;
+  margin-bottom: 8px;
+}
+
+.dac-deposit-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dac-deposit-label {
+  font-weight: 900; /* làm đậm hơn - từ 700 lên 900 */
+  font-size: 22px; /* tăng kích thước chữ - từ 20px lên 22px */
+  text-transform: uppercase; /* IN HOA chữ */
+  color: #0056b3; /* Màu xanh đậm */
+  margin-bottom: 0;
+  min-width: 80px; /* tăng khoảng trống */
+  white-space: nowrap;
+  letter-spacing: 0.8px; /* tăng letter-spacing cho chữ hoa dày hơn */
+  padding: 8px 12px; /* tăng padding để chữ to hơn có không gian */
+  border-radius: 6px;
+  background: rgba(0, 123, 255, 0.04); /* background của box */
+  border: 1px solid rgba(0, 123, 255, 0.08);
+}
+
+/* Stronger boxed modifier if you want the label to stand out more */
+.dac-deposit-label.boxed {
+  background: #fffbe6; /* match deposit amount container tone */
+  border: 1px solid #ffe066;
+  color: #007bff;
+  padding: 8px 12px; /* tăng padding cho chữ dày hơn */
+  font-weight: 900; /* làm đậm hơn */
+  font-size: 22px; /* tăng kích thước */
+  text-transform: uppercase; /* IN HOA cho boxed version */
+  letter-spacing: 0.8px; /* tăng letter-spacing */
+}
+
+.dac-deposit-amount-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fffbe6;
+  border-radius: 5px;
+  border: 1px solid #ffe066;
+  width: 180px;
+  padding: 3px 6px;
+}
+
+.dac-deposit-amount-inner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+}
+
+.dac-deposit-amount-field {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #e55353;
+  text-align: center;
+  border: none;
+  background: transparent;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.dac-deposit-currency {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: #e55353;
+  margin-left: 4px;
+}
+
+/* MARK: Production Deadline Section */
+.dac-deadline-container {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbe6;
+  border: 1px solid #ffc107;
+  border-radius: 5px;
+  padding: 4px 10px;
+  width: fit-content;
+}
+
+.dac-deadline-icon {
+  color: #ffc107;
+}
+
+.dac-deadline-label {
+  font-weight: 600;
+  color: #e55353;
+  font-size: 13px;
+  line-height: 1.15; /* tighter line-height for compactness */
+  max-width: 210px; /* prevent the label from becoming too wide */
+  white-space: normal; /* allow wrapping if needed */
+  word-break: keep-all; /* prefer breaking between words */
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.dac-deadline-field {
+  font-size: 1em;
+  font-weight: 600;
+  color: #007bff;
+  width: 100px; /* slightly narrower for a more compact look */
+  background: #fff;
+  border: 1px solid #007bff;
+  border-radius: 3px;
+  padding: 2px 8px;
+  margin-left: 6px;
+}
+
+/* MARK: Production Image Section */
+.dac-production-image {
+  max-width: 360px;
+  max-height: 360px;
+}
+
+.dac-image-button {
+  margin-right: 6px;
+}
+
+/* MARK: Invoice Button Styles */
+.dac-invoice-button-container {
+  margin-bottom: 8px;
+}
+
+.dac-invoice-button {
+  min-width: 70px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 7px 0;
+  margin-left: 8px;
+}
+
+.dac-invoice-button-standalone {
+  min-width: 80px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 7px 0;
+}
+
+/* MARK: Summary Section (Tổng tiền) */
+.dac-summary-container {
+  text-align: right;
+  margin-top: 16px;
+}
+
+.dac-summary-row {
+  margin: 4px 0;
+}
+
+.dac-summary-label {
+  font-weight: bold;
+}
+
+.dac-summary-value {
+  font-weight: bold;
+  margin-left: 16px;
+}
+
+.dac-summary-value--large {
+  font-size: 1.2em;
+}
+
+.dac-summary-value--highlight {
+  font-weight: bold;
+  color: #e55353;
+  font-size: 1.3em;
+  border: 2px solid #e55353;
+  padding: 4px 8px;
+  margin-left: 12px; /* add space between label and highlighted box */
+  border-radius: 4px;
+  background-color: #ffeaea;
+}
+
+.dac-summary-value--deposit {
+  font-weight: bold;
+  color: green;
+}
+
+/* MARK: Status Alert Messages */
+.dac-alert {
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  border: 1px solid transparent;
+}
+
+.dac-alert--completed {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.dac-alert--cancel {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* MARK: Action Buttons Container */
+.dac-action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* MARK: Conversation Widget */
+.conversation-widget-container {
+  position: fixed;
+  top: 2px;
+  right: 190px;
+  z-index: 1050;
+  width: 200px;
+}
+
+.conversation-widget {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+  overflow: hidden;
+}
+
+.conversation-header {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.conversation-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.conversation-header-icon {
+  font-size: 14px;
+}
+
+.conversation-header-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.conversation-header-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+}
+
+.conversation-header-right {
+  display: flex;
+  align-items: center;
+}
+
+.conversation-toggle {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  transform: rotate(180deg);
+}
+
+.conversation-content {
+  padding: 14px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fafafa;
+  display: none;
+}
+
+.conversation-quick-actions {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conversation-view-all-btn {
+  font-size: 10px;
+  padding: 3px 10px;
+}
+
+.conversation-view-all-btn i {
+  margin-right: 3px;
+}
+
+.conversation-hint {
+  font-size: 10px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* MARK: Responsive Design */
+@media (max-width: 768px) {
+  .dac-deposit-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .dac-deposit-amount-container {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .dac-action-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .conversation-widget-container {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .dac-deadline-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .dac-deadline-field {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .dac-summary-container {
+    text-align: left;
+  }
+
+  .dac-summary-value {
+    margin-left: 8px;
+  }
+
+  /* Ensure highlighted box doesn't push layout too far on small screens */
+  .dac-summary-value--highlight {
+    margin-left: 6px;
+    display: inline-block;
+  }
+
+  .dac-production-image {
+    max-width: 100%;
+    max-height: 250px;
+  }
+}
+
+/* MARK: Print Styles */
+@media print {
+  .conversation-widget-container,
+  .dac-action-buttons,
+  .oe_button_box {
+    display: none !important;
+  }
+
+  .dac-summary-container {
+    margin-top: 24px;
+  }
+
+  .dac-alert {
+    border: 2px solid !important;
+  }
+}
+
+/* MARK: High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .dac-deposit-amount-container,
+  .dac-deadline-container {
+    border-width: 2px;
+  }
+
+  .conversation-widget {
+    border-width: 2px;
+  }
+
+  .dac-summary-value--highlight {
+    border-width: 3px;
+  }
+}
+
+/* MARK: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .conversation-toggle {
+    transition: none;
+  }
+
+  .dac-ticket {
+    transition: none;
+  }
+}
+
+/* MARK: Dark Mode Support (future-proofing) */
+@media (prefers-color-scheme: dark) {
+  .conversation-widget {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+
+  .conversation-content {
+    background: #1a202c;
+  }
+
+  .dac-deposit-amount-container,
+  .dac-deadline-container {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+
+  .dac-deadline-field {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .dac-alert--completed {
+    background: #22543d;
+    border-color: #38a169;
+    color: #9ae6b4;
+  }
+
+  .dac-alert--cancel {
+    background: #742a2a;
+    border-color: #e53e3e;
+    color: #feb2b2;
+  }
+}
+
+.dac-deposit-container .dac-deposit-label {
+  background: #fffbe6; /* cùng tông với ô tiền cọc */
+  border: 1px solid #ffe066;
+  color: #b35a00; /* tương phản tốt trên nền vàng */
+  font-weight: 900; /* sửa từ 10000 thành 900 (hợp lệ) */
+  font-size: 18px; /* tăng kích thước */
+  padding: 8px 12px; /* tăng padding */
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px; /* tăng letter-spacing */
+  box-shadow: inset 0 1px 0 rgba(255, 193, 7, 0.35);
+}

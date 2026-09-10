@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_no_deposit_confirm_wizard_form" model="ir.ui.view">
+            <field name="name">no.deposit.confirm.wizard.form</field>
+            <field name="model">no.deposit.confirm.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Xác nhận không đặt cọc">
+                    <p class="text-muted mb-3">Đơn hàng chưa có khoản cọc, vẫn tiến hành sản xuất.</p>
+                    <footer>
+                        <button name="action_confirm_no_deposit" type="object" string="Tiến hành sản xuất" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

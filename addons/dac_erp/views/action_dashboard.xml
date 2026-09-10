@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action client cho Design Dashboard -->
+        <record id="dac_design_dashboard_action" model="ir.actions.client">
+            <field name="name">Thiết kế</field>
+            <field name="tag">dac_design_dashboard</field>
+            <field name="target">current</field>
+        </record>
+
+
+        <!-- Action client cho Production Dashboard -->
+        <record id="dac_production_dashboard_action" model="ir.actions.client">
+            <field name="name">Đang sản xuất</field>
+            <field name="tag">dac_production_dashboard</field>
+            <field name="target">current</field>
+        </record>
+    </data>
+</odoo>

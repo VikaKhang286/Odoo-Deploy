@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="dac_attendance.LeaveRequestDialog">
+    <Dialog title="'Gửi đơn xin nghỉ phép'" size="'md'">
+        <div class="o_dac_leave_dialog">
+            <div t-if="state.errorMsg" class="alert alert-danger mb-3">
+                <i class="fa fa-exclamation-triangle me-2"/>
+                <t t-esc="state.errorMsg"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Loại phép</label>
+                <div class="d-flex gap-2 flex-wrap">
+                    <t t-foreach="leaveTypes" t-as="lt" t-key="lt.value">
+                        <button t-attf-class="btn btn-sm {{ state.leaveType === lt.value ? 'btn-primary' : 'btn-outline-secondary' }}"
+                                t-on-click="() => this.state.leaveType = lt.value">
+                            <t t-esc="lt.label"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label fw-bold">Từ ngày <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateFrom"
+                           t-on-change="(e) => this.state.dateFrom = e.target.value"/>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-bold">Đến ngày <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control"
+                           t-att-value="state.dateTo"
+                           t-on-change="(e) => this.state.dateTo = e.target.value"/>
+                </div>
+            </div>
+
+            <div t-if="numberOfDays > 0" class="alert alert-info py-2 mb-3">
+                <i class="fa fa-info-circle me-2"/>
+                Tổng: <strong><t t-esc="numberOfDays"/> ngày</strong>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Lý do <span class="text-danger">*</span></label>
+                <textarea class="form-control" rows="3"
+                          t-att-value="state.reason"
+                          placeholder="Nhập lý do nghỉ phép..."
+                          t-on-input="(e) => this.state.reason = e.target.value"/>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="btn btn-secondary" t-on-click="props.close">Hủy</button>
+            <button class="btn btn-primary" t-on-click="onSubmit"
+                    t-att-disabled="state.submitting">
+                <i t-if="state.submitting" class="fa fa-spinner fa-spin me-2"/>
+                <t t-esc="state.submitting ? 'Đang gửi...' : 'Gửi đơn'"/>
+            </button>
+        </t>
+    </Dialog>
+</t>
+
+</templates>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="dac_attendance.EmployeeDashboard">
+    <div class="o_dac_employee_dashboard">
+
+        <!-- Loading -->
+        <div t-if="state.loading" class="o_dac_dashboard_loading">
+            <i class="fa fa-spinner fa-spin fa-2x text-muted"/>
+            <p class="text-muted mt-2">Đang tải dữ liệu...</p>
+        </div>
+
+        <t t-else="">
+            <!-- Error -->
+            <div t-if="state.error" class="alert alert-danger m-4">
+                <i class="fa fa-exclamation-triangle me-2"/>
+                <t t-esc="state.error"/>
+            </div>
+
+            <t t-else="">
+                <!-- Header -->
+                <div class="o_dac_emp_header">
+                    <div>
+                        <h4 class="o_dac_emp_greeting">Xin chào, <strong t-esc="state.data.employee_name"/></h4>
+                        <span class="o_dac_emp_date text-muted" t-esc="todayLabel"/>
+                    </div>
+                </div>
+
+                <!-- Today Status Card -->
+                <div t-attf-class="o_dac_today_card {{ state.data.today_status.checked_in ? 'o_dac_today_card--in' : 'o_dac_today_card--out' }}">
+                    <div class="o_dac_today_status_row">
+                        <span t-attf-class="o_dac_status_dot {{ state.data.today_status.checked_in ? 'o_dac_status_dot--on' : 'o_dac_status_dot--off' }}"/>
+                        <span class="o_dac_status_label">
+                            <t t-if="state.data.today_status.checked_in">
+                                ĐANG LÀM VIỆC
+                            </t>
+                            <t t-else="">
+                                CHƯA CHECK-IN
+                            </t>
+                        </span>
+                        <span t-if="state.data.today_status.checked_in" class="o_dac_checkin_time">
+                            Vào lúc <strong t-esc="state.data.today_status.check_in_time"/>
+                        </span>
+                    </div>
+
+                    <div t-if="state.data.today_status.checked_in" class="o_dac_today_hours">
+                        Đã làm: <strong><t t-esc="formatHours(state.data.today_status.today_hours)"/></strong>
+                    </div>
+
+                    <div t-if="state.data.today_status.is_late" class="o_dac_late_badge">
+                        <i class="fa fa-clock-o me-1"/>
+                        Vào trễ <t t-esc="state.data.today_status.late_minutes"/> phút
+                    </div>
+
+                    <div class="o_dac_today_actions">
+                        <button t-if="!state.data.today_status.checked_in"
+                                class="o_dac_btn_checkin" t-on-click="onCheckIn"
+                                t-att-disabled="state.actionLoading">
+                            <i t-if="state.actionLoading" class="fa fa-spinner fa-spin me-2"/>
+                            <i t-else="" class="fa fa-sign-in me-2"/>
+                            Check-in
+                        </button>
+                        <button t-if="state.data.today_status.checked_in"
+                                class="o_dac_btn_checkout" t-on-click="onCheckOut"
+                                t-att-disabled="state.actionLoading">
+                            <i t-if="state.actionLoading" class="fa fa-spinner fa-spin me-2"/>
+                            <i t-else="" class="fa fa-sign-out me-2"/>
+                            Check-out
+                        </button>
+                        <button class="o_dac_btn_amendment" t-on-click="openAmendmentDialog">
+                            <i class="fa fa-pencil me-1"/>
+                            Quên chấm? Điều chỉnh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Middle row: Calendar + Leave Balance -->
+                <div class="o_dac_middle_row">
+
+                    <!-- Mini Calendar -->
+                    <div class="o_dac_card o_dac_calendar_card">
+                        <AttendanceMiniCalendar
+                            days="state.data.month_calendar"
+                            monthLabel="state.data.month_label"/>
+                    </div>
+
+                    <!-- Leave Balance -->
+                    <div class="o_dac_card o_dac_leave_balance_card">
+                        <div class="o_dac_card_title">Ngày phép còn lại</div>
+                        <div class="o_dac_leave_balance_list">
+                            <div class="o_dac_leave_balance_row">
+                                <span class="o_dac_leave_type_label">Phép năm</span>
+                                <span class="o_dac_leave_balance_value">
+                                    <strong t-esc="remainingDays('annual')"/>
+                                    <span class="text-muted"> / <t t-esc="state.data.leave_balance.annual.total"/> ngày</span>
+                                </span>
+                            </div>
+                            <div class="o_dac_leave_progress">
+                                <div class="o_dac_leave_progress_bar"
+                                     t-att-style="leaveProgressStyle('annual')"/>
+                            </div>
+
+                            <div class="o_dac_leave_balance_row mt-2">
+                                <span class="o_dac_leave_type_label">Phép bệnh</span>
+                                <span class="o_dac_leave_balance_value">
+                                    <strong t-esc="remainingDays('sick')"/>
+                                    <span class="text-muted"> / <t t-esc="state.data.leave_balance.sick.total"/> ngày</span>
+                                </span>
+                            </div>
+                            <div class="o_dac_leave_progress">
+                                <div class="o_dac_leave_progress_bar o_dac_leave_progress_bar--sick"
+                                     t-att-style="leaveProgressStyle('sick')"/>
+                            </div>
+
+                            <div class="o_dac_leave_balance_row mt-2">
+                                <span class="o_dac_leave_type_label">Không lương</span>
+                                <span class="o_dac_leave_balance_value">
+                                    <strong t-esc="remainingDays('unpaid')"/>
+                                    <span class="text-muted"> / <t t-esc="state.data.leave_balance.unpaid.total"/> ngày</span>
+                                </span>
+                            </div>
+                            <div class="o_dac_leave_progress">
+                                <div class="o_dac_leave_progress_bar o_dac_leave_progress_bar--unpaid"
+                                     t-att-style="leaveProgressStyle('unpaid')"/>
+                            </div>
+                        </div>
+                        <button class="o_dac_btn_leave_request mt-3 w-100" t-on-click="openLeaveDialog">
+                            <i class="fa fa-plus-circle me-2"/>
+                            Xin nghỉ phép
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Attendance History -->
+                <div class="o_dac_card o_dac_history_card">
+                    <div class="o_dac_card_title">Lịch sử tháng này</div>
+                    <div class="o_dac_history_list">
+                        <t t-if="!state.data.history.length">
+                            <p class="text-muted text-center py-3">Chưa có dữ liệu chấm công</p>
+                        </t>
+                        <t t-foreach="state.data.history" t-as="row" t-key="row.date + row.check_in">
+                            <div t-attf-class="o_dac_history_row o_dac_history_row--{{ row.status }}">
+                                <span class="o_dac_hist_date" t-esc="row.date"/>
+                                <span class="o_dac_hist_times">
+                                    <t t-if="row.status === 'leave'">
+                                        <span class="o_dac_hist_leave_label">
+                                            <i class="fa fa-calendar me-1"/>
+                                            <t t-esc="row.leave_type || 'Nghỉ phép'"/>
+                                        </span>
+                                    </t>
+                                    <t t-elif="row.status === 'absent'">
+                                        <span class="text-danger">
+                                            <i class="fa fa-times-circle me-1"/>Vắng mặt
+                                        </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span><t t-esc="row.check_in || '--:--'"/></span>
+                                        <span class="o_dac_hist_arrow">→</span>
+                                        <span><t t-esc="row.check_out || '--:--'"/></span>
+                                    </t>
+                                </span>
+                                <span class="o_dac_hist_hours">
+                                    <t t-if="row.worked_hours > 0">
+                                        <t t-esc="formatHours(row.worked_hours)"/>
+                                    </t>
+                                </span>
+                                <span class="o_dac_hist_status">
+                                    <t t-if="row.status === 'on_time'">
+                                        <span class="text-success"><i class="fa fa-check-circle"/> Đúng giờ</span>
+                                    </t>
+                                    <t t-elif="row.status === 'late'">
+                                        <span class="text-warning">
+                                            <i class="fa fa-exclamation-triangle"/>
+                                            Trễ <t t-esc="row.late_minutes"/>p
+                                        </span>
+                                    </t>
+                                    <t t-elif="row.status === 'working'">
+                                        <span class="text-primary">
+                                            <i class="fa fa-circle o_dac_pulse_dot"/> Đang làm
+                                        </span>
+                                    </t>
+                                </span>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Pending Requests -->
+                <div t-if="state.data.pending_requests.length" class="o_dac_card o_dac_pending_card">
+                    <div class="o_dac_card_title">Yêu cầu đang chờ duyệt</div>
+                    <t t-foreach="state.data.pending_requests" t-as="req" t-key="req.type + req.id">
+                        <div class="o_dac_pending_row">
+                            <span t-attf-class="o_dac_pending_icon {{ req.type === 'leave' ? 'o_dac_icon_leave' : 'o_dac_icon_amendment' }}">
+                                <i t-attf-class="fa {{ req.type === 'leave' ? 'fa-calendar-check-o' : 'fa-pencil-square-o' }}"/>
+                            </span>
+                            <span class="o_dac_pending_summary" t-esc="req.summary"/>
+                            <span class="o_dac_pending_state">
+                                <i class="fa fa-clock-o me-1 text-warning"/>Chờ duyệt
+                            </span>
+                            <button class="o_dac_btn_cancel_request"
+                                    t-on-click="() => this.onCancelRequest(req.type, req.id)">
+                                Hủy
+                            </button>
+                        </div>
+                    </t>
+                </div>
+
+            </t>
+        </t>
+    </div>
+</t>
+
+</templates>

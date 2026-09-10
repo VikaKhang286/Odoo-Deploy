@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Custom List View cho Hóa đơn -->
+        <record id="dac_account_move_custom_view_list" model="ir.ui.view">
+            <field name="name">account.move.custom.list</field>
+            <field name="model">account.move</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <list string="Hóa đơn" default_order="create_date desc" create="0" edit="0">
+                    <header>
+                        <button name="action_update_missing_dac_user_manual" 
+                                string="Cập nhật người phụ trách cho hóa đơn cũ" 
+                                type="object" 
+                                class="btn-primary"
+                                groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+                    </header>
+                    <field name="name"/>
+                    <field name="create_date"/>
+                    <field name="invoice_date" optional="hide"/>
+                    <field name="partner_id"/>
+                    <field name="invoice_origin"/>
+                    <field name="dac_user_id" string="Người phụ trách" widget="many2one_avatar_user"/>
+                    <field name="amount_total" sum="Tổng" widget="monetary"/>
+                    <field name="currency_id" optional="hide"/>
+                    <field name="state" widget="badge"
+                        decoration-info="state == 'draft'"
+                        decoration-success="state == 'posted'"
+                        decoration-danger="state == 'cancel'"/>
+                    <field name="payment_state" widget="badge"
+                        decoration-warning="payment_state == 'not_paid'"
+                        decoration-success="payment_state == 'paid'"
+                        decoration-primary="payment_state == 'partial'"/>
+                    <field name="dac_deposit_invoice" widget="boolean_toggle"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Custom Search View cho Hóa đơn -->
+        <record id="dac_account_move_custom_search" model="ir.ui.view">
+            <field name="name">account.move.custom.search</field>
+            <field name="model">account.move</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm hóa đơn">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="invoice_origin"/>
+                    <field name="dac_user_id"/>
+                    <filter string="Của tôi" name="my_invoices" domain="[('dac_user_id', '=', uid)]"/>
+                    <separator/>
+                    <filter string="Hóa đơn cọc" name="deposit" domain="[('dac_deposit_invoice', '=', True)]"/>
+                    <filter string="Hóa đơn thanh toán" name="final" domain="[('dac_deposit_invoice', '=', False)]"/>
+                    <separator/>
+                    <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Đã xác nhận" name="posted" domain="[('state', '=', 'posted')]"/>
+                    <separator/>
+                    <filter string="Chưa thanh toán" name="not_paid" domain="[('payment_state', '=', 'not_paid')]"/>
+                    <filter string="Đã thanh toán" name="paid" domain="[('payment_state', '=', 'paid')]"/>
+                    <group expand="1" string="Nhóm theo">
+                        <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                        <filter string="Trạng thái thanh toán" name="group_by_payment_state" context="{'group_by': 'payment_state'}"/>
+                        <filter string="Khách hàng" name="group_by_partner" context="{'group_by': 'partner_id'}"/>
+                        <filter string="Ngày tạo" name="group_by_date" context="{'group_by': 'create_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Window cho manager Hóa đơn -->
+        <record id="dac_account_move_custom_action_manager" model="ir.actions.act_window">
+            <field name="name">Hóa đơn</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_account_move_custom_view_list"/>
+            <field name="search_view_id" ref="dac_account_move_custom_search"/>
+            <field name="domain">[('move_type', '=', 'out_invoice')]</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_manager')), (4, ref('base.group_system'))]"/>
+            <field name="context">{
+                'default_move_type': 'out_invoice',
+                'default_dac_user_id': uid
+            }</field>
+        </record>
+
+        
+        <!-- Action Window cho Sale Hóa đơn -->
+        <record id="dac_account_move_custom_action_sale" model="ir.actions.act_window">
+            <field name="name">Hóa đơn</field>
+            <field name="res_model">account.move</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="dac_account_move_custom_view_list"/>
+            <field name="search_view_id" ref="dac_account_move_custom_search"/>
+            <field name="domain">[('move_type', '=', 'out_invoice'), ('dac_user_id', '=', uid)]</field>
+            <field name="context">{'default_move_type': 'out_invoice', 'default_dac_user_id': uid}</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+        </record>
+        
+        <!-- Simple inherit để ẩn nút Register Payment khi có existing payments -->
+        <record id="account_move_form_hide_register_payment" model="ir.ui.view">
+            <field name="name">account.move.form.hide.register.payment</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Thêm computed fields ẩn -->
+                <field name="state" position="after">
+                    <field name="payment_count" invisible="1"/>
+                    <field name="has_existing_payments" invisible="1"/>
+                </field>
+                
+                <!-- Ẩn nút Register Payment khi đã có payments -->
+                <xpath expr="//button[@name='action_register_payment']" position="attributes">
+                    <attribute name="invisible">has_existing_payments or payment_count > 0</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

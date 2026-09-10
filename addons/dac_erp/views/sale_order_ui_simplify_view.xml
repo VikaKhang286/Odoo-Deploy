@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="dac_sale_order_ui_simplify_inherit" model="ir.ui.view">
+            <field name="name">sale.order.ui.simplify.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[2]" position="attributes">
+                    <attribute name="string">Thiết kế</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[3]" position="attributes">
+                    <attribute name="string">Sản xuất &amp; giao</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[4]" position="attributes">
+                    <attribute name="string">Giao nhận &amp; lắp đặt</attribute>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Thanh toán"
+                          groups="dac_erp.group_dac_erp_manager,dac_erp.group_dac_erp_sale">
+                        <group>
+                            <group>
+                                <field name="amount_untaxed_original" readonly="1" widget="monetary" string="Thành tiền"/>
+                                <field name="amount_tax" readonly="1" widget="monetary" string="Thuế"/>
+                                <field name="shipping_fee" readonly="1" widget="monetary" string="Phí vận chuyển"/>
+                                <field name="amount_total" readonly="1" widget="monetary" string="Tổng giá trị"/>
+                            </group>
+                            <group>
+                                <field name="total_deposit_paid" readonly="1" widget="monetary" string="Cọc đã thu"/>
+                                <field name="remaining_amount_display" readonly="1" widget="monetary" string="Còn phải thu"/>
+                                <field name="is_order_completed" readonly="1" widget="boolean_toggle" string="Đã hoàn tất"/>
+                            </group>
+                        </group>
+                        <div class="mt-3"
+                             groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager">
+                            <button name="action_view_all_invoices"
+                                    string="Xem hóa đơn"
+                                    type="object"
+                                    class="btn btn-outline-primary"
+                                    invisible="total_invoice_count == 0"/>
+                        </div>
+                    </page>
+
+                    <page string="Trao đổi khách">
+                        <group>
+                            <field name="conversation_count" readonly="1" string="Số hội thoại"/>
+                        </group>
+                        <div class="dac-box-card"
+                             invisible="conversation_count == 0"
+                             groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system">
+                            <h5 class="dac-box-title dac-title-client">
+                                <i class="fa fa-comments me-2"/>Tin nhắn Pancake
+                            </h5>
+                            <field name="conversation_buttons_html" nolabel="1" readonly="1"/>
+                            <div class="mt-3">
+                                <button name="action_view_conversations"
+                                        type="object"
+                                        class="btn btn-sm btn-outline-primary"
+                                        invisible="conversation_count &lt;= 0">
+                                    Xem tất cả hội thoại
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-light mb-0" role="status" invisible="conversation_count != 0">
+                            Chưa có hội thoại Pancake liên kết với đơn hàng này.
+                        </div>
+                    </page>
+                </xpath>
+
+                <xpath expr="//div[@id='conversation-floating-widget']" position="replace"/>
+            </field>
+        </record>
+    </data>
+</odoo>

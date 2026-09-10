@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.test</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='invite_users']"
+                    position="after">
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 1: THƯƠNG HIỆU
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="brand_configuration">
+                        <block title="Thương hiệu" name="brand_setting_container">
+                            <setting id="image_1024" string="Logo" help="">
+                                <field name="image_1024" widget="image" nolabel="0"></field>
+                            </setting>
+                            <setting id="image_logo_homepage_1024" string="Logo Homepage" help="">
+                                <field name="image_logo_homepage_1024" widget="image" nolabel="0"></field>
+                            </setting>
+                            <setting id="website_title" string="Tiêu đề cửa sổ" help="">
+                                <field name="website_title"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 2: THANH ĐIỀU HƯỚNG (NAVBAR)
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="navbar_colors_configuration">
+                        <block title="Màu sắc thanh điều hướng" name="navbar_color_setting_container">
+                            <setting id="nabar_background_color_setting"
+                                string="Màu nền Navbar"
+                                help="Chọn màu nền thanh điều hướng trên cùng">
+                                <field name="navbar_background_color" widget="color" nolabel="0"></field>
+                                <field name="navbar_background_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="text_color_setting" string="Màu chữ Navbar"
+                                help="Màu chữ và icon trên thanh điều hướng">
+                                <field name="navbar_text_color" widget="color" nolabel="0"></field>
+                                <field name="navbar_text_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="icon_setting" string="Màu icon"
+                                help="Màu icon trên thanh điều hướng">
+                                <field name="icon_color" widget="color" nolabel="0"></field>
+                                <field name="icon_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="button_setting" string="Màu nút chính"
+                                help="Màu nút Save, nút hành động chính">
+                                <field name="button_color" widget="color" nolabel="0"></field>
+                                <field name="button_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="search_color" string="Màu thanh tìm kiếm"
+                                help="Màu nền thanh tìm kiếm">
+                                <field name="search_color" widget="color" nolabel="0"></field>
+                                <field name="search_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="buble_color_setting" string="Màu bong bóng thông báo"
+                                help="Màu badge số lượng thông báo trên systray">
+                                <field name="buble_color" widget="color" nolabel="0"></field>
+                                <field name="buble_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="drop_background_setting" string="Màu nền menu dropdown"
+                                help="Màu nền khi mở menu dropdown">
+                                <field name="drop_background_color" widget="color" nolabel="0"></field>
+                                <field name="drop_background_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="drop_text_color_setting" string="Màu chữ menu dropdown"
+                                help="Màu chữ của các mục trong dropdown">
+                                <field name="drop_text_color" widget="color" nolabel="0"></field>
+                                <field name="drop_text_color" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 3: BỐ CỤC TRANG
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="layout_colors_configuration">
+                        <block title="Màu sắc bố cục trang" name="layout_color_setting_container">
+                            <setting id="website_background_color_setting"
+                                string="Màu nền toàn trang"
+                                help="Màu nền ngoài cùng của toàn bộ giao diện">
+                                <field name="website_background_color" widget="color" nolabel="0"></field>
+                                <field name="website_background_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="background_color_setting" string="Màu nền nội dung"
+                                help="Màu nền vùng nội dung chính (app_settings_block)">
+                                <field name="background_color" widget="color" nolabel="0"></field>
+                                <field name="background_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="filter_setting" string="Màu thanh breadcrumb"
+                                help="Màu nền thanh điều hướng breadcrumb đầu trang">
+                                <field name="filter_color" widget="color" nolabel="0"></field>
+                                <field name="filter_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="title_setting" string="Màu nền tiêu đề block"
+                                help="Màu nền các thanh tiêu đề block trong Settings">
+                                <field name="title_color" widget="color" nolabel="0"></field>
+                                <field name="title_color" nolabel="1"></field>
+                            </setting>
+                            <setting id="body_text_color_setting" string="Màu chữ nội dung"
+                                help="Màu chữ chính của phần thân trang, nút, icon">
+                                <field name="text_color" widget="color" nolabel="0"></field>
+                                <field name="text_color" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 4: SIDEBAR
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="sidebar_colors_configuration">
+                        <block title="Màu sắc sidebar" name="sidebar_color_setting_container">
+                            <setting id="sidebar_background_setting" string="Màu nền sidebar"
+                                help="Màu nền thanh sidebar bên trái">
+                                <field name="sidebar_background" widget="color" nolabel="0"></field>
+                                <field name="sidebar_background" nolabel="1"></field>
+                            </setting>
+                            <setting id="sidebar_active_color_setting"
+                                string="Màu nền mục đang chọn"
+                                help="Màu nền mục đang được chọn trong sidebar">
+                                <field name="sidebar_chose_background" widget="color" nolabel="0"></field>
+                                <field name="sidebar_chose_background" nolabel="1"></field>
+                            </setting>
+                            <setting id="sidebar_text_color_setting" string="Màu chữ sidebar"
+                                help="Màu chữ các mục trong sidebar">
+                                <field name="sidebar_text" widget="color" nolabel="0"></field>
+                                <field name="sidebar_text" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 5: LIST VIEW
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="list_colors_configuration">
+                        <block title="Màu sắc List view" name="list_color_setting_container">
+                            <setting id="list_title_color_setting" string="Màu nền tiêu đề cột"
+                                help="Màu nền thanh tiêu đề cột trong list view">
+                                <field name="list_title" widget="color" nolabel="0"></field>
+                                <field name="list_title" nolabel="1"></field>
+                            </setting>
+                            <setting id="list_text_title_setting" string="Màu chữ tiêu đề cột"
+                                help="Màu chữ của tiêu đề cột trong list view">
+                                <field name="list_text_title" widget="color" nolabel="0"></field>
+                                <field name="list_text_title" nolabel="1"></field>
+                            </setting>
+                            <setting id="list_table_setting" string="Màu nền bảng"
+                                help="Màu nền các hàng dữ liệu trong list">
+                                <field name="list_table" widget="color" nolabel="0"></field>
+                                <field name="list_table" nolabel="1"></field>
+                            </setting>
+                            <setting id="list_text_table_setting" string="Màu chữ bảng"
+                                help="Màu chữ dữ liệu trong các hàng list">
+                                <field name="list_text_table" widget="color" nolabel="0"></field>
+                                <field name="list_text_table" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 6: KANBAN VIEW
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="kanban_colors_configuration">
+                        <block title="Màu sắc Kanban view" name="kanban_color_setting_container">
+                            <setting id="kanban_background_setting" string="Màu nền kanban"
+                                help="Màu nền vùng kanban và form">
+                                <field name="kanban_background" widget="color" nolabel="0"></field>
+                                <field name="kanban_background" nolabel="1"></field>
+                            </setting>
+                            <setting id="kanban_form_setting" string="Màu nền thẻ kanban"
+                                help="Màu nền của từng thẻ kanban">
+                                <field name="kanban_form" widget="color" nolabel="0"></field>
+                                <field name="kanban_form" nolabel="1"></field>
+                            </setting>
+                            <setting id="kanban_text_setting" string="Màu tiêu đề thẻ"
+                                help="Màu chữ tiêu đề của thẻ kanban">
+                                <field name="kanban_text" widget="color" nolabel="0"></field>
+                                <field name="kanban_text" nolabel="1"></field>
+                            </setting>
+                            <setting id="kanban_item_setting" string="Màu chi tiết thẻ"
+                                help="Màu chữ các chi tiết (field) trong thẻ kanban">
+                                <field name="kanban_item" widget="color" nolabel="0"></field>
+                                <field name="kanban_item" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════════════
+                         NHÓM 7: DISCUSS
+                    ═══════════════════════════════════════════════════ -->
+                    <div id="discuss_colors_configuration">
+                        <block title="Màu sắc Discuss" name="discuss_color_setting_container">
+                            <setting id="discuss_form_setting" string="Màu nền Discuss"
+                                help="Màu nền tổng thể của module Discuss">
+                                <field name="discuss_background" widget="color" nolabel="0"></field>
+                                <field name="discuss_background" nolabel="1"></field>
+                            </setting>
+                            <setting id="discuss_chose_sidebar_setting" string="Màu hover sidebar Discuss"
+                                help="Màu nền khi hover hoặc chọn một mục trong sidebar Discuss">
+                                <field name="discuss_chose_sidebar" widget="color" nolabel="0"></field>
+                                <field name="discuss_chose_sidebar" nolabel="1"></field>
+                            </setting>
+                        </block>
+                    </div>
+
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

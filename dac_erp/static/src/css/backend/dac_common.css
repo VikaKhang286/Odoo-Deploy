@@ -1,0 +1,688 @@
+.badge-priority {
+  background: #29cb00 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.badge-late {
+  background: #dc2626 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.badge-due {
+  background: #d97706 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.badge-today {
+  background: #e80000 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+/* MARK: Custom Badge trạng thái đơn hàng DAC */
+/* Custom màu cho badge theo trạng thái đơn*/
+/* Base cho badge DAC */
+.dac-badge {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+/* Alias: dùng chung màu với map cũ */
+.dac-state-quotation,
+.dac-badge--quotation {
+  background: #007bff !important;
+} /* Báo giá */
+.dac-state-deposit,
+.dac-badge--deposit {
+  background: #e83e8c !important;
+} /* Đặt cọc */
+.dac-state-production,
+.dac-badge--production {
+  background: #ffc107 !important;
+  color: #1a1a1a !important;
+} /* Sản xuất */
+.dac-state-installation,
+.dac-badge--installation {
+  background: #17a2b8 !important;
+} /* Thi công - lắp đặt */
+.dac-state-delivery,
+.dac-badge--delivery {
+  background: #6f42c1 !important;
+} /* Giao hàng */
+.dac-state-payment,
+.dac-badge--payment {
+  background: #29cb00 !important;
+} /* Thu tiền */
+.dac-state-completed,
+.dac-badge--completed {
+  background: #6c757d !important;
+} /* Hoàn thành */
+.dac-state-cancel,
+.dac-badge--cancel {
+  background: #dc2626 !important;
+} /* Hủy */
+
+/* MARK: Design Dashboard – Ticket */
+:root {
+  --dac-ticket-min-h: 100px; /* chiều cao tối thiểu mặc định */
+  --dac-ticket-radius: 10px;
+  --dac-ticket-shadow: 0 1px 4px #0001;
+  --dac-ticket-bg: #f8f9fa;
+}
+
+/* thẻ card/ticket */
+.dac-ticket {
+  background: var(--dac-ticket-bg);
+  border-radius: var(--dac-ticket-radius);
+  box-shadow: var(--dac-ticket-shadow);
+  min-height: var(--dac-ticket-min-h);
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+.dac-ticket:hover {
+  box-shadow: 0 4px 20px #0002;
+  transform: translateY(-1px);
+}
+
+/* phần tiêu đề và dòng “Số ĐH” */
+.dac-ticket__title {
+  font-size: 1.2em;
+  font-weight: 600;
+}
+.dac-ticket__order {
+  font-size: 15.5px;
+}
+.dac-ticket__order .has-number {
+  color: #1a73e8;
+  font-weight: 600;
+} /* tự chọn màu riêng */
+.dac-ticket__order .no-number {
+  color: #f59e0b;
+  font-weight: 600;
+} /* tự chọn màu riêng */
+
+/* muốn cao hơn nữa cho tất cả ticket: chỉ việc set class “dac-tickets-tall” ở wrapper */
+.dac-tickets-tall .dac-ticket {
+  --dac-ticket-min-h: 120px;
+}
+
+/* ==== Highlight cho Design + Production ==== */
+.dac-dp-block {
+  /* container: xếp dọc, nút nằm dưới */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.dac-dp-card {
+  /* khung nổi bật */
+  padding: 10px;
+  border: 2px dashed #1a73e8;
+  background: #e8f0fe;
+  border-radius: 8px;
+}
+
+/* field kéo full chiều ngang trong khung */
+.dac-dp-card .o_field_widget,
+.dac-dp-card .o_input,
+.dac-dp-card input,
+.dac-dp-card textarea {
+  width: 100% !important;
+}
+/* nút bên dưới, không full width dù dùng o_col-12 để xuống dòng */
+.dac-dp-submit {
+  width: auto;
+  display: inline-block;
+}
+
+/* Accent riêng cho dashboard Design */
+.o_dac_dashboard.dac-theme-design .k-value {
+  color: #2563eb;
+} /* KPI */
+.o_dac_dashboard.dac-theme-design .badge-priority {
+  background: #2563eb !important;
+}
+.o_dac_dashboard.dac-theme-design .badge-today {
+  background: #dc2626 !important;
+}
+
+/* ==== DESIGN DASHBOARD: Ticket Highlight ==== */
+/* Ticket trễ hạn - đỏ */
+.ticket-late {
+  border-left: 4px solid #dc2626 !important;
+  background: rgba(220, 38, 38, 0.05) !important;
+}
+
+/* Ticket hoàn thành - xanh lá */
+.ticket-done {
+  border-left: 4px solid #28a745 !important;
+  background: rgba(40, 167, 69, 0.05) !important;
+}
+.badge-done {
+  background: #28a745;
+  color: #fff;
+}
+
+/* Ticket mới - xanh dương */
+.ticket-new {
+  border-left: 4px solid #2563eb !important;
+  background: rgba(37, 99, 235, 0.05) !important;
+}
+
+/* Ticket đang thực hiện - tím */
+.ticket-inprogress {
+  border-left: 4px solid #d6339d !important;
+  background: rgba(108, 51, 214, 0.05) !important;
+}
+
+/* Ticket chưa có link thiết kế - vàng */
+.ticket-missing {
+  border-left: 4px solid #ff9f1a !important;
+  background: rgba(255, 159, 26, 0.05) !important;
+}
+.badge-missing {
+  background: #ff9f1a !important;
+  color: #fff !important;
+}
+
+/* ==== DESIGN DASHBOARD: KPI Cards GIỐNG TICKET ==== */
+
+/* KPI - Đơn mới chờ TK (xanh dương) */
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(1) .dac-card {
+  border-left: 4px solid #2563eb !important;
+  background: #fff !important;
+}
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(1) .k-value {
+  color: #2563eb;
+}
+
+/* KPI - Đang thực hiện (hồng) */
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(2) .dac-card {
+  border-left: 4px solid #d6339d !important;
+  background: #fff !important;
+}
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(2) .k-value {
+  color: #d6339d;
+}
+
+/* KPI - Sắp trễ hạn (đỏ) */
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(3) .dac-card {
+  border-left: 4px solid #dc2626 !important;
+  background: #fff !important;
+}
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(3) .k-value {
+  color: #dc2626;
+}
+
+/* KPI - Chưa có link TK (cam) */
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(4) .dac-card {
+  border-left: 4px solid #ff9f1a !important;
+  background: #fff !important;
+}
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(4) .k-value {
+  color: #ff9f1a;
+}
+
+/* KPI - Hoàn thành tuần (xanh lá) */
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(5) .dac-card {
+  border-left: 4px solid #28a745 !important;
+  background: #fff !important;
+}
+.dac-theme-design .kpi-row > .col-lg-3:nth-child(5) .k-value {
+  color: #28a745;
+}
+
+/* nắn khoảng cách giữa KPI và board theo chủ đề Design */
+.o_dac_dashboard.dac-theme-design .kpi-row {
+  margin-bottom: 16px;
+}
+@media (min-width: 992px) {
+  .o_dac_dashboard.dac-theme-design .kpi-row {
+    margin-bottom: 20px;
+  }
+}
+.o_dac_dashboard.dac-theme-design .board-row {
+  margin-top: 8px;
+}
+
+/* Accent riêng cho dashboard Production */
+.o_dac_dashboard.dac-theme-production .k-value {
+  color: #0d6efd;
+} /* KPI xanh dương */
+.o_dac_dashboard.dac-theme-production .kpi-row {
+  margin-bottom: 20px;
+}
+.o_dac_dashboard.dac-theme-production .board-row {
+  margin-top: 8px;
+}
+
+/* ==== PRODUCTION DASHBOARD: Ticket Highlight ==== */
+/* Ticket đang sản xuất - xanh dương */
+.ticket-inprod {
+  border-left: 4px solid #1d4ed8 !important;
+  background: rgba(29, 78, 216, 0.05) !important;
+}
+
+/* Ticket ưu tiên/quá hạn - đỏ */
+.ticket-urgent {
+  border-left: 4px solid #dc2626 !important;
+  background: rgba(220, 38, 38, 0.05) !important;
+}
+
+/* Ticket sắp hạn/chưa hoàn tất - vàng */
+.ticket-warning {
+  border-left: 4px solid #f59e0b !important;
+  background: rgba(245, 158, 11, 0.05) !important;
+}
+
+/* Ticket hoàn thành - xanh lá */
+.ticket-completed {
+  border-left: 4px solid #16a34a !important;
+  background: rgba(22, 163, 74, 0.05) !important;
+}
+
+/* ========== VIP CUSTOMER HIGHLIGHTING (DESIGN & PRODUCTION) ========== */
+/* Khách lớn (VIP) */
+.dac-ticket.vip-customer,
+.ticket.vip-customer {
+  border-left: 4px solid #f59e0b !important; /* Vàng kim */
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.08) 0%,
+    rgba(251, 191, 36, 0.05) 100%
+  ) !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15) !important;
+}
+
+.dac-ticket.vip-customer:hover,
+.ticket.vip-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.12) 0%,
+    rgba(251, 191, 36, 0.08) 100%
+  ) !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.dac-ticket.vip-customer .dac-ticket__title,
+.dac-ticket.vip-customer .task-card-header,
+.ticket.vip-customer .ticket__title {
+  color: #d97706 !important;
+  font-weight: 700 !important;
+}
+
+/* Icon VIP */
+.dac-ticket.vip-customer::before,
+.ticket.vip-customer::before {
+  content: "👑 ";
+  font-size: 14px;
+}
+
+/* Khách quen (Loyal) */
+.dac-ticket.loyal-customer,
+.ticket.loyal-customer {
+  border-left: 4px solid #3b82f6 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.06) 0%,
+    rgba(96, 165, 250, 0.04) 100%
+  ) !important;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1) !important;
+}
+
+.dac-ticket.loyal-customer:hover,
+.ticket.loyal-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(96, 165, 250, 0.06) 100%
+  ) !important;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2) !important;
+  transform: translateY(-2px);
+}
+
+.dac-ticket.loyal-customer .dac-ticket__title,
+.dac-ticket.loyal-customer .task-card-header,
+.ticket.loyal-customer .ticket__title {
+  color: #2563eb !important;
+  font-weight: 600 !important;
+}
+
+/* Icon Loyal */
+.dac-ticket.loyal-customer::before,
+.ticket.loyal-customer::before {
+  content: "⭐ ";
+  font-size: 14px;
+}
+
+/* ========== CẢ VIP + LOYAL (Class kép) ========== */
+/* Khi có CẢ 2 class: vip-customer loyal-customer */
+.dac-ticket.vip-customer.loyal-customer,
+.ticket.vip-customer.loyal-customer {
+  /* Viền gradient vàng-xanh */
+  border-left: 4px solid transparent !important;
+  border-image: linear-gradient(180deg, #f59e0b 0%, #3b82f6 100%) 1 !important;
+  /* Nền kết hợp vàng + xanh */
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.1) 0%,
+    rgba(59, 130, 246, 0.08) 100%
+  ) !important;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.2),
+    0 3px 10px rgba(59, 130, 246, 0.15) !important;
+}
+
+.dac-ticket.vip-customer.loyal-customer:hover,
+.ticket.vip-customer.loyal-customer:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.15) 0%,
+    rgba(59, 130, 246, 0.12) 100%
+  ) !important;
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3),
+    0 5px 15px rgba(59, 130, 246, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.dac-ticket.vip-customer.loyal-customer .dac-ticket__title,
+.dac-ticket.vip-customer.loyal-customer .task-card-header,
+.ticket.vip-customer.loyal-customer .ticket__title {
+  /* Gradient text vàng → xanh */
+  background: linear-gradient(90deg, #d97706 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700 !important;
+}
+
+/* Icon kép: Vương miện + Ngôi sao */
+.dac-ticket.vip-customer.loyal-customer::before,
+.ticket.vip-customer.loyal-customer::before {
+  content: "👑⭐ ";
+  font-size: 14px;
+}
+
+/* ==== PRODUCTION DASHBOARD: KPI Cards GIỐNG TICKET ==== */
+
+/* KPI - Đang sản xuất (xanh dương) */
+.dac-theme-production .k-inprod {
+  border-left: 4px solid #1d4ed8 !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-inprod .k-value {
+  color: #1d4ed8;
+}
+
+/* KPI - Đơn ưu tiên (đỏ) */
+.dac-theme-production .k-priority {
+  border-left: 4px solid #dc2626 !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-priority .k-value {
+  color: #dc2626;
+}
+
+/* KPI - Quá hạn sản xuất (đỏ) */
+.dac-theme-production .k-overdue {
+  border-left: 4px solid #dc2626 !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-overdue .k-value {
+  color: #dc2626;
+}
+
+/* KPI - Sắp đến hạn (vàng) */
+.dac-theme-production .k-dueSoon {
+  border-left: 4px solid #f59e0b !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-dueSoon .k-value {
+  color: #f59e0b;
+}
+
+/* KPI - Chưa hoàn tất (vàng) */
+.dac-theme-production .k-needMark {
+  border-left: 4px solid #f59e0b !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-needMark .k-value {
+  color: #f59e0b;
+}
+
+/* KPI - Hoàn thành tuần (xanh lá) */
+.dac-theme-production .k-doneWeek {
+  border-left: 4px solid #16a34a !important;
+  background: #fff !important;
+}
+.dac-theme-production .k-doneWeek .k-value {
+  color: #16a34a;
+}
+
+/* MARK: ===== Production Dashboard (card-based) ===== */
+.dac-theme-production .prod-grid {
+  /* tính chiều cao dựa trên viewport, trừ header + KPI + margin */
+  max-height: calc(100vh - 360px);
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+@media (max-width: 1200px) {
+  .dac-theme-production .prod-grid {
+    max-height: calc(100vh - 420px);
+  }
+}
+
+.dac-ticket .task-card-header {
+  font-weight: 600;
+}
+.ticket-done {
+  background: #f2fbf2;
+  border: 1px solid #e3f4e3;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.badge-done {
+  background: #2eb872;
+}
+.badge-priority {
+  background: #2f74ff;
+}
+.badge-today {
+  background: #e53935;
+}
+.badge-due {
+  background: #f39c12;
+}
+/* ==== KPI cards màu sắc & layout chung (giống Design) ==== */
+.dac-theme-production .k-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 18px rgba(16, 24, 40, 0.06);
+  border: 1px solid rgba(16, 24, 40, 0.06);
+}
+.dac-theme-production .k-card .k-title {
+  font-size: 13px;
+  color: #667085;
+  margin-bottom: 6px;
+}
+.dac-theme-production .k-card .k-value {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 800;
+  color: #175cd3; /* màu chủ đạo KPI – bạn có thể đổi */
+}
+
+/* ======= Ticket production ======= */
+.dac-theme-production .dac-ticket {
+  transition: transform 0.12s ease;
+}
+.dac-theme-production .dac-ticket:hover {
+  transform: translateY(-2px);
+}
+
+/* badge tái sử dụng */
+.badge-priority {
+  background: #2563eb;
+  color: #fff;
+}
+.badge-today {
+  background: #dc2626;
+  color: #fff;
+}
+.badge-due {
+  background: #f59e0b;
+  color: #111827;
+}
+.badge-done {
+  background: #12b76a;
+  color: #fff;
+}
+
+/* ======= VÙNG cuộn chính của "Việc đang sản xuất" ======= */
+.work-scroll {
+  /* khoảng nửa màn hình: bạn có thể tinh chỉnh */
+  max-height: 46vh; /* chiều cao tối đa ~ nửa trang */
+  min-height: 28vh; /* tránh co quá nhỏ khi ít ticket */
+  overflow: auto;
+  padding-bottom: 0.25rem;
+  margin-top: 0.25rem;
+}
+.work-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.work-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+/* ==== KPI màu & hover (Production) ==== */
+.dac-theme-production .k-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 18px rgba(16, 24, 40, 0.06);
+  border: 1px solid rgba(16, 24, 40, 0.06);
+}
+.dac-theme-production .k-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.12);
+  transition: 0.15s;
+}
+
+/* Màu theo loại KPI */
+.dac-theme-production .k-inprod .k-value {
+  color: #1d4ed8;
+} /* xanh dương */
+.dac-theme-production .k-priority .k-value {
+  color: #dc2626;
+} /* đỏ */
+.dac-theme-production .k-overdue .k-value {
+  color: #dc2626;
+} /* đỏ */
+.dac-theme-production .k-dueSoon .k-value {
+  color: #f59e0b;
+} /* vàng */
+.dac-theme-production .k-needMark .k-value {
+  color: #f59e0b;
+} /* vàng */
+.dac-theme-production .k-doneWeek .k-value {
+  color: #16a34a;
+} /* xanh lá */
+
+/* ============================================================
+   HƯỚNG DẪN ĐIỀU CHỈNH CHIỀU CAO DASHBOARD SẢN XUẤT
+   ============================================================ */
+
+/* 1️⃣ CHIỀU CAO 2 Ô TRÊN (Việc đang sản xuất + Chưa xác nhận hoàn tất) */
+.o_dac_dashboard.dac-theme-production {
+  --prod-pane-h: 60vh;
+  /* 👆 Đổi giá trị này:
+     - 50vh (thấp hơn)
+     - 60vh (hiện tại)
+     - 70vh (cao hơn)
+     - Hoặc dùng pixel: 500px, 600px, 700px */
+}
+
+/* 2️⃣ CHIỀU CAO 2 Ô DƯỚI (Đã hoàn thành sản xuất) */
+/* Chỉ áp dụng cho .list-scroll KHÔNG NẰM trong .prod-top-row */
+.dac-theme-production .list-scroll {
+  max-height: 22vh !important;
+  /* 👆 Đổi giá trị này:
+     - 10vh (thấp hơn)
+     - 12vh (hiện tại)
+     - 20vh (cao hơn)
+     - Hoặc dùng pixel: 200px, 300px, 400px */
+  min-height: 14vh; /* Chiều cao tối thiểu, tránh co quá nhỏ */
+  overflow: auto; /* Bật thanh cuộn khi nội dung tràn */
+}
+
+/* 2) CHỈ áp height cho card cha trực tiếp trong 2 cột của hàng trên */
+.dac-theme-production .prod-top-row > [class*="col-"] > .dac-card {
+  display: flex;
+  flex-direction: column;
+  height: var(--prod-pane-h);
+}
+
+/* 3) Vùng cuộn trong 2 panel: chiếm trọn phần còn lại, không “trần” */
+.dac-theme-production .prod-top-row .work-scroll,
+.dac-theme-production .prod-top-row .list-scroll {
+  flex: 1 1 auto;
+  overflow: auto;
+  max-height: unset;
+  padding-bottom: 0; /* tránh dư khoảng trắng đáy */
+}
+
+/* 4) Ticket KHÔNG bị kéo cao theo panel */
+.dac-theme-production .prod-top-row .dac-ticket {
+  height: auto;
+  min-height: var(--dac-ticket-min-h);
+}
+/* Card cha của 2 cột trên: khóa chiều cao + CẮT tràn nội dung vào trong khung trắng */
+.dac-theme-production .prod-top-row > [class*="col-"] > .dac-card {
+  display: flex;
+  flex-direction: column;
+  height: var(--prod-pane-h) !important; /* thắng mọi h-100 còn sót */
+  overflow: hidden; /* quan trọng: cắt phần tràn */
+  border-radius: 12px; /* bo góc cắt mượt */
+}
+
+/* Vùng cuộn trong 2 panel trên: chỉ chiếm phần còn lại, KHÔNG min/max từ rule chung */
+.dac-theme-production .prod-top-row .work-scroll,
+.dac-theme-production .prod-top-row .list-scroll {
+  flex: 1 1 auto;
+  min-height: 0 !important; /* hạ min-height 28vh cũ */
+  max-height: none !important; /* gỡ max-height 22/32/46vh cũ */
+  overflow: auto;
+  padding-bottom: 0;
+}
+
+/* Gọn mép đáy: bỏ khoảng cách dư của phần tử cuối */
+.dac-theme-production .prod-top-row .list-scroll > :last-child,
+.dac-theme-production .prod-top-row .work-scroll > .row > :last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   GHI ĐÈ: Ô "Đã hoàn thành" bên DƯỚI (KHÔNG có .prod-top-row)
+   ============================================================ */
+.dac-theme-production .row:not(.prod-top-row) .list-scroll {
+  max-height: 30vh !important;
+  /* 👆 ĐIỀU CHỈNH CHIỀU CAO Ô "ĐÃ HOÀN THÀNH SẢN XUẤT" TẠI ĐÂY */
+  min-height: 15vh !important;
+  flex: initial !important; /* Gỡ flex từ rule trên */
+  overflow: auto !important;
+}

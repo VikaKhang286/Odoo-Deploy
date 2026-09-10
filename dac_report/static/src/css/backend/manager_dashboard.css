@@ -1,0 +1,874 @@
+/* ========================================
+   DAC MANAGER DASHBOARD STYLES
+   ======================================== */
+
+.dac-manager-dashboard {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  padding: 0 16px; /* Thêm khoảng cách 2 bên để tránh scrollbar sát viền */
+}
+
+/* Loading State */
+.dac-dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  color: #6c757d;
+}
+
+.dac-dashboard-loading i {
+  color: #0d6efd;
+  margin-bottom: 1rem;
+}
+
+/* Dashboard Cards */
+.dac-manager-dashboard .dashboard-card {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  transition: box-shadow 0.3s ease;
+}
+
+.dac-manager-dashboard .dashboard-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* KPI Cards */
+.dac-manager-dashboard .kpi-card {
+  text-align: center;
+}
+
+.dac-manager-dashboard .kpi-card .kpi-value {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+.dac-manager-dashboard .kpi-card .kpi-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+/* KPI Sub-values (Doanh Thu Dự Kiến trong card Tổng Doanh Thu) */
+.dac-manager-dashboard .kpi-card .kpi-label-small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dac-manager-dashboard .kpi-card .kpi-value-small {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.25rem 0;
+  color: #212529;
+}
+
+/* Pipeline Groups */
+.dac-manager-dashboard .pipeline-group {
+  margin-bottom: 2rem;
+}
+
+.dac-manager-dashboard .pipeline-group:last-child {
+  margin-bottom: 0;
+}
+
+.dac-manager-dashboard .pipeline-group-title {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+}
+
+.dac-manager-dashboard .pipeline-group-title .fa-solid {
+  margin-right: 0.5rem;
+  color: #0d6efd;
+  font-size: 1.1rem;
+}
+
+/* Pipeline Stages */
+.dac-manager-dashboard .pipeline-stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Stage Card */
+.dac-manager-dashboard .stage-card {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-top: 4px solid;
+  border-radius: 8px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dac-manager-dashboard .stage-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.dac-manager-dashboard .stage-card h6 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #212529;
+  font-size: 0.95rem;
+}
+
+.dac-manager-dashboard .stage-card .stage-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 0.25rem;
+}
+
+.dac-manager-dashboard .stage-card .stage-subtext {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Stage Colors - theo sale_order.py */
+.dac-manager-dashboard .stage-quotation {
+  border-top-color: #6c757d;
+}
+
+.dac-manager-dashboard .stage-quotation:hover {
+  border-top-color: #5a6268;
+}
+
+.dac-manager-dashboard .stage-deposit {
+  border-top-color: #0d6efd;
+}
+
+.dac-manager-dashboard .stage-deposit:hover {
+  border-top-color: #0a58ca;
+}
+
+.dac-manager-dashboard .stage-production {
+  border-top-color: #fd7e14;
+}
+
+.dac-manager-dashboard .stage-production:hover {
+  border-top-color: #dc6d03;
+}
+
+.dac-manager-dashboard .stage-delivery {
+  border-top-color: #0dcaf0;
+}
+
+.dac-manager-dashboard .stage-delivery:hover {
+  border-top-color: #0aa2c0;
+}
+
+.dac-manager-dashboard .stage-installation {
+  border-top-color: #8a2be2;
+}
+
+.dac-manager-dashboard .stage-installation:hover {
+  border-top-color: #7526c4;
+}
+
+.dac-manager-dashboard .stage-payment {
+  border-top-color: #ffc107;
+}
+
+.dac-manager-dashboard .stage-payment:hover {
+  border-top-color: #e0a800;
+}
+
+.dac-manager-dashboard .stage-completed {
+  border-top-color: #198754;
+}
+
+.dac-manager-dashboard .stage-completed:hover {
+  border-top-color: #146c43;
+}
+
+/* Execution Group - Rẽ nhánh */
+.dac-manager-dashboard .execution-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.dac-manager-dashboard .execution-branches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  padding-left: 2rem;
+  border-left: 3px dashed #fd7e14;
+  position: relative;
+}
+
+.dac-manager-dashboard .execution-branches::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    #fd7e14 0%,
+    rgba(253, 126, 20, 0.3) 100%
+  );
+}
+
+/* Action Center - Match Height with Pipeline Overview */
+.dac-manager-dashboard .action-center {
+  display: flex;
+  flex-direction: column;
+  min-height: 900px; /* Chiều cao tối thiểu để match Pipeline */
+  max-height: 900px; /* Chiều cao tối đa - giống Pipeline Overview */
+  height: 100%;
+}
+
+.dac-manager-dashboard .action-center .card-header {
+  flex-shrink: 0; /* Header không co lại */
+  padding: 1rem 1.25rem;
+}
+
+.dac-manager-dashboard .action-center .card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto; /* Bật scroll cho phần body */
+  padding: 0.5rem;
+}
+
+.dac-manager-dashboard .action-center .nav-tabs .nav-link {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.dac-manager-dashboard .action-center .nav-tabs .nav-link.active {
+  border-color: #dee2e6 #dee2e6 #fff;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.dac-manager-dashboard .action-center table tr {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dac-manager-dashboard .action-center table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.dac-manager-dashboard .action-center .badge {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+  color: #ffffff !important; /* Màu chữ trắng cho tất cả badges */
+}
+
+/* Custom scrollbar cho Action Center */
+.dac-manager-dashboard .action-center .card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dac-manager-dashboard .action-center .card-body::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 3px;
+}
+
+.dac-manager-dashboard .action-center .card-body::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 3px;
+}
+
+.dac-manager-dashboard
+  .action-center
+  .card-body::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Performance All-in-One Section */
+.dac-manager-dashboard .performance-all-in-one {
+  padding: 12px;
+}
+
+.dac-manager-dashboard .performance-section {
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.dac-manager-dashboard .performance-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.dac-manager-dashboard .performance-section h6 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dac-manager-dashboard .performance-section h6 i {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+/* Performance Tracking */
+.dac-manager-dashboard .performance-item {
+  margin-bottom: 1.5rem;
+}
+
+.dac-manager-dashboard .performance-item:last-child {
+  margin-bottom: 0;
+}
+
+.dac-manager-dashboard .performance-item strong {
+  font-size: 0.95rem;
+}
+
+.dac-manager-dashboard .performance-item .progress {
+  border-radius: 4px;
+  background-color: #e9ecef;
+}
+
+.dac-manager-dashboard .performance-item .progress-bar {
+  border-radius: 4px;
+}
+
+/* Custom Date Picker */
+.dac-manager-dashboard .custom-date-picker {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.dac-manager-dashboard .custom-date-picker input[type="date"] {
+  max-width: 150px;
+}
+
+/* Custom Date Picker Dropdown - Compact */
+.dac-manager-dashboard .date-filter-container {
+  position: relative;
+}
+
+.dac-manager-dashboard .custom-date-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1050;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  min-width: 280px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.dac-manager-dashboard .custom-date-dropdown-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 4px;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .form-label small {
+  font-weight: 400;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .form-control-sm {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.875rem;
+}
+
+/* Style cho date input VN */
+.dac-manager-dashboard .custom-date-dropdown .date-input-vn::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .date-input-vn:focus::placeholder {
+  opacity: 0.5;
+}
+
+/* Override browser default date input placeholder */
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-datetime-edit-text,
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-datetime-edit-month-field,
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-datetime-edit-day-field,
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #495057;
+}
+
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]:invalid::-webkit-datetime-edit {
+  color: #adb5bd;
+}
+
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.dac-manager-dashboard
+  .custom-date-dropdown
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .form-control-sm:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.dac-manager-dashboard .custom-date-dropdown .btn-sm {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .btn-success {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.dac-manager-dashboard .custom-date-dropdown .btn-success:hover {
+  background: #5568d3;
+  border-color: #5568d3;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 991px) {
+  .dac-manager-dashboard .execution-branches {
+    grid-template-columns: 1fr;
+    padding-left: 1.5rem;
+  }
+
+  .dac-manager-dashboard .pipeline-stages {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
+  .dac-manager-dashboard .kpi-card .kpi-value {
+    font-size: 1.75rem;
+  }
+
+  .dac-manager-dashboard .stage-card .stage-value {
+    font-size: 1.5rem;
+  }
+
+  .dac-manager-dashboard .custom-date-picker {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dac-manager-dashboard .custom-date-picker input[type="date"] {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Custom Date Dropdown Responsive */
+  .dac-manager-dashboard .custom-date-dropdown {
+    left: 0;
+    right: 0;
+    min-width: auto;
+    width: calc(100vw - 32px);
+    max-width: 360px;
+  }
+}
+
+/* Scrollbar Styling */
+.dac-manager-dashboard .card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dac-manager-dashboard .card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.dac-manager-dashboard .card-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.dac-manager-dashboard .card-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ========================================
+   NEW PERIOD SELECTOR STYLES
+   ======================================== */
+
+/* Period Display Button */
+.period-selector-container {
+  position: relative;
+}
+
+/* Week Quick Filters */
+.week-quick-filters {
+  gap: 0.5rem;
+}
+
+.week-quick-filters .btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.week-quick-filters .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.week-quick-filters .btn.active {
+  background-color: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+}
+
+/* Week Dropdown */
+.week-dropdown .btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  min-width: 140px;
+}
+
+.week-dropdown .dropdown-menu {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 0;
+  min-width: 240px;
+}
+
+.week-dropdown .dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.week-dropdown .dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+}
+
+.week-dropdown .dropdown-item.active {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
+
+.week-dropdown .dropdown-item .fa-calendar-week {
+  color: #6c757d;
+  width: 20px;
+}
+
+.week-dropdown .dropdown-item.active .fa-calendar-week {
+  color: #ffffff;
+}
+
+.week-dropdown .dropdown-item small {
+  font-size: 0.75rem;
+}
+
+.period-display {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 280px;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.period-display:hover {
+  background: #f8f9fa;
+  border-color: #0d6efd;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+}
+
+.period-display i.fa-calendar {
+  color: #0d6efd;
+}
+
+.period-display i.fa-chevron-down {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.period-text {
+  flex: 1;
+  text-align: left;
+}
+
+/* Period Picker Dropdown */
+.period-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1050;
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  min-width: 320px;
+  padding: 16px;
+}
+
+.period-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.period-nav-btn {
+  background: transparent;
+  border: none;
+  color: #495057;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.period-nav-btn:hover {
+  background: #e9ecef;
+  color: #0d6efd;
+}
+
+.period-year {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #212529;
+}
+
+.period-picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Month Grid */
+.period-months-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.period-month-btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+.period-month-btn:hover {
+  background: #e7f3ff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.period-month-btn.active {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Year Button */
+.period-year-btn {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #495057;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.period-year-btn:hover {
+  background: #e7f3ff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+}
+
+.period-year-btn.active {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+}
+
+/* Custom Range Button */
+.period-custom-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.period-custom-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Custom Range Modal */
+.custom-range-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.custom-range-content {
+  background: #ffffff;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.custom-range-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-range-header h6 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.btn-close-custom {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.btn-close-custom:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.custom-range-body {
+  padding: 20px;
+}
+
+.custom-range-body .form-control {
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  padding: 10px 12px;
+}
+
+.custom-range-body .form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.custom-range-body .btn {
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-weight: 600;
+}

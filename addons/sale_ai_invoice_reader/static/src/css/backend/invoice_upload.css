@@ -1,0 +1,88 @@
+.dac-invoice-drop-zone {
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    background: #f8f9fa;
+    user-select: none;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dac-invoice-drop-zone:hover,
+.dac-invoice-drop-zone--dragging {
+    border-color: #0d6efd;
+    background: #e8f0fe;
+}
+
+.dac-invoice-drop-zone--has-file {
+    border-color: #198754;
+    border-style: solid;
+    background: #f0fff4;
+}
+
+.dac-invoice-preview {
+    max-height: 180px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* ─── Mobile styles ────────────────────────────────────────────────── */
+@media (max-width: 767.98px) {
+    .dac-invoice-drop-zone {
+        padding: 24px 16px;
+        min-height: 200px;
+        /* Không có hover effect trên touch */
+        cursor: default;
+    }
+
+    .dac-invoice-drop-zone:hover {
+        border-color: #ced4da;
+        background: #f8f9fa;
+    }
+
+    .dac-invoice-drop-zone--has-file:hover {
+        border-color: #198754;
+        background: #f0fff4;
+    }
+
+    /* Nút chụp ảnh chính — to, dễ bấm */
+    .dac-camera-main-btn {
+        width: 160px;
+        height: 120px;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(13, 110, 253, 0.25);
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .dac-camera-main-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2);
+    }
+
+    .dac-camera-retake-btn {
+        min-height: 36px;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Dialog toàn chiều rộng màn hình trên mobile */
+    .modal-dialog.modal-md {
+        margin: 8px;
+        max-width: calc(100vw - 16px);
+    }
+
+    .dac-invoice-preview {
+        max-height: 200px;
+    }
+}

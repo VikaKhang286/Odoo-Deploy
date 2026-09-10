@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="navbar_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.navbar_background_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="navbar_text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.navbar_text_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.text_color</field>
+            <field name="value">#0f172a</field>
+        </record>
+        <record id="button_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.button_color</field>
+            <field name="value">#2563eb</field>
+        </record>
+        <record id="icon_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.icon_color</field>
+            <field name="value">#1e293b</field>
+        </record>
+        <record id="filter_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.filter_color</field>
+            <field name="value">#f8fafc</field>
+        </record>
+        <record id="title_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.title_color</field>
+            <field name="value">#eff6ff</field>
+        </record>
+
+        <record id="drop_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.drop_background_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="drop_text_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.drop_text_color</field>
+            <field name="value">#0f172a</field>
+        </record>
+
+        <record id="buble_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.buble_color</field>
+            <field name="value">#2563eb</field>
+        </record>
+
+        <record id="sidebar_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_background</field>
+            <field name="value">#f8fafc</field>
+        </record>
+        <record id="sidebar_chose_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_chose_background</field>
+            <field name="value">#dbeafe</field>
+        </record>
+        <record id="sidebar_text" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.sidebar_text</field>
+            <field name="value">#0f172a</field>
+        </record>
+
+        <record id="search_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.search_color</field>
+            <field name="value">#ffffff</field>
+        </record>
+
+        <record id="website_background_color" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.website_background_color</field>
+            <field name="value">#f3f6fb</field>
+        </record>
+        <record id="list_text_title" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_text_title</field>
+            <field name="value">#475569</field>
+        </record>
+        <record id="list_title" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_title</field>
+            <field name="value">#f8fafc</field>
+        </record>
+        <record id="list_table" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_table</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="list_text_table" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.list_text_table</field>
+            <field name="value">#0f172a</field>
+        </record>
+        <record id="kanban_form" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_form</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="kanban_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_background</field>
+            <field name="value">#ffffff</field>
+        </record>
+        <record id="kanban_text" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_text</field>
+            <field name="value">#0f172a</field>
+        </record>
+        <record id="kanban_item" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.kanban_item</field>
+            <field name="value">#2563eb</field>
+        </record>
+        <record id="discuss_background" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.discuss_background</field>
+            <field name="value">#f8fafc</field>
+        </record>
+        <record id="discuss_chose_sidebar" model="ir.config_parameter">
+            <field name="key">change_odoo_theme_header_color.discuss_chose_sidebar</field>
+            <field name="value">#e0ecff</field>
+        </record>
+    </data>
+</odoo>

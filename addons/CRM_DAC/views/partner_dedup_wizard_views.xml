@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Wizard form view -->
+        <record id="view_partner_dedup_wizard_form" model="ir.ui.view">
+            <field name="name">res.partner.dedup.wizard.form</field>
+            <field name="model">res.partner.dedup.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Gom khách hàng trùng số điện thoại">
+                    <sheet>
+                        <div class="alert alert-info" role="alert">
+                            Wizard này tìm các khách hàng có cùng số điện thoại (đã chuẩn hoá) và giúp bạn gom lại thành 1 bản ghi duy nhất.
+                            <br/>
+                            Partner được <b>giữ lại</b> (master) sẽ nhận toàn bộ conversations, đơn hàng và Pancake IDs từ các partner trùng.
+                            Các partner trùng sẽ bị <b>archive</b> (không xoá).
+                        </div>
+                        <group>
+                            <field name="total_groups" readonly="1"/>
+                            <field name="total_partners" readonly="1"/>
+                        </group>
+                        <field name="line_ids">
+                            <list>
+                                <field name="should_merge"/>
+                                <field name="phone_normalized" readonly="1"/>
+                                <field name="partner_count" readonly="1" string="Số lượng"/>
+                                <field name="master_partner_id" string="Giữ lại"/>
+                                <field name="duplicate_partner_ids" widget="many2many_tags" readonly="1" string="Sẽ archive"/>
+                            </list>
+                        </field>
+                    </sheet>
+                    <footer>
+                        <button name="action_merge_all" type="object" string="Gom các nhóm đã chọn" class="btn-primary"/>
+                        <button string="Đóng" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action mở wizard -->
+        <record id="action_partner_dedup_wizard" model="ir.actions.act_window">
+            <field name="name">Gom khách hàng trùng</field>
+            <field name="res_model">res.partner.dedup.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'dialog_size': 'extra-large'}</field>
+        </record>
+
+        <!-- Server action để trigger wizard (gọi _find_duplicates_and_create) -->
+        <record id="action_partner_dedup_server" model="ir.actions.server">
+            <field name="name">Gom khách hàng trùng SĐT</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">action = env['res.partner.dedup.wizard'].action_open_wizard()</field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+        </record>
+    </data>
+</odoo>

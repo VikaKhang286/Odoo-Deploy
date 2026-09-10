@@ -1,0 +1,291 @@
+/* DAC Attendance Systray & Camera Dialog Styles */
+
+/* ===== Systray Attendance Box ===== */
+.o_dac_attendance_systray {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    margin: 0 4px;
+    padding: 0;
+}
+
+/* Hide original attendance systray button to avoid duplicate UI */
+.o_menu_systray {
+    align-items: center;
+
+    .o_hr_attendance_sign_in_out_icon,
+    .o_attendance_systray,
+    [data-menu="hr_attendance.hr_attendance_menu"],
+    [data-menu-xmlid="hr_attendance.hr_attendance_menu"],
+    .o-dropdown:has(.fa[aria-label="Chấm công"]),
+    button:has(.fa[aria-label="Chấm công"]) {
+        display: none !important;
+    }
+}
+
+.o_dac_attendance_box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 320px;
+    min-height: 46px;
+    padding: 6px 6px 6px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.o_dac_attendance_box_content {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+}
+
+.o_dac_attendance_box_status_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.o_dac_attendance_box_dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+    background: #3b82f6;
+}
+
+.o_dac_attendance_box_label {
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.o_dac_attendance_box_meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    color: #64748b;
+}
+
+.o_dac_attendance_box_sub,
+.o_dac_attendance_box_hint {
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.o_dac_attendance_box_hint {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.o_dac_attendance_action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+.o_dac_attendance_action_spinner {
+    opacity: 0.8;
+}
+
+.o_dac_attendance_action--checkin {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.o_dac_attendance_action--late {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+.o_dac_attendance_action--checkout {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.o_dac_attendance_action--early {
+    background: #cbd5e1;
+    color: #475569;
+}
+
+.o_dac_attendance_action--loading {
+    background: #94a3b8;
+    color: #ffffff;
+}
+
+.o_dac_attendance_box--ready {
+    border-color: #bfdbfe;
+    background: #f8fbff;
+
+    .o_dac_attendance_box_dot {
+        background: #3b82f6;
+    }
+
+    .o_dac_attendance_box_label {
+        color: #1d4ed8;
+    }
+}
+
+.o_dac_attendance_box--working {
+    border-color: #86efac;
+    background: #f0fdf4;
+
+    .o_dac_attendance_box_dot {
+        background: #16a34a;
+        animation: dac_attendance_pulse 2s ease-in-out infinite;
+    }
+
+    .o_dac_attendance_box_label {
+        color: #15803d;
+    }
+}
+
+.o_dac_attendance_box--late {
+    border-color: #fdba74;
+    background: #fff7ed;
+
+    .o_dac_attendance_box_dot {
+        background: #f59e0b;
+    }
+
+    .o_dac_attendance_box_label {
+        color: #c2410c;
+    }
+}
+
+.o_dac_attendance_box--loading {
+    border-color: #94a3b8;
+    background: #f8fafc;
+
+    .o_dac_attendance_box_dot {
+        display: none;
+    }
+
+    .o_dac_attendance_box_label,
+    .o_dac_attendance_box_hint,
+    .o_dac_attendance_box_sub {
+        color: #64748b;
+    }
+}
+
+.o_dac_attendance_systray:hover .o_dac_attendance_box {
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
+}
+
+.o_dac_attendance_action:hover {
+    transform: translateY(-1px);
+}
+
+/* ---- Pulse animation ---- */
+@keyframes dac_attendance_pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.35);
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(22, 163, 74, 0);
+    }
+}
+
+/* ===== Mobile responsive: thu gọn thành pill nhỏ ===== */
+@media (max-width: 767.98px) {
+    .o_dac_attendance_systray {
+        margin: 0 2px;
+    }
+
+    .o_dac_attendance_box {
+        min-width: 0;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 999px;
+    }
+
+    /* Ẩn phần text nội dung trên mobile — chỉ giữ nút action */
+    .o_dac_attendance_box_content {
+        display: none;
+    }
+
+    .o_dac_attendance_action {
+        height: 30px;
+        padding: 0 12px;
+        font-size: 11px;
+        border-radius: 999px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+}
+
+/* ===== Camera Dialog ===== */
+.o_dac_camera_dialog {
+    .o_dac_camera_preview {
+        video {
+            background: #1a1a2e;
+            border-radius: 8px;
+            transform: scaleX(-1);
+            /* Mirror for selfie */
+        }
+    }
+
+    .o_dac_photo_preview {
+        img {
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+    }
+
+    .btn-secondary {
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-weight: 600;
+    }
+}

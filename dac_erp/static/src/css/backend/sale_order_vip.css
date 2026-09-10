@@ -1,0 +1,37 @@
+/* ========== VIP CUSTOMER SIMPLE STYLING - DÙNG MÀU ODOO ========== */
+
+/* Ẩn cột partner_vip_class */
+.o_list_view th[data-name="partner_vip_class"],
+.o_list_view td[name="partner_vip_class"] {
+  display: none !important;
+}
+
+/* Khách lớn - Màu VÀNG (warning) */
+.o_list_view tr.text-warning {
+  background-color: rgba(255, 193, 7, 0.1) !important;
+  border-left: 4px solid #ffc107 !important;
+}
+
+.o_list_view tr.text-warning:hover {
+  background-color: rgba(255, 193, 7, 0.2) !important;
+}
+
+/* Khách quen - Màu XANH DƯƠNG (info) */
+.o_list_view tr.text-info {
+  background-color: rgba(23, 162, 184, 0.1) !important;
+  border-left: 4px solid #17a2b8 !important;
+}
+
+.o_list_view tr.text-info:hover {
+  background-color: rgba(23, 162, 184, 0.2) !important;
+}
+
+/* Khách lớn + quen - Màu ĐỎ (danger) */
+.o_list_view tr.text-danger {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  border-left: 4px solid #dc3545 !important;
+}
+
+.o_list_view tr.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.2) !important;
+}

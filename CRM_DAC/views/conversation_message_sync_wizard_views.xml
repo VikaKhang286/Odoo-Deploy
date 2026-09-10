@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- NEW: form view cho wizard -->
+        <record id="view_conversation_message_sync_wizard_form" model="ir.ui.view">
+            <field name="name">page.fm.conversation.message.sync.wizard.form</field>
+            <field name="model">page.fm.conversation.message.sync.wizard</field>
+            <field name="arch" type="xml">
+            <form string="Đồng bộ tin nhắn" class="o_form_dialog">
+                <group>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="unread_only"/>
+                </group>
+                <footer>
+                <button string="Đồng bộ"
+                        type="object"
+                        name="action_sync"
+                        class="btn-primary"/>
+                <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <!-- NEW: action mở wizard (popup) -->
+        <record id="action_conversation_message_sync_wizard" model="ir.actions.act_window">
+            <field name="name">Đồng bộ tin nhắn</field>
+            <field name="res_model">page.fm.conversation.message.sync.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_conversation_message_sync_wizard_form"/>
+            <field name="target">new</field>
+            <!-- active_ids sẽ do Odoo tự bơm khi mở từ form/list conversation -->
+        </record>
+
+        <!-- NEW: gắn nút vào form page.fm.conversation (chỉ quản lý thấy) -->
+        <record id="view_page_fm_conversation_form_syncbtn" model="ir.ui.view">
+            <field name="name">page.fm.conversation.form.sync.btn</field>
+            <field name="model">page.fm.conversation</field>
+            <field name="inherit_id" ref="CRM_DAC.view_page_fm_conversation_form"/>
+            <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button type="action"
+                        name="%(action_conversation_message_sync_wizard)d"
+                        string="Đồng bộ tin nhắn"
+                        class="btn-secondary"
+                        groups="dac_erp.group_dac_erp_manager"/>
+            </xpath>
+            </field>
+        </record>
+
+        <!-- OPTIONAL: thêm vào menu “Hành động” của list conversation (multi-select) -->
+        <record id="action_server_open_sync_wizard" model="ir.actions.server">
+            <field name="name">Đồng bộ tin nhắn…</field>
+            <field name="model_id" ref="model_page_fm_conversation"/>
+            <field name="state">code</field>
+            <field name="binding_type">action</field>
+            <field name="binding_model_id" ref="model_page_fm_conversation"/>
+            <!-- Trả về act_window đã khai báo ở trên -->
+            <field name="code">
+        action = env.ref('CRM_DAC.action_conversation_message_sync_wizard').sudo().read()[0]
+            </field>
+            <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+        </record>
+    </data>
+</odoo>

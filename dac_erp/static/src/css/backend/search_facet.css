@@ -1,0 +1,30 @@
+/* Tô lại chữ trong chip bộ lọc (facet) trên control panel */
+:root {
+  --dac-facet-text: #1a1d20; /* màu chữ muốn dùng */
+  --dac-facet-text-hover: #111; /* khi hover */
+}
+
+/* chữ trong phần giá trị của chip */
+.o_control_panel
+  .o_searchview
+  .o_searchview_facet
+  .o_facet_values
+  .o_facet_value {
+  color: var(--dac-facet-text) !important;
+  font-weight: 600; /* tuỳ chọn: cho dễ đọc hơn */
+  text-shadow: none;
+}
+
+/* khi hover vào chip */
+.o_control_panel
+  .o_searchview
+  .o_searchview_facet:hover
+  .o_facet_values
+  .o_facet_value {
+  color: var(--dac-facet-text-hover) !important;
+}
+
+/* (tuỳ chọn) đổi nền chip nhạt hơn để tương phản tốt hơn */
+.o_control_panel .o_searchview .o_searchview_facet.bg-200 {
+  background-color: #eef4ff !important;
+}

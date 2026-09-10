@@ -1,0 +1,327 @@
+// Employee Dashboard Styles
+
+.o_dac_employee_dashboard {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    font-family: inherit;
+}
+
+.o_dac_dashboard_loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+// Header
+.o_dac_emp_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    h4.o_dac_emp_greeting {
+        margin: 0 0 4px;
+        font-size: 20px;
+        color: #1e293b;
+    }
+
+    .o_dac_emp_date {
+        font-size: 13px;
+    }
+}
+
+// Today Card
+.o_dac_today_card {
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+
+    &--in {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-color: #86efac;
+    }
+
+    &--out {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-color: #cbd5e1;
+    }
+}
+
+.o_dac_today_status_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.o_dac_status_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &--on {
+        background: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+        animation: dac_pulse 2s infinite;
+    }
+
+    &--off {
+        background: #94a3b8;
+    }
+}
+
+@keyframes dac_pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25); }
+    50% { box-shadow: 0 0 0 6px rgba(22, 163, 74, 0.1); }
+}
+
+.o_dac_status_label {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #1e293b;
+}
+
+.o_dac_checkin_time {
+    font-size: 13px;
+    color: #64748b;
+    margin-left: auto;
+}
+
+.o_dac_today_hours {
+    font-size: 24px;
+    font-weight: 700;
+    color: #16a34a;
+    margin-bottom: 8px;
+}
+
+.o_dac_late_badge {
+    display: inline-flex;
+    align-items: center;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.o_dac_today_actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.o_dac_btn_checkin,
+.o_dac_btn_checkout,
+.o_dac_btn_amendment {
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+    &:not(:disabled):hover { transform: translateY(-1px); }
+    &:not(:disabled):active { transform: translateY(0); }
+}
+
+.o_dac_btn_checkin {
+    background: #2563eb;
+    color: #fff;
+}
+
+.o_dac_btn_checkout {
+    background: #16a34a;
+    color: #fff;
+}
+
+.o_dac_btn_amendment {
+    background: transparent;
+    border: 1.5px solid #94a3b8;
+    color: #475569;
+    font-weight: 600;
+
+    &:hover { border-color: #64748b; color: #1e293b; }
+}
+
+// Middle row
+.o_dac_middle_row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    @media (max-width: 640px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Cards
+.o_dac_card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.o_dac_card_title {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 14px;
+}
+
+// Mini Calendar (host card)
+.o_dac_calendar_card { padding-bottom: 12px; }
+
+// Leave Balance
+.o_dac_leave_balance_card {}
+
+.o_dac_leave_balance_list { margin-bottom: 4px; }
+
+.o_dac_leave_balance_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.o_dac_leave_type_label { font-size: 13px; color: #475569; }
+
+.o_dac_leave_balance_value {
+    font-size: 13px;
+    strong { font-size: 18px; font-weight: 700; color: #1e293b; }
+}
+
+.o_dac_leave_progress {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 2px;
+}
+
+.o_dac_leave_progress_bar {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+
+    &--sick { background: #f59e0b; }
+    &--unpaid { background: #6b7280; }
+}
+
+.o_dac_btn_leave_request {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.2s;
+
+    &:hover { background: #1d4ed8; }
+}
+
+// History
+.o_dac_history_card { margin-bottom: 16px; }
+
+.o_dac_history_list {}
+
+.o_dac_history_row {
+    display: grid;
+    grid-template-columns: 70px 1fr 60px 120px;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+
+    &:last-child { border-bottom: none; }
+
+    &--late { background: #fffbeb; border-radius: 8px; padding: 10px 8px; }
+    &--absent { background: #fef2f2; border-radius: 8px; padding: 10px 8px; }
+    &--leave { background: #eff6ff; border-radius: 8px; padding: 10px 8px; }
+
+    @media (max-width: 640px) {
+        grid-template-columns: 60px 1fr;
+        .o_dac_hist_hours, .o_dac_hist_status { grid-column: 2; }
+    }
+}
+
+.o_dac_hist_date { font-weight: 600; color: #475569; }
+.o_dac_hist_times { color: #1e293b; display: flex; align-items: center; gap: 4px; }
+.o_dac_hist_arrow { color: #94a3b8; }
+.o_dac_hist_hours { color: #64748b; text-align: right; }
+.o_dac_hist_status { font-size: 12px; }
+.o_dac_hist_leave_label { color: #2563eb; }
+
+// Pending
+.o_dac_pending_card {}
+
+.o_dac_pending_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+
+    &:last-child { border-bottom: none; }
+}
+
+.o_dac_pending_icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+
+    &.o_dac_icon_leave { background: #dbeafe; color: #2563eb; }
+    &.o_dac_icon_amendment { background: #fef3c7; color: #d97706; }
+}
+
+.o_dac_pending_summary { flex: 1; color: #1e293b; }
+.o_dac_pending_state { font-size: 12px; color: #d97706; white-space: nowrap; }
+
+.o_dac_btn_cancel_request {
+    background: transparent;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover { background: #fef2f2; }
+}
+
+.o_dac_pulse_dot {
+    animation: dac_pulse_inline 2s infinite;
+}

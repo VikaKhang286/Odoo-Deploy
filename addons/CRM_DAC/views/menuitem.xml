@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ========================================================
+             1. MENU CHO PHÂN HỆ BÁN HÀNG & CRM (dac_erp.dac_sale_crm_root)
+             ======================================================== -->
+             
+        <!-- Dashboard tin nhắn Pancake — chỉ Manager -->
+        <menuitem id="menu_pancake_message_dashboard_main"
+                  name="Dashboard tin nhắn"
+                  parent="dac_erp.dac_sale_crm_root"
+                  action="action_pancake_message_dashboard"
+                  sequence="2"
+                  groups="dac_erp.group_dac_erp_manager"/>
+
+
+        <!-- ========================================================
+             2. MENU CHO PHÂN HỆ CẤU HÌNH & HỆ THỐNG (dac_erp.dac_system_settings_root)
+             ======================================================== -->
+
+        <!-- Quản trị đồng bộ Pancake -->
+        <menuitem id="menu_page_fm_sync_root"
+                  name="Đồng bộ Pancake"
+                  parent="dac_erp.dac_system_settings_root"
+                  sequence="10"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Đồng bộ liên tục (Rút gọn từ 2 menu trùng lặp thành 1 menu duy nhất) -->
+        <menuitem id="menu_pancake_sync_dashboard"
+                  name="Đồng bộ liên tục"
+                  parent="menu_page_fm_sync_root"
+                  action="action_pancake_sync_dashboard"
+                  sequence="5"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Đồng bộ toàn bộ (Bulk Sync) -->
+        <menuitem id="menu_pancake_full_message_sync_monitor"
+                  name="Đồng bộ toàn bộ"
+                  parent="menu_page_fm_sync_root"
+                  action="action_pancake_bulk_sync_dashboard"
+                  sequence="6"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Lịch sử Job Bulk Sync -->
+        <menuitem id="menu_pancake_full_message_sync_jobs"
+                  name="Lịch sử job đồng bộ"
+                  parent="menu_page_fm_sync_root"
+                  action="action_pancake_message_sync_jobs"
+                  sequence="7"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Trang Fanpage / OA đã kết nối -->
+        <menuitem id="menu_page_fm_synced_pages_main"
+                  name="Trang kết nối"
+                  parent="menu_page_fm_sync_root"
+                  action="action_page_fm_page_simplified"
+                  sequence="10"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Quản trị cuộc hội thoại Pancake -->
+        <menuitem id="menu_page_fm_all_conversations_optional"
+                  name="Quản trị hội thoại"
+                  parent="menu_page_fm_sync_root"
+                  action="action_page_fm_conversation_admin"
+                  sequence="20"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Quản trị các Tag Pancake -->
+        <menuitem id="menu_page_fm_all_tags_optional"
+                  name="Tất cả tag Pancake"
+                  parent="menu_page_fm_sync_root"
+                  action="action_page_fm_tag"
+                  sequence="30"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Mapping nhân viên Pancake → Tài khoản Odoo -->
+        <menuitem id="menu_pancake_staff_mapping"
+                  name="Nhân viên Pancake"
+                  parent="menu_page_fm_sync_root"
+                  action="action_pancake_staff_mapping"
+                  sequence="35"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+
+        <!-- Báo cáo KPI Pancake -->
+        <menuitem id="menu_page_fm_reporting"
+                  name="Báo cáo KPI &amp; Log"
+                  parent="dac_erp.dac_system_settings_root"
+                  sequence="30"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Tốc độ / Thời gian phản hồi phản chat -->
+        <menuitem id="menu_kpi_sale_daily"
+                  name="Thời gian phản hồi"
+                  parent="menu_page_fm_reporting"
+                  action="action_kpi_sale_daily"
+                  sequence="10"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Chạy tính toán lại KPI bằng Server Action -->
+        <menuitem id="menu_recalculate_kpi_manually"
+                  name="Tính toán lại KPI"
+                  parent="menu_page_fm_reporting"
+                  action="action_server_recalculate_kpi"
+                  sequence="20"
+                  groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+        <!-- Ẩn menu trùng lặp cũ khỏi view chính -->
+        <menuitem id="menu_pancake_sync_dashboard_external"
+                  name="Đồng bộ cũ"
+                  parent="menu_page_fm_sync_root"
+                  action="action_pancake_sync_dashboard"
+                  sequence="99"
+                  groups="base.group_no_one"/>
+
+    </data>
+</odoo>

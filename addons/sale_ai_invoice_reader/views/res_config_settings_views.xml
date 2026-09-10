@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_sale_ai_invoice_reader" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale_ai_invoice_reader</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='quotation_order_setting_container']" position="after">
+                <block title="AI Invoice Reader (Cấu hình đọc hóa đơn bằng AI)" name="ai_invoice_reader_settings_block" groups="base.group_system">
+                    
+                    <!-- 1. API Rotation Toggle Setting -->
+                    <setting id="gemini_rotation_config" title="API Rotation Configuration" string="Xoay vòng API Keys" help="Kích hoạt chế độ xoay vòng round-robin các API Keys giữa các lần gọi.">
+                        <div class="content-group">
+                            <div class="row mt16">
+                                <field name="gemini_api_rotation" widget="boolean_toggle"/>
+                            </div>
+                        </div>
+                    </setting>
+
+                    <!-- 2. API Keys Table Setting -->
+                    <setting id="gemini_api_keys_config" title="Gemini API Keys List" string="Danh sách Gemini API Keys" help="Thêm và sắp xếp danh sách các API Keys sẽ sử dụng.">
+                        <div class="content-group mt16" style="width: 100%;">
+                            <field name="gemini_api_key_ids" widget="many2many">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" string="Tên gợi nhớ" required="1"/>
+                                    <field name="key" string="API Key" password="True" required="1"/>
+                                    <field name="is_active" string="Hoạt động"/>
+                                    <button name="action_test_key" string="Kiểm tra" type="object" class="btn-secondary" icon="fa-refresh"/>
+                                </list>
+                            </field>
+                        </div>
+                    </setting>
+
+                    <!-- 3. Models Priority Table Setting -->
+                    <setting id="gemini_models_config" title="Gemini Models Priority List" string="Thứ tự ưu tiên các Models" help="Chọn các model và sắp xếp theo thứ tự ưu tiên từ trên xuống.">
+                        <div class="content-group mt16" style="width: 100%;">
+                            <field name="gemini_model_priority_ids" widget="many2many">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="model_name" string="Model Gemini" required="1"/>
+                                    <button name="action_test_model" string="Kiểm tra" type="object" class="btn-secondary" icon="fa-refresh"/>
+                                </list>
+                            </field>
+                        </div>
+                    </setting>
+
+                    <!-- 4. System Prompt Setting -->
+                    <setting id="gemini_prompt_config" title="System Prompt for AI" string="System Prompt gợi ý AI" help="Gợi ý/hướng dẫn cho AI bóc tách chính xác.">
+                        <div class="content-group mt16" style="width: 100%;">
+                            <field name="gemini_system_prompt" widget="text" placeholder="Nhập prompt gợi ý AI..." style="width: 100%; min-height: 100px;"/>
+                        </div>
+                    </setting>
+
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

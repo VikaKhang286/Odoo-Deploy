@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- LƯU Ý: Tạo Group mới không được trùng lặp id và ghi đè lên gourp cũ 
+        ID group quyền (parent) phải khác nhau khi thêm mới -->
+        <record id="cate_groups_dac_erp" model="ir.module.category">
+            <field name="name">DAC ROLE</field>
+            <field name="sequence">500</field>
+        </record>
+
+        <!-- Nhóm quản lý -->
+        <record id="group_dac_erp_manager" model="res.groups">
+            <field name="name">DAC Manager</field>
+            <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
+        </record>
+
+        <!-- Nhóm bán hàng -->
+        <record id="group_dac_erp_sale" model="res.groups">
+            <field name="name">DAC Sale</field>
+            <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
+        </record>
+
+        <!-- Nhóm sản xuất -->
+        <record id="group_dac_erp_production" model="res.groups">
+            <field name="name">DAC Production</field>
+            <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
+        </record>
+
+        <!-- Nhóm thiết kế -->
+        <record id="group_dac_erp_design" model="res.groups">
+            <field name="name">DAC Design</field>
+            <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
+        </record>
+    </data>
+</odoo>

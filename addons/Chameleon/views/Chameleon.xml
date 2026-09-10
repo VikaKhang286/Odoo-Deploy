@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Kế thừa web.layout để thêm thẻ <style> -->
+    <data>
+        <template id="layout_inherit" inherit_id="web.layout">
+            <xpath expr="//head" position="inside">
+                <t t-set="navbar_background_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.navbar_background_color')"></t>
+                <t t-set="navbar_text_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.navbar_text_color')"></t>
+                <t t-set="text_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.text_color')"></t>
+                <t t-set="button_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.button_color')"></t>
+                <t t-set="icon_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.icon_color')"></t>
+                <t t-set="filter_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.filter_color')"></t>
+                <t t-set="title_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.title_color')"></t>
+                <t t-set="image_1024" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.image_1024')"></t>
+                <t t-set="background_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.background_color')"></t>
+                <t t-set="font_family" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.font_family')"></t>
+                <t t-set="buble_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.buble_color')"></t>
+                <t t-set="drop_background_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.drop_background_color')"></t>
+                <t t-set="drop_text_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.drop_text_color')"></t>
+
+                <t t-set="search_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.search_color')"></t>
+
+                <t t-set="sidebar_background" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.sidebar_background')"></t>
+                <t t-set="sidebar_chose_background" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.sidebar_chose_background')"></t>
+                <t t-set="sidebar_text" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.sidebar_text')"></t>
+                
+                <t t-set="website_background_color" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.website_background_color')"></t>
+
+                <t t-set="list_title" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.list_title')"></t>
+                <t t-set="list_text_title" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.list_text_title')"></t>
+                <t t-set="list_text_table" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.list_text_table')"></t>
+                <t t-set="list_table" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.list_table')"></t>
+
+                <t t-set="kanban_form" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.kanban_form')"></t>
+                <t t-set="kanban_background" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.kanban_background')"></t>
+                <t t-set="kanban_text" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.kanban_text')"></t>
+                <t t-set="kanban_item" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.kanban_item')"></t>
+
+                <t t-set="discuss_background" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.discuss_background')"></t>
+                <t t-set="discuss_chose_sidebar" t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.discuss_chose_sidebar')"></t>
+                <t t-set="image_logo_homepage_64"
+                    t-value="request.env['ir.config_parameter'].sudo().get_param('change_odoo_theme_header_color.image_logo_homepage_64')"></t>
+                <style type="text/css">
+                    <!-- body{
+                        user-select: none !important;
+                    } -->
+                    <!-- Thanh navigationbar -->
+
+                     <t t-if="image_logo_homepage_64">.oi-apps:before { content:
+                    url('data:image/png;base64,<t t-esc="image_logo_homepage_64" />') !important; }</t>
+
+                    .o_main_navbar .o_menu_sections .o_nav_entry, .o_main_navbar .o_menu_sections .dropdown-toggle {
+                        background: <t t-esc="navbar_background_color"/> !important;
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        border: 1px solid transparent !important;
+                    }
+
+                    .o_base_settings_view .o_form_renderer .o_setting_container .settings .settingSearchHeader {
+                            background-color: <t t-esc="background_color"/> !important;
+                    }
+
+                    <!-- Tiêu đề trên thanh navigationbar -->
+                    .o_main_navbar .o_menu_brand{
+                        color: <t t-esc="navbar_text_color"/> !important;
+                    }
+
+                    <!-- Màu menu item background -->
+                    
+                    .o-dropdown.dropup > .o-dropdown--menu, .o-dropdown.dropdown > .o-dropdown--menu, .o-dropdown.dropstart > .o-dropdown--menu, .o-dropdown.dropend > .o-dropdown--menu{
+                        background: <t t-esc="drop_background_color"/> !important;
+                        color: <t t-esc="drop_text_color"/> !important;
+                    }
+
+                    <!-- Màu bong bóng thông báo -->
+                    .o_main_navbar .o_menu_systray .badge{
+                        background: <t t-esc="buble_color"/> !important;
+                        color: <t t-esc="navbar_text_color"/> !important;
+                    }
+
+                    <!-- Màu thanh tiêu đề  -->
+                    .o_main_navbar {
+                        background-color: <t t-esc="navbar_background_color"/> !important;
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        border-bottom:1px solid <t t-esc="navbar_background_color"/> !important
+                    }
+                    .breadcrumb {
+                        background-color: <t t-esc="filter_color"/> !important;
+                    }
+
+                    <!-- Màu nút như save, active-->
+                    .btn-primary{
+                        background-color: <t t-esc="button_color"/> !important;
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        border-color: <t t-esc="navbar_background_color"/> !important;
+                    }
+
+                    <!-- Màu nút infor-->
+                    .btn-info {
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        background-color: <t t-esc="button_color"/> !important;
+                        border-color: <t t-esc="navbar_background_color"/> !important;
+                    }
+                    
+                    <!-- Các nút như module infor, upgrade -->
+                    .btn-secondary{
+                        background-color: <t t-esc="navbar_background_color"/> !important;
+                        color: <t t-esc="text_color"/> !important;
+                        border-color: <t t-esc="navbar_background_color"/> !important;
+                    }
+
+                    <!-- Thanh Tiêu đề đầu trang -->
+                    .o_control_panel{
+                        color: <t t-esc="text_color"/> !important;
+                        background-color: <t t-esc="filter_color"/> !important;
+                        border-color: <t t-esc="filter_color"/> !important;
+                    }
+
+                    <!-- Thanh tìm kiếm -->
+                    .o_searchview{
+                        color: <t t-esc="icon_color"/> !important;
+                        background-color: <t t-esc="search_color"/> !important;
+                        border-color: #1d1d1d !important;
+                    }
+
+                    <!-- Thanh tiêu đề mục -->
+                    .o_base_settings_view .o_form_renderer .o_setting_container .settings > .app_settings_block h2, .o_base_settings_view .o_form_renderer .o_setting_container .settings > .app_settings_block .h2 {
+                        color: <t t-esc="text_color"/> !important;
+                        background-color: <t t-esc="title_color"/> !important;
+                    }
+
+                    .o_main_navbar .o_menu_sections .o_nav_entry:hover, .o_main_navbar .o_menu_sections .dropdown-toggle:hover {
+                        background: rgba(0, 0, 0, 0.08) !important;
+                    }
+
+                    <!-- Các nút icon, màu chữ trên thanh bar -->
+                    .o_main_navbar .o_menu_brand, .o_main_navbar .o_navbar_apps_menu .dropdown-toggle, .o_main_navbar .o_nav_entry, .o_main_navbar .dropdown-toggle {
+                        background: transparent;
+                        color: <t t-esc="icon_color"/> !important;
+                    }.o_main_navbar .o_menu_brand{
+                        color: <t t-esc="navbar_text_color"/> !important;
+                    }
+                    
+                    <!-- Màu sidebar -->
+                    .o_base_settings_view .o_form_renderer {
+                        --settings__tab-bg: <t t-esc="sidebar_background"/> !important;
+                        --settings__tab-bg--active: <t t-esc="sidebar_chose_background"/> !important;
+                        --settings__tab-color: <t t-esc="sidebar_text"/> !important;
+                    }
+                    <!-- Màu sidebar app  -->
+                    .bg-view, .text-bg-view {
+                        background-color: <t t-esc="sidebar_background"/> !important;
+                    }
+                    <!-- Menu item  -->
+                    .dropdown-item {
+                        color: <t t-esc="drop_text_color"/> !important;
+                        background-color: transparent;
+                    }
+                    <!-- Màu thanh tìm kiếm -->
+
+                    .o_control_panel_main_buttons ,.o_control_panel_collapsed_create, .o_form_button_create {
+                        color: <t t-esc="text_color"/> !important;
+                        background-color: transparent;
+                    }
+                    .o_main_navbar .o_menu_sections .o_nav_entry:hover, .o_main_navbar .o_menu_sections .dropdown-toggle:active {
+                        background: rgba(0, 0, 0, 0.08) !important;
+                    }
+                    .o_main_navbar .o_menu_sections .o_nav_entry:active, .o_main_navbar .o_menu_sections .dropdown-toggle:active {
+                        background: rgba(0, 0, 0, 0.08) !important;
+                    }
+                    .btn-outline-primary {
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        background-color: <t t-esc="button_color"/> !important;
+                        border-color: <t t-esc="button_color"/> !important;
+                    }
+                    .btn-outline-primary:hover {
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        background-color: <t t-esc="button_color"/> !important;
+                        border-color: <t t-esc="button_color"/> !important;
+                    }
+                    .btn-check:focus + .btn-outline-primary, .btn-outline-primary:focus {
+                        box-shadow: 0 0 0 0.25rem rgba(113, 99, 158, 0.5);
+                    }
+                    .btn-check:checked + .btn-outline-primary, .btn-check:active + .btn-outline-primary, .btn-outline-primary:active, .btn-outline-primary.active, .btn-outline-primary.dropdown-toggle.show {
+                        color: <t t-esc="navbar_text_color"/> !important;
+                        background-color:  <t t-esc="navbar_background_color"/> !important;
+                        border-color: <t t-esc="navbar_background_color"/> !important;
+                    }
+                    .o_button_icon {
+                        color: <t t-esc="text_color"/> !important;
+                    }
+                    .o_field_statinfo .o_stat_value {
+                        color: <t t-esc="text_color"/> !important;
+                    }
+                    .form-check-input:checked {
+                        background-color: <t t-esc="button_color"/> !important;
+                        border-color: <t t-esc="button_color"/> !important;
+                    }
+                    .btn-link {
+                        color: <t t-esc="button_color"/> !important;
+                    }
+                    .text-600 {
+                        color: <t t-esc="text_color"/> !important;
+                    }
+                    
+                    .o_settings_container {
+                        color: <t t-esc="text_color"/> !important;
+                    }
+                    .app_settings_block{
+                        background-color: <t t-esc="background_color"/> !important;
+                    }
+
+
+                    <!-- Màu background list-->
+                    <!-- Background list -->
+                    .o_web_client {
+                        background-color: <t t-esc="website_background_color"/> !important;
+                        color-scheme: bright;
+                    }
+
+                    <!-- Thanh tiêu đề list table và màu chữ-->
+                    .o_list_renderer .o_list_table thead th {
+                        background-color: <t t-esc="list_title"/> !important;
+                        color: <t t-esc="list_text_title"/> !important;
+                    }
+                    <!--Màu table list-->
+                    .o_list_renderer .o_list_table {
+                        --table-bg: <t t-esc="list_table"/> !important;
+                    }
+                    .table {
+                        color: <t t-esc="list_text_table"/> !important;
+                    }
+
+                    <!-- Màu Kanban-->
+                    .o_kanban_renderer{
+                        --Kanban-background: <t t-esc="kanban_background"/> !important;
+                    }
+                    <!-- Các mục form-->
+                    
+                    .o_kanban_renderer .o_kanban_record > div:not(.o_dropdown_kanban), .o_kanban_renderer .o_kanban_quick_create {
+                        background-color: <t t-esc="kanban_form"/> !important;
+                    }
+                    <!-- Màu chữ kanban  -->
+                    .o_kanban_renderer .o_kanban_record .o_kanban_record_title {
+                        color: <t t-esc="kanban_text"/> !important;
+                    }
+                    <!-- Chi tiết mục kanban -->
+                    .o_form_view .o_form_sheet {
+                        background-color: <t t-esc="kanban_background"/> !important;
+                    }
+                    .o_notebook .nav {
+                        background-color: <t t-esc="kanban_background"/> !important;
+                    }
+
+                    <!-- Màu nền discuss -->
+                    .bg-view, .text-bg-view {
+                        background-color: <t t-esc="discuss_background"/> !important;
+                    }
+
+                    <!-- Màu hover discuss sidebar -->
+                    .o-mail-DiscussSidebar-item:hover, .o-mail-DiscussSidebar-item.o-active {
+                        background-color: <t t-esc="discuss_chose_sidebar"/> !important;
+                    }
+                    .o_web_client {
+                        overflow-x: hidden;
+                    }
+                    .o_home_menu_form .o_form_sheet_bg,
+                    .o_home_menu_form .o_form_sheet {
+                        background: transparent !important;
+                        box-shadow: none !important;
+                        border: 0 !important;
+                    }
+                    .o_home_menu_form .o_form_sheet {
+                        max-width: 1220px !important;
+                    }
+                    .dac-home-shell {
+                        display: grid !important;
+                        gap: 22px;
+                        padding: 6px 0 32px;
+                    }
+                    .dac-home-hero {
+                        display: grid !important;
+                        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+                        gap: 18px;
+                        padding: 28px;
+                        border: 1px solid rgba(37, 99, 235, 0.12);
+                        border-radius: 8px;
+                        background:
+                            radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 32%),
+                            linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #eff6ff 100%) !important;
+                        box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
+                    }
+                    .dac-home-copy h1 {
+                        max-width: 12ch;
+                        margin: 16px 0 14px;
+                        color: #0f172a;
+                        font-size: clamp(34px, 4vw, 52px);
+                        line-height: 1.04;
+                        font-weight: 700;
+                    }
+                    .dac-home-lead {
+                        max-width: 68ch;
+                        margin: 0;
+                        color: #475569;
+                        font-size: 16px;
+                        line-height: 1.75;
+                    }
+                    .dac-home-eyebrow {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 7px 12px;
+                        border-radius: 8px;
+                        background: #eff6ff;
+                        color: #1d4ed8;
+                        border: 1px solid #bfdbfe;
+                        font-size: 12px;
+                        font-weight: 700;
+                        letter-spacing: 0.08em;
+                        text-transform: uppercase;
+                    }
+                    .dac-home-pill-row {
+                        display: flex !important;
+                        flex-wrap: wrap;
+                        gap: 10px;
+                        margin-top: 22px;
+                    }
+                    .dac-home-pill {
+                        padding: 10px 14px;
+                        border: 1px solid rgba(37, 99, 235, 0.12);
+                        border-radius: 8px;
+                        background: rgba(37, 99, 235, 0.06);
+                        color: #1e293b;
+                        font-weight: 600;
+                    }
+                    .dac-home-brand-card {
+                        display: flex !important;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 12px;
+                        padding: 24px;
+                        border-radius: 8px;
+                        background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        box-shadow: 0 18px 36px rgba(37, 99, 235, 0.24);
+                        text-align: center;
+                        color: #ffffff;
+                    }
+                    .dac-home-logo {
+                        width: 100% !important;
+                        max-width: 176px !important;
+                        height: auto !important;
+                        object-fit: contain;
+                    }
+                    .dac-home-brand-title {
+                        font-size: 22px;
+                        font-weight: 700;
+                    }
+                    .dac-home-brand-caption {
+                        color: rgba(255, 255, 255, 0.82);
+                        text-transform: uppercase;
+                        letter-spacing: 0.14em;
+                        font-size: 12px;
+                    }
+                    .dac-home-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(3, minmax(0, 1fr));
+                        gap: 16px;
+                    }
+                    .dac-home-card {
+                        padding: 22px;
+                        border-radius: 8px;
+                        border: 1px solid rgba(148, 163, 184, 0.18);
+                        background: rgba(255, 255, 255, 0.94);
+                        box-shadow: 0 18px 34px rgba(15, 23, 42, 0.06);
+                    }
+                    .dac-home-card-title {
+                        margin-bottom: 10px;
+                        color: #0f172a;
+                        font-size: 18px;
+                        font-weight: 700;
+                    }
+                    .dac-home-card p {
+                        margin: 0;
+                        color: #475569;
+                        line-height: 1.75;
+                    }
+                    @media (max-width: 991.98px) {
+                        .dac-home-hero,
+                        .dac-home-grid {
+                            grid-template-columns: 1fr !important;
+                        }
+                        .dac-home-hero {
+                            padding: 22px;
+                        }
+                        .dac-home-copy h1 {
+                            max-width: 100%;
+                            font-size: 34px;
+                        }
+                    }
+                    @media (max-width: 575.98px) {
+                        .dac-home-hero,
+                        .dac-home-card {
+                            padding: 18px;
+                            border-radius: 8px;
+                        }
+                        .dac-home-copy h1 {
+                            font-size: 29px;
+                        }
+                        .dac-home-pill {
+                            width: 100%;
+                            text-align: center;
+                        }
+                        .dac-home-logo {
+                            max-width: 140px !important;
+                        }
+                    }
+                </style>
+            </xpath>
+        </template>
+    </data>
+</odoo>

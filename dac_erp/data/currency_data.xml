@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cấu hình VND không có số thập phân -->
+        <record id="base.VND" model="res.currency" forcecreate="True">
+            <field name="name">VND</field>
+            <field name="symbol">₫</field>
+            <field name="decimal_places">0</field>
+            <field name="position">after</field>
+            <field name="currency_unit_label">Đồng</field>
+            <field name="currency_subunit_label">xu</field>
+            <field name="active" eval="True"/>
+        </record>
+        
+        <!-- Đặt VND làm tiền tệ mặc định -->
+        <record id="base.main_company" model="res.company">
+            <field name="currency_id" ref="base.VND"/>
+        </record>
+        
+        <!-- Vô hiệu hóa USD -->
+        <record id="base.USD" model="res.currency">
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Vô hiệu hóa EUR -->
+        <record id="base.EUR" model="res.currency">
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>

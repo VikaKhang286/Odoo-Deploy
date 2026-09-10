@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <!-- Dashboard cho Sale users -->
+    <menuitem id="dac_sale_dashboard_menu_root"
+              name="Dashboard Sale"
+              action="dac_sale_dashboard_action"
+              groups="dac_erp.group_dac_erp_sale"
+              sequence="-100"/>
+
+    <!-- Dashboard cho Manager -->
+    <menuitem id="dac_manager_dashboard_menu_root"
+              name="Dashboard Quản Lý"
+              action="dac_manager_dashboard_action"
+              groups="dac_erp.group_dac_erp_manager"
+              sequence="-101"/>
+
+    <!-- ========== MENU CON CỦA DASHBOARD MANAGER ========== -->
+    
+    <!-- Menuitem cho Manager - Đơn hàng -->
+    <menuitem id="dac_sale_order_menu_manager"
+        name="Đơn hàng"
+        parent="dac_manager_dashboard_menu_root"
+        action="dac_erp.dac_sale_order_manager_action"
+        sequence="10"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <!-- Menuitem cho Manager - Khách hàng -->
+    <menuitem id="dac_res_partner_customer_menu"
+          name="Khách hàng"
+          parent="dac_manager_dashboard_menu_root"
+          action="dac_erp.dac_res_partner_customer_action"
+          sequence="20"
+          groups="dac_erp.group_dac_erp_manager"/>
+
+    <!-- Menu cho Manager - Hóa đơn -->
+    <menuitem id="dac_account_move_menu_root"
+        name="Hóa đơn"
+        parent="dac_manager_dashboard_menu_root"
+        action="dac_erp.dac_account_move_custom_action_manager"
+        sequence="30"
+        groups="dac_erp.group_dac_erp_manager,base.group_system"/>
+
+    <!-- Menu cho Manager - Phiếu thu -->
+    <menuitem id="dac_account_payment_menu"
+        name="Phiếu thu"
+        parent="dac_manager_dashboard_menu_root"
+        action="dac_erp.dac_account_payment_custom_action"
+        sequence="40"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <!-- Các dashboard -->
+    <menuitem id="menu_dac_manage"
+        name="Quản lý"
+        parent="dac_manager_dashboard_menu_root"
+        sequence="60"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <menuitem id="menu_dashboards_manage"
+        name="Các dashboard"
+        parent="menu_dac_manage"
+        sequence="10"
+        groups="dac_erp.group_dac_erp_manager"/>
+    
+    <!-- Menu cho Manager - Báo cáo doanh thu -->
+    <menuitem id="menu_dac_sales_goal"
+        name="Cấu hình KPI Sale"
+        parent="menu_dac_manage"
+        sequence="50"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <menuitem id="menu_dac_sales_goal_kpi"
+        name="Mục tiêu doanh thu"
+        parent="menu_dac_sales_goal"
+        action="action_dac_sales_goal"
+        sequence="55"
+        groups="dac_erp.group_dac_erp_manager"/>
+    
+
+    <menuitem id="menu_dashboards_manage_sale"
+        name="Dashboard - Sale"
+        parent="menu_dashboards_manage"
+        action="dac_sale_dashboard_action"
+        sequence="10"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <menuitem id="menu_dashboards_manage_design"
+        name="Dashboard - Thiết kế"
+        parent="menu_dashboards_manage"
+        action="dac_erp.dac_design_dashboard_action"
+        sequence="11"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <menuitem id="menu_dashboards_manage_production"
+        name="Dashboard - Sản xuất"
+        parent="menu_dashboards_manage"
+        action="dac_erp.dac_production_dashboard_action"
+        sequence="12"
+        groups="dac_erp.group_dac_erp_manager"/>
+
+    <!-- ========== MENU CON CỦA DASHBOARD SALE ========== -->
+
+    <!-- Menuitem cho menu Đơn hàng - Sale user chỉ xem đơn của mình -->
+    <menuitem id="dac_sale_order_menu_sale"
+        name="Đơn hàng"
+        parent="dac_sale_dashboard_menu_root"
+        action="dac_erp.dac_sale_order_custom_action"
+        sequence="10"
+        groups="dac_erp.group_dac_erp_sale"/>
+
+    <!-- Menuitem cho sale - Khách hàng -->
+    <menuitem id="dac_res_partner_customer_menu_sale"
+          name="Khách hàng"
+          parent="dac_sale_dashboard_menu_root"
+          action="dac_erp.dac_res_partner_customer_action_sale"
+          sequence="20"
+          groups="dac_erp.group_dac_erp_sale"/>
+
+    <!-- Menu cho Sale - Hóa đơn -->
+    <menuitem id="dac_account_move_sale_menu"
+        name="Hóa đơn"
+        parent="dac_sale_dashboard_menu_root"
+        action="dac_erp.dac_account_move_custom_action_sale"
+        sequence="30"
+        groups="dac_erp.group_dac_erp_sale"/>
+
+    <!-- Menu cho Sale - Phiếu thu -->
+    <menuitem id="dac_account_payment_sale_menu"
+        name="Phiếu thu"
+        parent="dac_sale_dashboard_menu_root"
+        action="dac_erp.dac_account_payment_custom_action"
+        sequence="40"
+        groups="dac_erp.group_dac_erp_sale"/>
+  </data>
+</odoo>

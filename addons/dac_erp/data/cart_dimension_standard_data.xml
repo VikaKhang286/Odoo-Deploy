@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Đồng bộ cả database đã cài module trước khi các bản ghi mẫu còn noupdate. -->
+    <function model="dac.cart.dimension" name="write">
+        <value eval="[ref('cart_dimension_80x40')]"/>
+        <value eval="{'length': 80.0, 'width': 38.0, 'height': 195.0, 'is_standard': True}"/>
+    </function>
+    <function model="dac.cart.dimension" name="write">
+        <value eval="[ref('cart_dimension_100x50')]"/>
+        <value eval="{'length': 100.0, 'width': 48.0, 'height': 195.0, 'is_standard': True}"/>
+    </function>
+    <function model="dac.cart.dimension" name="write">
+        <value eval="[ref('cart_dimension_120x60')]"/>
+        <value eval="{'length': 120.0, 'width': 58.0, 'height': 195.0, 'is_standard': True}"/>
+    </function>
+</odoo>

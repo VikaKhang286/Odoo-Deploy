@@ -1,0 +1,24 @@
+<odoo>
+  <data>
+    <!-- Action cho Khách hàng Sale Dashboard-->
+    <record id="dac_res_partner_customer_action_sale" model="ir.actions.act_window">
+      <field name="name">Khách hàng</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,list,form</field>
+      <field name="domain">
+          ['|', ('responsible_user_id', '=', uid), ('participant_user_ids', 'in', uid)]
+        </field>
+      <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+    </record>
+
+
+    <!-- Action cho Khách hàng của Manager-->
+    <record id="dac_res_partner_customer_action" model="ir.actions.act_window">
+      <field name="name">Khách hàng</field>
+      <field name="res_model">res.partner</field>
+      <field name="view_mode">kanban,list,form</field>
+      <field name="domain">[]</field>
+      <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
+    </record>
+  </data>
+</odoo>

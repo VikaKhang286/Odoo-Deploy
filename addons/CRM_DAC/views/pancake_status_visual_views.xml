@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pancake_sync_dashboard_form_visual_state" model="ir.ui.view">
+            <field name="name">pancake.sync.dashboard.form.visual.state</field>
+            <field name="model">pancake.sync.dashboard</field>
+            <field name="inherit_id" ref="CRM_DAC.view_pancake_sync_dashboard_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_load_pages_from_token']" position="attributes">
+                    <attribute name="string">Tải Page và tạo token trang</attribute>
+                </xpath>
+
+                <xpath expr="//page[.//field[@name='access_token']]/group/group[1]" position="replace">
+                    <group colspan="2">
+                        <div class="o_pancake_status_panel o_pancake_status_panel--danger"
+                             invisible="not token_check_status or token_check_status == 'valid'">
+                            <span class="o_pancake_status_title">Token đang hết hạn hoặc có lỗi</span>
+                            <div class="o_pancake_status_hint">
+                                <field name="token_check_status" readonly="1" nolabel="1"/>
+                            </div>
+                            <div class="o_pancake_status_hint">
+                                <field name="token_check_message" readonly="1" nolabel="1"/>
+                            </div>
+                        </div>
+                        <div class="o_pancake_status_panel o_pancake_status_panel--success"
+                             invisible="token_check_status != 'valid'">
+                            <span class="o_pancake_status_title">Token đang hoạt động tốt</span>
+                            <div class="o_pancake_status_hint">
+                                <field name="token_check_status" readonly="1" nolabel="1"/>
+                            </div>
+                            <div class="o_pancake_status_hint">
+                                <field name="token_check_message" readonly="1" nolabel="1"/>
+                            </div>
+                        </div>
+                        <div class="o_pancake_status_panel o_pancake_status_panel--neutral"
+                             invisible="token_check_status">
+                            <span class="o_pancake_status_title">Token chưa được kiểm tra</span>
+                            <div class="o_pancake_status_hint">
+                                Nhập token rồi bấm <strong>Kiểm tra token</strong> để xác nhận ngay trên dashboard.
+                            </div>
+                        </div>
+
+                        <div class="o_pancake_token_editor">
+                            <div class="o_pancake_token_label">Access Token Chính</div>
+                            <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--danger"
+                                 invisible="not token_check_status or token_check_status == 'valid'">
+                                <field name="access_token" nolabel="1" placeholder="Nhập access token chính từ Pancake..."/>
+                            </div>
+                            <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--success"
+                                 invisible="token_check_status != 'valid'">
+                                <field name="access_token" nolabel="1" placeholder="Nhập access token chính từ Pancake..."/>
+                            </div>
+                            <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--neutral"
+                                 invisible="token_check_status">
+                                <field name="access_token" nolabel="1" placeholder="Nhập access token chính từ Pancake..."/>
+                            </div>
+                            <div class="o_pancake_token_hint o_pancake_token_hint--danger"
+                                 invisible="not token_check_status or token_check_status == 'valid'">
+                                Token hiện tại cần được thay mới hoặc kiểm tra lại ngay.
+                            </div>
+                            <div class="o_pancake_token_hint o_pancake_token_hint--success"
+                                 invisible="token_check_status != 'valid'">
+                                Token hợp lệ. Có thể tải Page và tiếp tục đồng bộ.
+                            </div>
+                            <div class="o_pancake_token_hint o_pancake_token_hint--neutral"
+                                 invisible="token_check_status">
+                                Chưa có kết quả kiểm tra token gần nhất.
+                            </div>
+                            <div class="text-muted mt-2">
+                                Đây là <strong>main access token</strong>. Sau khi tải danh sách page, hệ thống sẽ tự gọi API để xin <strong>page access token</strong> riêng cho từng page active.
+                            </div>
+                        </div>
+
+                        <div class="o_pancake_token_editor">
+                            <div class="o_pancake_token_label">Webhook Secret</div>
+                            <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--neutral">
+                                <field name="webhook_secret" nolabel="1" placeholder="Webhook secret dự phòng cho phase webhook sau, hiện chưa dùng ở API-first..."/>
+                            </div>
+                        </div>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="view_res_config_settings_inherit_crm_dac_pancake_visual_state" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.crm.dac.pancake.visual.state</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="CRM_DAC.view_res_config_settings_inherit_crm_dac_pancake"/>
+            <field name="arch" type="xml">
+                <xpath expr="//setting[@id='crm_dac_pancake_token_entry']/field[@name='access_token']" position="replace">
+                    <div class="o_pancake_token_editor">
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--danger"
+                             invisible="not token_check_status or token_check_status == 'valid'">
+                            <field name="access_token" nolabel="1" placeholder="Nhập access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--success"
+                             invisible="token_check_status != 'valid'">
+                            <field name="access_token" nolabel="1" placeholder="Nhập access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--neutral"
+                             invisible="token_check_status">
+                            <field name="access_token" nolabel="1" placeholder="Nhập access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--danger"
+                             invisible="not token_check_status or token_check_status == 'valid'">
+                            Token đang hết hạn hoặc lỗi. Cần thay token mới rồi kiểm tra lại.
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--success"
+                             invisible="token_check_status != 'valid'">
+                            Token hợp lệ. Có thể tiếp tục tải Page và chạy đồng bộ.
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--neutral"
+                             invisible="token_check_status">
+                            Chưa có kết quả kiểm tra token gần nhất.
+                        </div>
+                        <div class="text-muted mt-2">
+                            Trường này nhận <strong>main access token</strong>, không phải page access token. Page token sẽ được hệ thống tự xin lại theo từng page.
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//setting[@id='crm_dac_pancake_token_status']/field[1]" position="before">
+                    <div class="o_pancake_status_panel o_pancake_status_panel--danger"
+                         invisible="not token_check_status or token_check_status == 'valid'">
+                        <span class="o_pancake_status_title">Token đang hết hạn hoặc có lỗi</span>
+                        <div class="o_pancake_status_hint">
+                            <field name="token_check_status" readonly="1" nolabel="1"/>
+                        </div>
+                        <div class="o_pancake_status_hint">
+                            <field name="token_check_message" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                    <div class="o_pancake_status_panel o_pancake_status_panel--success"
+                         invisible="token_check_status != 'valid'">
+                        <span class="o_pancake_status_title">Token hợp lệ</span>
+                        <div class="o_pancake_status_hint">
+                            <field name="token_check_message" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                    <div class="o_pancake_status_panel o_pancake_status_panel--neutral"
+                         invisible="token_check_status">
+                        <span class="o_pancake_status_title">Chưa có trạng thái token</span>
+                        <div class="o_pancake_status_hint">
+                            Sau khi nhập token, hãy kiểm tra từ màn Đồng bộ liên tục Pancake để cập nhật trạng thái.
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_pancake_bulk_sync_dashboard_form_visual_state" model="ir.ui.view">
+            <field name="name">pancake.bulk.sync.dashboard.form.visual.state</field>
+            <field name="model">pancake.bulk.sync.dashboard</field>
+            <field name="inherit_id" ref="CRM_DAC.view_pancake_bulk_sync_dashboard_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='access_token']" position="replace">
+                    <div class="o_pancake_token_editor">
+                        <div class="o_pancake_token_label">Access Token Chính</div>
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--danger"
+                             invisible="not token_check_status or token_check_status == 'valid'">
+                            <field name="access_token" nolabel="1" placeholder="Nhập main access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--success"
+                             invisible="token_check_status != 'valid'">
+                            <field name="access_token" nolabel="1" placeholder="Nhập main access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_input_wrap o_pancake_token_input_wrap--neutral"
+                             invisible="token_check_status">
+                            <field name="access_token" nolabel="1" placeholder="Nhập main access token từ Pancake..."/>
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--danger"
+                             invisible="not token_check_status or token_check_status == 'valid'">
+                            Token đang hết hạn hoặc lỗi. Cần thay token mới rồi kiểm tra lại.
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--success"
+                             invisible="token_check_status != 'valid'">
+                            Token hợp lệ. Có thể tải Page và chạy đồng bộ toàn bộ.
+                        </div>
+                        <div class="o_pancake_token_hint o_pancake_token_hint--neutral"
+                             invisible="token_check_status">
+                            Chưa có kết quả kiểm tra token gần nhất.
+                        </div>
+                    </div>
+                </xpath>
+
+                <xpath expr="//field[@name='sync_batch_size']" position="before">
+                    <div class="o_pancake_status_panel o_pancake_status_panel--danger"
+                         invisible="not token_check_status or token_check_status == 'valid'">
+                        <span class="o_pancake_status_title">Token đang hết hạn hoặc có lỗi</span>
+                        <div class="o_pancake_status_hint">
+                            <field name="token_check_message" readonly="1" nolabel="1"/>
+                        </div>
+                    </div>
+                    <div class="o_pancake_status_panel o_pancake_status_panel--success"
+                         invisible="token_check_status != 'valid'">
+                        <span class="o_pancake_status_title">Token hợp lệ</span>
+                        <div class="o_pancake_status_hint">
+                            Có thể tải danh sách Page, chọn page active cần sync và chạy job đồng bộ toàn bộ theo API queue.
+                        </div>
+                    </div>
+                    <div class="o_pancake_status_panel o_pancake_status_panel--neutral"
+                         invisible="token_check_status">
+                        <span class="o_pancake_status_title">Token chưa được kiểm tra</span>
+                        <div class="o_pancake_status_hint">
+                            Nhập token rồi bấm <strong>Kiểm tra token</strong> để xác nhận trước khi chạy job đồng bộ toàn bộ.
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

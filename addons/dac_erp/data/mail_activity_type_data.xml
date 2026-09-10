@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_activity_type_cskh_followup" model="mail.activity.type">
+            <field name="name">CSKH Follow-up</field>
+            <field name="category">default</field>
+            <field name="icon">fa-comments</field>
+            <field name="summary">CSKH Follow-up</field>
+        </record>
+    </data>
+</odoo>

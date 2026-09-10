@@ -1,0 +1,39 @@
+/* Hide header buttons only for account move form with specific view_id */
+/* This targets only our inherited view, not affecting other invoice views */
+.o_form_view[data-view-xmlid="dac_erp.account_move_form_inherit_dac"]
+  .o_statusbar_buttons {
+  display: none !important;
+}
+
+/* Hide header buttons for account payment form with specific view_id */
+.o_form_view[data-view-xmlid="dac_erp.account_payment_form_inherit_dac"]
+  .o_statusbar_buttons {
+  display: none !important;
+}
+
+/* Alternative approach using body class targeting */
+body[data-view_xmlid="dac_erp.account_move_form_inherit_dac"]
+  .o_statusbar_buttons {
+  display: none !important;
+}
+
+body[data-view_xmlid="dac_erp.account_payment_form_inherit_dac"]
+  .o_statusbar_buttons {
+  display: none !important;
+}
+
+/* More specific targeting for our inherited account move view */
+.o_form_view
+  .o_form_sheet_bg
+  .o_form_statusbar
+  .o_statusbar_buttons:has(button[name="action_post"]) {
+  display: none !important;
+}
+
+/* More specific targeting for our inherited account payment view */
+.o_form_view
+  .o_form_sheet_bg
+  .o_form_statusbar
+  .o_statusbar_buttons:has(button[name="action_validate"]) {
+  display: none !important;
+}

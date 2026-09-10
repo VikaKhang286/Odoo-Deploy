@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cron_dispatch_outbound_webhooks" model="ir.cron">
+            <field name="name">DAC OpenClaw: Dispatch outbound webhooks</field>
+            <field name="model_id" ref="model_dac_openclaw_outbound_webhook_log"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_dispatch_pending_webhooks()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_scan_unassigned_conversations" model="ir.cron">
+            <field name="name">DAC OpenClaw: Scan unassigned conversations</field>
+            <field name="model_id" ref="model_dac_openclaw_automation_scanner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_scan_unassigned_conversations()</field>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_scan_overdue_tasks" model="ir.cron">
+            <field name="name">DAC OpenClaw: Scan overdue tasks</field>
+            <field name="model_id" ref="model_dac_openclaw_automation_scanner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_scan_overdue_tasks()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_scan_duplicate_orders" model="ir.cron">
+            <field name="name">DAC OpenClaw: Scan duplicate orders</field>
+            <field name="model_id" ref="model_dac_openclaw_automation_scanner"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_scan_duplicate_orders()</field>
+            <field name="interval_number">6</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="cron_data_quality_scan" model="ir.cron">
+            <field name="name">DAC OpenClaw: Data quality daily scan</field>
+            <field name="model_id" ref="model_dac_openclaw_data_quality_issue"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_data_quality_scan()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

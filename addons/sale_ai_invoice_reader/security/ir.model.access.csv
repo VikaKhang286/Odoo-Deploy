@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gemini_api_key_system,gemini.api.key.system,model_gemini_api_key,base.group_system,1,1,1,1
+access_gemini_api_key_user,gemini.api.key.user,model_gemini_api_key,base.group_user,1,0,0,0
+access_gemini_model_priority_system,gemini.model.priority.system,model_gemini_model_priority,base.group_system,1,1,1,1
+access_gemini_model_priority_user,gemini.model.priority.user,model_gemini_model_priority,base.group_user,1,0,0,0
+access_gemini_create_partner_wizard_system,gemini.create.partner.wizard.system,model_gemini_create_partner_wizard,base.group_system,1,1,1,1
+access_gemini_create_partner_wizard_user,gemini.create.partner.wizard.user,model_gemini_create_partner_wizard,base.group_user,1,1,1,1
+access_gemini_invoice_line_preview_system,gemini.invoice.line.preview.system,model_gemini_invoice_line_preview,base.group_system,1,1,1,1
+access_gemini_invoice_line_preview_user,gemini.invoice.line.preview.user,model_gemini_invoice_line_preview,base.group_user,1,1,1,1

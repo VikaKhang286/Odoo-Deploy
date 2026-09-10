@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit view hóa đơn để thêm nút "Đơn hàng" và di chuyển các nút xuống footer -->
+        <record id="account_move_form_inherit_dac" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.dac</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <!-- Thêm nút "Đơn hàng" vào button box - sẽ bị di chuyển xuống dưới -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <!-- Placeholder, nút sẽ được di chuyển xuống dưới -->
+                </xpath>
+
+                <!-- Ẩn các nút trong header bằng invisible - ẩn tất cả các nút có thể có -->
+                <xpath expr="//button[@name='action_post']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_register_payment']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@id='account_invoice_payment_btn']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@id='account_invoice_payment_secondary_btn']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_invoice_sent']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_cancel']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                    <attribute name="modifiers">{"invisible": true}</attribute>
+                </xpath>
+
+                <!-- Thêm các nút xuống phía dưới cuối sheet giống sale order view -->
+                <xpath expr="//notebook" position="after">
+                    <div style="display: flex; gap: 16px; justify-content: flex-end; margin-top: 16px;">
+                        <!-- Nút Quay về đơn hàng -->
+                        <button name="action_back_to_sale_order" 
+                            type="object"
+                            class="btn btn-warning"
+                            string="Quay về đơn hàng"
+                            help="Quay về đơn hàng"
+                            invisible="not invoice_origin"/>
+                        
+                        <!-- Nút Xác nhận -->
+                        <button name="action_post" 
+                                string="Xác nhận" 
+                                type="object" 
+                                class="btn btn-primary oe_highlight"
+                                invisible="state != 'draft'"/>
+                        
+                        <!-- Nút Thanh toán -->
+                        <button name="action_register_payment" 
+                                string="Thanh toán" 
+                                type="object" 
+                                class="btn btn-success"
+                                invisible="state != 'posted' or payment_state not in ['not_paid', 'partial']"/>
+                        
+                        <!-- Nút Hủy -->
+                        <button string="Hủy" 
+                                class="btn btn-secondary" 
+                                special="cancel"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

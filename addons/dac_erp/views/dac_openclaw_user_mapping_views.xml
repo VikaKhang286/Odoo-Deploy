@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_dac_openclaw_user_mapping_tree" model="ir.ui.view">
+            <field name="name">dac.openclaw.user.mapping.tree</field>
+            <field name="model">dac.openclaw.user.mapping</field>
+            <field name="arch" type="xml">
+                <list string="OpenClaw User Mappings">
+                    <field name="user_id"/>
+                    <field name="channel"/>
+                    <field name="target"/>
+                    <field name="role"/>
+                    <field name="notify_enabled"/>
+                    <field name="digest_enabled"/>
+                    <field name="deadline_enabled"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_dac_openclaw_user_mapping_form" model="ir.ui.view">
+            <field name="name">dac.openclaw.user.mapping.form</field>
+            <field name="model">dac.openclaw.user.mapping</field>
+            <field name="arch" type="xml">
+                <form string="OpenClaw User Mapping">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="channel"/>
+                                <field name="target"/>
+                                <field name="role"/>
+                                <field name="active"/>
+                            </group>
+                            <group>
+                                <field name="notify_enabled"/>
+                                <field name="digest_enabled"/>
+                                <field name="deadline_enabled"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Manager Scope">
+                                <field name="manager_user_ids" widget="many2many_tags" invisible="role not in ['manager', 'admin']"/>
+                            </page>
+                            <page string="Ghi chú">
+                                <field name="note"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_dac_openclaw_user_mapping_search" model="ir.ui.view">
+            <field name="name">dac.openclaw.user.mapping.search</field>
+            <field name="model">dac.openclaw.user.mapping</field>
+            <field name="arch" type="xml">
+                <search string="OpenClaw Mappings">
+                    <field name="user_id"/>
+                    <field name="channel"/>
+                    <field name="target"/>
+                    <field name="role"/>
+                    <filter string="Active" name="active" domain="[('active','=',True)]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Role" name="group_role" context="{'group_by': 'role'}"/>
+                        <filter string="Channel" name="group_channel" context="{'group_by': 'channel'}"/>
+                        <filter string="User" name="group_user" context="{'group_by': 'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_dac_openclaw_user_mapping" model="ir.actions.act_window">
+            <field name="name">OpenClaw User Mapping</field>
+            <field name="res_model">dac.openclaw.user.mapping</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <menuitem id="menu_dac_openclaw_user_mapping"
+                  name="OpenClaw Mapping"
+                  action="action_dac_openclaw_user_mapping"
+                  parent="home_menu.home_root"
+                  groups="dac_erp.group_dac_erp_manager"
+                  sequence="220"/>
+    </data>
+</odoo>
