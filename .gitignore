@@ -21,5 +21,3 @@ Thumbs.db
 .vscode/settings.json
 .idea/
 
-# Secrets
-config/odoo.conf
