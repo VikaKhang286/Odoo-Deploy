@@ -1,21 +1,25 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-.env
-.env.*
-
-.vscode/
-
-.idea/
-
+# Odoo runtime
+backups/
+logs/
 *.log
 
+# Backup files
+*.bak
+*.bak-*
+
+# OS
 .DS_Store
+Thumbs.db
 
-.odoo/
-filestore/
-sessions/
+# IDE
+.vscode/settings.json
+.idea/
 
-node_modules/
+# Secrets
+config/odoo.conf
