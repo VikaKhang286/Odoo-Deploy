@@ -1,4 +1,5 @@
 <odoo>
+    <function model="hr.employee" name="_dac_archive_obsolete_category_views"/>
     <record id="view_hr_employee_form_dac_role" model="ir.ui.view">
         <field name="name">hr.employee.form.dac.role</field>
         <field name="model">hr.employee</field>

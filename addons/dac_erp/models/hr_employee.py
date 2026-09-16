@@ -1,9 +1,47 @@
+import logging
+import re
+
+from lxml import etree
+
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+
+    @api.model
+    def _dac_archive_obsolete_category_views(self):
+        """Keep legacy customizations recoverable when their field is absent.
+
+        Run before loading the employee form: validating a new extension also
+        validates existing sibling extensions left in the production database.
+        """
+        field_name = 'dac_employee_category'
+        if field_name in self._fields:
+            return
+        views = self.env['ir.ui.view'].with_context(lang=None).search([
+            ('model', '=', 'hr.employee'),
+            ('active', '=', True),
+            ('inherit_id', '!=', False),
+            ('mode', '=', 'extension'),
+            ('arch_db', 'ilike', field_name),
+        ])
+        token = re.compile(r'\b%s\b' % field_name)
+        obsolete = views.filtered(lambda view: any(
+            token.search(value)
+            for node in etree.fromstring(view.arch_db).iter()
+            for value in node.attrib.values()
+        ))
+        if obsolete:
+            _logger.warning(
+                'Archiving employee extension views referencing missing %s: %s. '
+                'View definitions are preserved for recovery.',
+                field_name, [(view.id, view.name) for view in obsolete],
+            )
+            obsolete.write({'active': False})
 
     dac_role = fields.Selection(
         related='user_id.dac_role',

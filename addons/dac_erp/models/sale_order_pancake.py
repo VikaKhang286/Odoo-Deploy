@@ -164,6 +164,17 @@ class SaleOrderPancake(models.Model):
 
         return recent_customer_name, recent_staff_name
 
+    def action_open_order_conversation(self):
+        """Compatibility entry point for order buttons saved in older views."""
+        self.ensure_one()
+        self.check_access_rights('read')
+        self.check_access_rule('read')
+        if self.conversation_id:
+            self.conversation_id.check_access_rights('read')
+            self.conversation_id.check_access_rule('read')
+            return self.action_open_pancake_conversation(self.conversation_id.id)
+        return self.action_view_conversations()
+
     def action_open_pancake_conversation(self, conversation_id):
         """Mở trực tiếp cuộc hội thoại trên Pancake"""
         self.ensure_one()
