@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 import logging
 from datetime import date, timedelta
 
@@ -38,7 +39,10 @@ class SaleOrder(models.Model):
     user_id_design = fields.Many2one(
         'res.users',
         string='Người thiết kế',
-        domain=lambda self: self.env['res.users']._dac_exact_role_domain('design'),
+        domain=lambda self: expression.OR([
+            self.env['res.users']._dac_exact_role_domain(role)
+            for role in ('design', 'design_production', 'full_stack')
+        ]),
         tracking=True,
     )
 
@@ -46,7 +50,10 @@ class SaleOrder(models.Model):
     user_id_production = fields.Many2one(
         'res.users',
         string='Người sản xuất',
-        domain=lambda self: self.env['res.users']._dac_exact_role_domain('production'),
+        domain=lambda self: expression.OR([
+            self.env['res.users']._dac_exact_role_domain(role)
+            for role in ('production', 'design_production', 'full_stack')
+        ]),
         tracking=True,
     )
 
