@@ -4,17 +4,51 @@ import { useService } from "@web/core/utils/hooks";
 import { registry } from "@web/core/registry";
 import { patch } from "@web/core/utils/patch";
 import { UserMenu } from "@web/webclient/user_menu/user_menu";
-import { onWillStart, useState, onMounted } from "@odoo/owl";
+import { Component, onWillStart, useState, xml } from "@odoo/owl";
+import { usePopover } from "@web/core/popover/popover_hook";
 import { user } from "@web/core/user";
 import { rpc } from "@web/core/network/rpc";
+
+// Keep the existing DAC-branded button; render its menu through Odoo's overlay.
+class HomeAppsMenu extends Component {
+  static props = {
+    apps: Array,
+    getHref: Function,
+    onSelect: Function,
+  };
+  static template = xml`
+    <div class="o_home_apps_menu py-1" style="max-height: 80vh; overflow-y: auto;">
+      <a t-foreach="props.apps" t-as="app" t-key="app.id"
+         class="dropdown-item o_app" role="menuitem"
+         t-att-href="props.getHref(app)"
+         t-att-data-menu-xmlid="app.xmlid" t-att-data-section="app.id"
+         t-on-click="(event) => this.selectApp(event, app)">
+        <t t-esc="app.name"/>
+      </a>
+    </div>`;
+
+  selectApp(event, app) {
+    // Preserve the browser's open-in-new-tab behavior.
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    this.props.onSelect(app);
+  }
+}
 
 patch(NavBar.prototype, {
   setup() {
     super.setup(...arguments);
     this.state = useState({
-      ...super.state,
+      ...this.state,
       isMenuBlocked: false,
       rootMenuActionID: 0,
+    });
+    this.homeAppsPopover = usePopover(HomeAppsMenu, {
+      position: "bottom-start",
+      arrow: false,
+      popoverClass: "o-dropdown--menu dropdown-menu d-block",
+      popoverRole: "menu",
+      closeOnEscape: true,
     });
     onWillStart(async () => {
       const menuItems = this.menuService.getApps();
@@ -82,22 +116,26 @@ patch(NavBar.prototype, {
       id: "home-menu-button",
       title: "Home Menu",
       icon: "oi oi-apps",
-      callback: () => this.onHomeButtonClick(),
+      callback: (event) => this.onHomeButtonClick(event),
     };
   },
 
-  async onHomeButtonClick() {
-    if (this.state.rootMenuActionID && this.state.rootMenuActionID !== 0) {
-      await this.env.services.action.doAction(this.state.rootMenuActionID, {
-        clearBreadcrumbs: true,
-      });
-    } else {
-      console.warn(
-        "No valid rootMenuActionID found, falling back to reload page"
-      );
-      // Fallback: just reload the page
-      window.location.reload();
+  onHomeButtonClick(event) {
+    if (this.homeAppsPopover.isOpen) {
+      this.homeAppsPopover.close();
+      return;
     }
+    // currentTarget is the branded button, even when its icon was clicked.
+    const target = event?.currentTarget;
+    if (!target) return;
+    this.homeAppsPopover.open(target, {
+      apps: this.menuService.getApps(),
+      getHref: (app) => this.getMenuItemHref(app),
+      onSelect: (app) => {
+        this.homeAppsPopover.close();
+        this.onNavBarDropdownItemSelection(app);
+      },
+    });
   },
 
   trigger(event) {
