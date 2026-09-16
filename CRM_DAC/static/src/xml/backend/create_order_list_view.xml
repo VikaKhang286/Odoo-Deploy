@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- primary mode: tạo template mới dựa trên web.ListView, KHÔNG sửa template gốc -->
+    <t t-name="CRM_DAC.DacCreateOrderListView" t-inherit="web.ListView" t-inherit-mode="primary">
+        <xpath expr="//t[@t-set-slot='control-panel-always-buttons']" position="inside">
+            <Dropdown position="'bottom-start'" menuClass="'dac-create-order-dropdown-menu'">
+                <button class="btn btn-primary" type="button">
+                    <i class="fa fa-plus-circle me-1"/>Tạo đơn<i class="fa fa-caret-down ms-1"/>
+                </button>
+                <t t-set-slot="content">
+                    <DropdownItem onSelected="() => this.onCreateWalkIn()">
+                        <i class="fa fa-user me-2"/>Đơn khách vãng lai
+                    </DropdownItem>
+                    <DropdownItem onSelected="() => this.onCreatePancake()">
+                        <i class="fa fa-comments me-2"/>Đơn khách Pancake
+                    </DropdownItem>
+                </t>
+            </Dropdown>
+            <Dropdown position="'bottom-start'" menuClass="'dac-create-order-dropdown-menu'">
+                <button class="btn btn-secondary ms-1" type="button">
+                    <i class="fa fa-download me-1"/>Nhập đơn<i class="fa fa-caret-down ms-1"/>
+                </button>
+                <t t-set-slot="content">
+                    <DropdownItem onSelected="() => this.onImportManual()">
+                        <i class="fa fa-keyboard-o me-2"/>Nhập đơn thủ công
+                    </DropdownItem>
+                    <DropdownItem onSelected="() => this.onImportImage()">
+                        <i class="fa fa-file-image-o me-2"/>Nhập đơn từ ảnh
+                    </DropdownItem>
+                </t>
+            </Dropdown>
+        </xpath>
+    </t>
+
+</templates>

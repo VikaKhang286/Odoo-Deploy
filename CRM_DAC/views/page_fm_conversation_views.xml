@@ -50,19 +50,19 @@
         <field name="name">page.fm.conversation.list</field>
         <field name="model">page.fm.conversation</field>
         <field name="arch" type="xml">
-            <list string="Conversations">
+            <list string="Conversations" create="false" default_order="last_message_at_fm asc, id asc">
                 <header>
+                    <button name="%(CRM_DAC.action_pancake_sync_dashboard)d"
+                            type="action"
+                            string="Mở Dashboard Đồng Bộ Tin Nhắn"
+                            display="always"
+                            class="btn-secondary"
+                            groups="dac_erp.group_dac_erp_manager,base.group_system"/>
                     <!-- CÁC NÚT CẦN THIẾT -->
                     <button name="sync_all_conversations_scheduled"
                             type="object"
                             string="Đồng bộ đã chọn"
                             class="btn-primary"
-                            groups="dac_erp.group_dac_erp_manager"/>
-                    <button name="action_sync_messages_button"
-                            type="object"
-                            string="Đồng bộ tin nhắn"
-                            class="btn-success"
-                            context="{'load_all': True}"
                             groups="dac_erp.group_dac_erp_manager"/>
                     <button name="action_sync_tags_from_page"
                             type="object"
@@ -102,14 +102,13 @@
         <field name="name">page.fm.conversation.form</field>
         <field name="model">page.fm.conversation</field>
         <field name="arch" type="xml">
-            <form string="Conversation">
+            <form string="Conversation" create="false">
                 <header>
-                    <button name="action_sync_messages_button" 
-                            type="object" 
-                            string="Đồng bộ tin nhắn" 
-                            class="btn-success" 
-                            context="{'load_all': True}"
-                            groups="dac_erp.group_dac_erp_manager"/>
+                    <button name="action_open_message_sync_dashboard"
+                            type="object"
+                            string="Mở đồng bộ tin nhắn"
+                            class="btn-primary"
+                            groups="dac_erp.group_dac_erp_manager,base.group_system"/>
                     <button name="action_sync_tags_from_page"
                             type="object"
                             string="Đồng bộ Tags"
@@ -141,6 +140,24 @@
                                 icon="fa-shopping-cart">
                             <span class="o_stat_info">
                                 <span class="o_stat_text">Đơn hàng</span>
+                            </span>
+                        </button>
+                        <button name="action_open_create_order_wizard"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-plus-circle"
+                                groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system">
+                            <span class="o_stat_info">
+                                <span class="o_stat_text">Tạo đơn</span>
+                            </span>
+                        </button>
+                        <button name="action_open_invoice_upload_new_order"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-image-o"
+                                groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system">
+                            <span class="o_stat_info">
+                                <span class="o_stat_text">Tạo đơn từ ảnh</span>
                             </span>
                         </button>
                     </div>
@@ -279,6 +296,25 @@
         </field>
     </record>
 
+    <record id="action_page_fm_conversation_queue" model="ir.actions.act_window">
+        <field name="name">Hội thoại cần xử lý</field>
+        <field name="res_model">page.fm.conversation</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_page_fm_conversation_search"/>
+        <field name="context">{
+            'search_default_filter_require_processing': 1,
+            'search_default_filter_unread': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có hội thoại nào trong hàng chờ xử lý.
+            </p>
+            <p>
+                Danh sách này ưu tiên các hội thoại chưa đọc, cần xử lý, hoặc đang được giao cho bạn.
+            </p>
+        </field>
+    </record>
+
     <record id="action_page_fm_conversation_all" model="ir.actions.act_window">
         <field name="name">Quản Lý Cuộc Trò Chuyện</field>
         <field name="res_model">page.fm.conversation</field>
@@ -299,6 +335,21 @@
                 <li><strong>🔄 Đồng Bộ Toàn Bộ (Batch)</strong> - Đồng bộ tất cả conversations</li>
                 <li><strong>⚡ Sync Ngay (Background)</strong> - Đồng bộ nền không chặn UI</li>
             </ul>
+        </field>
+    </record>
+
+    <record id="action_page_fm_conversation_admin" model="ir.actions.act_window">
+        <field name="name">Quản trị hội thoại Pancake</field>
+        <field name="res_model">page.fm.conversation</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_page_fm_conversation_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Chưa có cuộc trò chuyện nào được đồng bộ.
+            </p>
+            <p>
+                Màn hình này được giữ cho manager/admin để rà soát toàn bộ hội thoại, sync, tags và phân công.
+            </p>
         </field>
     </record>
 

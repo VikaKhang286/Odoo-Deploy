@@ -13,14 +13,10 @@ class AccountMove(models.Model):
     def read(self, fields=None, load='_classic_read'):
         """Override read để chặn Design/Production users truy cập hóa đơn"""
         user = self.env.user
-        
-        # Chặn Design và Production (không phải Manager/Admin/Sale)
-        if (user.has_group('dac_erp.group_dac_erp_design') or 
-            user.has_group('dac_erp.group_dac_erp_production')) and \
-           not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                user.has_group('dac_erp.group_dac_erp_sale') or
-                user.has_group('base.group_system')):
-            
+
+        # Chặn Design và Production thuần (không phải Manager/Admin/Sale)
+        if user._dac_is_worker_only():
+
             _logger.warning(f"BLOCKED READ: User {user.name} (ID: {user.id}) tried to read account.move {self.ids}")
             
             raise AccessError(
@@ -36,14 +32,10 @@ class AccountMove(models.Model):
     def web_read(self, specification):
         """Override web_read để chặn JSON-RPC calls từ Design/Production users"""
         user = self.env.user
-        
-        # Chặn Design và Production (không phải Manager/Admin/Sale)
-        if (user.has_group('dac_erp.group_dac_erp_design') or 
-            user.has_group('dac_erp.group_dac_erp_production')) and \
-           not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                user.has_group('dac_erp.group_dac_erp_sale') or
-                user.has_group('base.group_system')):
-            
+
+        # Chặn Design và Production thuần (không phải Manager/Admin/Sale)
+        if user._dac_is_worker_only():
+
             _logger.warning(f"BLOCKED WEB_READ: User {user.name} (ID: {user.id}) tried to web_read account.move {self.ids}")
             
             raise AccessError(
@@ -60,9 +52,9 @@ class AccountMove(models.Model):
         """Kiểm tra quyền xóa hóa đơn - CHỈ ÁP DỤNG CHO SALES USERS"""
         for move in self:
             # Nếu user là DAC sale (không phải manager hoặc admin) -> không cho xóa
-            if (self.env.user.has_group('dac_erp.group_dac_erp_sale') and 
-                not self.env.user.has_group('dac_erp.group_dac_erp_manager') and
-                not self.env.user.has_group('base.group_system')):
+            if (self.env.user._dac_is_sale() and
+                not self.env.user._dac_is_manager() and
+                not self.env.user._dac_is_admin()):
                 raise AccessError(
                     f"Bạn không có quyền xóa hóa đơn {move.name}!\n"
                     "Liên hệ quản lý để được hỗ trợ."
@@ -530,19 +522,20 @@ class AccountMove(models.Model):
                 user = self.env.user
                 
                 # KIỂM TRA QUYỀN TRUY CẬP TRƯỚC KHI REDIRECT
-                if (user.has_group('dac_erp.group_dac_erp_design') or 
-                    user.has_group('dac_erp.group_dac_erp_production')) and \
-                   not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                        user.has_group('dac_erp.group_dac_erp_sale') or
-                        user.has_group('base.group_system')):
-                    
-                    # Check xem user có quyền truy cập đơn hàng này không
-                    can_access = False
-                    if user.has_group('dac_erp.group_dac_erp_design'):
-                        can_access = (sale_order.user_id_design == user)
-                    elif user.has_group('dac_erp.group_dac_erp_production'):
-                        can_access = (sale_order.user_id_production == user or user in sale_order.production_group_ids)
-                    
+                if user._dac_is_worker_only():
+
+                    # Check xem user có quyền truy cập đơn hàng này không.
+                    # Dùng OR để dual-role (design + production) được tính cả 2 nhánh,
+                    # không bị kẹt ở nhánh design như logic if/elif cũ.
+                    can_access = (
+                        user._dac_is_design() and sale_order.user_id_design == user
+                    ) or (
+                        user._dac_is_production() and (
+                            sale_order.user_id_production == user
+                            or user in sale_order.production_group_ids
+                        )
+                    )
+
                     if not can_access:
                         # User không có quyền → redirect về menu action với URL trực tiếp
                         _logger.warning(f"ACCESS DENIED: User {user.name} (ID: {user.id}) tried to access order {sale_order.name} but not assigned")
@@ -559,11 +552,12 @@ class AccountMove(models.Model):
                             }
                         )
                         
-                        # Redirect về menu phù hợp theo group
-                        if user.has_group('dac_erp.group_dac_erp_design'):
-                            menu = self.env.ref('dac_erp.dac_sale_order_menu_design_only')
-                        elif user.has_group('dac_erp.group_dac_erp_production'):
+                        # Redirect về menu phù hợp theo group.
+                        # Dual-role ưu tiên production (đồng bộ dashboard routing).
+                        if user._dac_is_production():
                             menu = self.env.ref('dac_erp.dac_sale_order_menu_production_only')
+                        elif user._dac_is_design():
+                            menu = self.env.ref('dac_erp.dac_sale_order_menu_design_only')
                         else:
                             # Fallback: redirect về root menu "Đang sản xuất"
                             menu = self.env.ref('dac_erp.dac_design_root_menu')
@@ -574,11 +568,12 @@ class AccountMove(models.Model):
                             'target': 'self',
                         }
                     
-                    # User có quyền → redirect về form view với action context đúng theo group
-                    if user.has_group('dac_erp.group_dac_erp_design'):
-                        action = self.env.ref('dac_erp.dac_sale_order_action_design_only')
-                    elif user.has_group('dac_erp.group_dac_erp_production'):
+                    # User có quyền → redirect về form view với action context đúng theo group.
+                    # Dual-role ưu tiên production (đồng bộ dashboard routing).
+                    if user._dac_is_production():
                         action = self.env.ref('dac_erp.dac_sale_order_action_production_only')
+                    elif user._dac_is_design():
+                        action = self.env.ref('dac_erp.dac_sale_order_action_design_only')
                     else:
                         # Manager/Sale/Admin - dùng action manager
                         action = self.env.ref('dac_erp.dac_sale_order_manager_action')

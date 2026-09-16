@@ -1,13 +1,107 @@
 # -*- coding: utf-8 -*-
+import hashlib
+import hmac
 import json
 import logging
-from odoo import http
-from odoo.http import request
-from odoo.exceptions import AccessDenied
 import os
 from datetime import datetime, timedelta
 
+from odoo import http
+from odoo.http import request
+
 _logger = logging.getLogger(__name__)
+
+
+# Phase 1 security: webhook authentication.
+# Mode được điều khiển qua ICP `dac_erp.pancake_webhook_auth_mode`:
+#   - 'disabled' (mặc định nếu chưa cấu hình)  : behavior cũ — chỉ log warning,
+#                                                vẫn xử lý webhook (backward compat)
+#   - 'api_key'                                : yêu cầu header X-API-KEY khớp
+#                                                ICP `dac_erp.pancake_webhook_secret`
+#   - 'hmac'                                   : yêu cầu header X-Pancake-Signature
+#                                                là HMAC-SHA256 của raw body với
+#                                                key ICP `dac_erp.pancake_webhook_secret`
+# Khuyến nghị production: dùng 'hmac'. Khi chuyển mode phải coordinate với Pancake.
+PANCAKE_AUTH_MODE_PARAM = 'dac_erp.pancake_webhook_auth_mode'
+PANCAKE_WEBHOOK_SECRET_PARAM = 'dac_erp.pancake_webhook_secret'
+
+
+def _verify_pancake_webhook_auth(raw_body_bytes):
+    """Kiểm tra auth webhook Pancake. Trả None nếu OK, hoặc Response error.
+
+    `raw_body_bytes` phải là bytes — dùng cho HMAC. Không decode trước.
+    """
+    icp = request.env['ir.config_parameter'].sudo()
+    mode = (icp.get_param(PANCAKE_AUTH_MODE_PARAM) or 'disabled').strip().lower()
+    if mode in ('', 'disabled', 'off', 'none'):
+        # Backward compat — log warning, không reject
+        _logger.warning("Pancake webhook auth is DISABLED (ICP %s). "
+                        "Production cần set mode='hmac' hoặc 'api_key'.",
+                        PANCAKE_AUTH_MODE_PARAM)
+        return None
+
+    secret = (icp.get_param(PANCAKE_WEBHOOK_SECRET_PARAM) or '').strip()
+    if not secret:
+        _logger.error("Pancake webhook auth mode=%s nhưng ICP %s chưa set.",
+                      mode, PANCAKE_WEBHOOK_SECRET_PARAM)
+        return request.make_response(
+            json.dumps({'status': 'error', 'message': 'webhook secret not configured'}),
+            headers={'Content-Type': 'application/json'},
+            status=503,
+        )
+
+    if mode == 'api_key':
+        provided = request.httprequest.headers.get('X-API-KEY') or ''
+        if not provided:
+            _logger.warning("Pancake webhook: missing X-API-KEY header")
+            return request.make_response(
+                json.dumps({'status': 'error', 'message': 'missing X-API-KEY'}),
+                headers={'Content-Type': 'application/json'},
+                status=401,
+            )
+        if not hmac.compare_digest(str(provided).strip(), secret):
+            _logger.warning("Pancake webhook: X-API-KEY mismatch")
+            return request.make_response(
+                json.dumps({'status': 'error', 'message': 'invalid X-API-KEY'}),
+                headers={'Content-Type': 'application/json'},
+                status=403,
+            )
+        return None
+
+    if mode == 'hmac':
+        provided_sig = (request.httprequest.headers.get('X-Pancake-Signature') or '').strip()
+        if not provided_sig:
+            _logger.warning("Pancake webhook: missing X-Pancake-Signature header")
+            return request.make_response(
+                json.dumps({'status': 'error', 'message': 'missing X-Pancake-Signature'}),
+                headers={'Content-Type': 'application/json'},
+                status=401,
+            )
+        # Cho phép prefix 'sha256=' theo convention phổ biến (GitHub style)
+        if provided_sig.startswith('sha256='):
+            provided_sig = provided_sig[len('sha256='):]
+        expected = hmac.new(
+            secret.encode('utf-8'),
+            raw_body_bytes,
+            hashlib.sha256,
+        ).hexdigest()
+        if not hmac.compare_digest(provided_sig.lower(), expected.lower()):
+            _logger.warning("Pancake webhook: HMAC signature mismatch")
+            return request.make_response(
+                json.dumps({'status': 'error', 'message': 'invalid signature'}),
+                headers={'Content-Type': 'application/json'},
+                status=403,
+            )
+        return None
+
+    # Unknown mode
+    _logger.error("Pancake webhook: unknown auth mode %r in ICP", mode)
+    return request.make_response(
+        json.dumps({'status': 'error', 'message': 'auth mode misconfigured'}),
+        headers={'Content-Type': 'application/json'},
+        status=503,
+    )
+
 
 class PancakeWebhookController(http.Controller):
 
@@ -24,32 +118,32 @@ class PancakeWebhookController(http.Controller):
         """
         Endpoint để nhận dữ liệu webhook từ Pancake.
         URL này sẽ được cấu hình trong Pancake: https://your_odoo_domain.com/dac_erp/pancake_webhook
+
+        Auth được điều khiển qua ICP `dac_erp.pancake_webhook_auth_mode`.
+        Production: 'hmac' với HMAC-SHA256(secret, raw_body) trong header X-Pancake-Signature.
         """
         _logger.info("Pancake Webhook: Yêu cầu nhận được.")
 
-        # 1. Xác thực Request từ Pancake (Kiểm tra X-API-KEY)
-        # Lấy secret key đã cấu hình trong Odoo (nên lưu trong System Parameters)
-        # Ví dụ: request.env['ir.config_parameter'].sudo().get_param('pancake.webhook_secret_key')
-        # Trong ví dụ này, chúng ta sẽ tạm hardcode (KHÔNG NÊN LÀM TRONG PRODUCTION)
-        # Key này phải khớp với key bạn cấu hình trong Pancake (webhook_headers)
-        # expected_api_key = "elqsF9ERiFWGacWQO9Gg5XC4kXojot" # Lấy từ cấu hình Pancake của bạn
-
-        # Lấy giá trị X-API-KEY từ header của request
-        # received_api_key = request.httprequest.headers.get('X-API-KEY')
-
-        # if not received_api_key or received_api_key != expected_api_key:
-        #     _logger.warning(f"Pancake Webhook: Xác thực thất bại. X-API-KEY không hợp lệ hoặc bị thiếu. Nhận được: {received_api_key}")
-        #     # Trả về lỗi 401 Unauthorized
-        #     return request.make_response(
-        #         json.dumps({'status': 'error', 'message': 'Unauthorized: Invalid or missing X-API-KEY'}),
-        #         headers={'Content-Type': 'application/json'},
-        #         status=401
-        #     )
-        _logger.info("Pancake Webhook: Xác thực X-API-KEY thành công.")
-
-        # 2. Lấy và Parse dữ liệu JSON từ Pancake
+        # 1. Đọc raw body TRƯỚC KHI verify (HMAC cần raw bytes)
         try:
-            raw_data = request.httprequest.data.decode('utf-8')
+            raw_body_bytes = request.httprequest.data or b''
+        except Exception as e:
+            _logger.error("Pancake Webhook: lỗi đọc raw body: %s", e)
+            return request.make_response(
+                json.dumps({'status': 'error', 'message': 'cannot read body'}),
+                headers={'Content-Type': 'application/json'},
+                status=400,
+            )
+
+        # 2. Xác thực Request từ Pancake
+        auth_error = _verify_pancake_webhook_auth(raw_body_bytes)
+        if auth_error is not None:
+            return auth_error
+        _logger.info("Pancake Webhook: Xác thực thành công.")
+
+        # 3. Lấy và Parse dữ liệu JSON từ Pancake
+        try:
+            raw_data = raw_body_bytes.decode('utf-8') if raw_body_bytes else ''
             if not raw_data:
                 _logger.warning("Pancake Webhook: Không có dữ liệu trong request body.")
                 return request.make_response(

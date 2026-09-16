@@ -1,5 +1,7 @@
 import logging
+from datetime import timedelta
 from odoo import models, fields, api, _
+from odoo.addons.dac_erp.models.phone_utils import normalize_phone_vn
 
 _logger = logging.getLogger(__name__)
 
@@ -47,8 +49,32 @@ class ResUsers(models.Model):
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+
+    # === PANCAKE CUSTOMER LINK ===
     pancake_id = fields.Char(string="Pancake Customer ID", index=True, copy=False)
-    
+
+    # Bảng alias: nhiều Pancake UUID → 1 partner
+    pancake_customer_ids = fields.One2many(
+        'page.fm.customer', 'partner_id',
+        string='Pancake Customer IDs',
+        help='Tất cả Pancake UUID được liên kết với khách hàng này',
+    )
+
+    # === PHONE NORMALIZATION ===
+    phone_normalized = fields.Char(
+        string='SĐT chuẩn hoá',
+        compute='_compute_phone_normalized',
+        store=True,
+        index=True,
+        copy=False,
+        help='Số điện thoại đã chuẩn hoá về dạng 0XXXXXXXXX (VN)',
+    )
+
+    @api.depends('phone')
+    def _compute_phone_normalized(self):
+        for p in self:
+            p.phone_normalized = normalize_phone_vn(p.phone)
+
     conversation_ids = fields.One2many(
         'page.fm.conversation', 'partner_id', string='Conversations'
     )
@@ -58,7 +84,17 @@ class ResPartner(models.Model):
     is_pancake_customer = fields.Boolean(
         string='Khách từ Pancake', compute='_compute_is_pancake_customer'
     )
-    
+    pancake_icon_html = fields.Html(
+        string='',
+        compute='_compute_pancake_icon_html',
+        sanitize=False,
+        store=False,
+    )
+    is_new_customer = fields.Boolean(
+        string='Khách hàng mới', compute='_compute_is_new_customer',
+        help="Khách mới liên hệ trong vòng 7 ngày và chưa có đơn hàng nào."
+    )
+
     # === PANCAKE TAGS ===
     pancake_tag_ids = fields.Many2many(
         'page.fm.tag',
@@ -81,6 +117,36 @@ class ResPartner(models.Model):
     def _compute_is_pancake_customer(self):
         for p in self:
             p.is_pancake_customer = bool(p.conversation_count)
+
+    def _compute_pancake_icon_html(self):
+        icon = (
+            '<span title="Khách từ Pancake" '
+            'style="color:#0084ff;font-size:13px;vertical-align:middle;">'
+            '<i class="fa fa-comments"></i></span>'
+        )
+        for p in self:
+            p.pancake_icon_html = icon if p.conversation_count else ''
+
+    def _compute_is_new_customer(self):
+        one_week_ago = fields.Datetime.now() - timedelta(days=7)
+        for partner in self:
+            is_recent = bool(partner.create_date and partner.create_date >= one_week_ago)
+            if not is_recent:
+                first_conv = self.env['page.fm.conversation'].sudo().search([
+                    ('partner_id', '=', partner.id)
+                ], order='create_date asc', limit=1)
+                if first_conv and first_conv.create_date and first_conv.create_date >= one_week_ago:
+                    is_recent = True
+            
+            if not is_recent:
+                partner.is_new_customer = False
+                continue
+            
+            orders = self.env['sale.order'].sudo().search_count([
+                ('partner_id', 'child_of', partner.commercial_partner_id.id),
+                ('state', '!=', 'cancel')
+            ])
+            partner.is_new_customer = (orders == 0)
 
     def action_view_conversations(self):
         self.ensure_one()
@@ -176,3 +242,41 @@ class ResPartner(models.Model):
         'unique(pancake_id, company_id)',
         'Pancake Customer ID must be unique per company.')
     ]
+
+
+class SaleOrderExt(models.Model):
+    _inherit = 'sale.order'
+
+    partner_is_pancake = fields.Boolean(
+        related='partner_id.is_pancake_customer',
+        string='Khách từ Pancake',
+        store=False,
+    )
+    partner_pancake_icon_html = fields.Html(
+        string='',
+        compute='_compute_partner_pancake_icon_html',
+        sanitize=False,
+        store=False,
+    )
+
+    @api.depends('conversation_count')
+    def _compute_partner_pancake_icon_html(self):
+        icon = (
+            '<span title="Khách từ Pancake" '
+            'style="color:#0084ff;font-size:13px;vertical-align:middle;">'
+            '<i class="fa fa-comments"></i></span>'
+        )
+        for order in self:
+            order.partner_pancake_icon_html = icon if order.conversation_count > 0 else ''
+
+    def action_open_create_order_wizard_from_list(self):
+        """Mở wizard tạo đơn từ nút trong danh sách đơn hàng."""
+        return self.env['dac.create.order.wizard'].sudo().action_open_wizard()
+
+    def action_open_invoice_upload_from_list(self):
+        """Mở dialog upload hoá đơn ảnh để tạo đơn hàng mới từ list view."""
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'sale_ai_invoice_reader.open_upload_dialog',
+            'params': {},
+        }

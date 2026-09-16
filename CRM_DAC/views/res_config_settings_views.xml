@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_res_config_settings_inherit_crm_dac_pancake" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.crm.dac.pancake</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='invite_users']" position="after">
+                    <div id="crm_dac_pancake_settings" groups="base.group_system">
+                        <block title="Pancake" name="crm_dac_pancake_settings_block">
+                            <setting id="crm_dac_pancake_dashboard_entry"
+                                     string="Đồng bộ liên tục Pancake"
+                                     help="Mở dashboard riêng để theo dõi luồng đồng bộ liên tục, chạy tay khi cần và chỉnh cấu hình nền của Pancake.">
+                                <button name="%(CRM_DAC.action_pancake_sync_dashboard)d"
+                                        type="action"
+                                        string="Mở Đồng bộ liên tục"
+                                        class="btn btn-primary"/>
+                            </setting>
+                            <setting id="crm_dac_pancake_bulk_sync_entry"
+                                     string="Đồng bộ toàn bộ Pancake"
+                                     help="Màn hình riêng để chọn page, theo dõi tiến độ và chạy job đồng bộ toàn bộ thủ công bằng API queue runner.">
+                                <button name="%(CRM_DAC.action_pancake_bulk_sync_dashboard)d"
+                                        type="action"
+                                        string="Mở Đồng bộ toàn bộ"
+                                        class="btn btn-primary"/>
+                            </setting>
+                            <setting id="crm_dac_pancake_token_entry"
+                                     string="Access Token Pancake"
+                                     help="Dán Public API access token từ Pancake để Odoo có thể kiểm tra token và tải danh sách Page.">
+                                <field name="access_token" placeholder="Nhập access token từ Pancake..."/>
+                            </setting>
+                            <setting id="crm_dac_pancake_token_status"
+                                     string="Trạng thái token"
+                                     help="Hiển thị kết quả kiểm tra token gần nhất từ endpoint page catalog mà integration hiện tại đang sử dụng.">
+                                <field name="token_check_status" readonly="1"/>
+                                <field name="token_check_at" readonly="1"/>
+                                <field name="token_check_page_count" readonly="1"/>
+                                <field name="token_check_message" readonly="1"/>
+                            </setting>
+                            <setting id="crm_dac_pancake_operator_note"
+                                     string="Quy trình đổi token"
+                                     help="Pancake không tự refresh token cho integration này.">
+                                <div class="text-muted">
+                                    Tạo token mới trong Pancake, cập nhật vào Odoo, kiểm tra token hợp lệ, rồi mới xóa token cũ ở Pancake.
+                                </div>
+                            </setting>
+                            <setting id="crm_dac_pancake_continuous_sync_settings"
+                                     string="Đồng bộ liên tục"
+                                     help="Bật hoặc tắt toàn bộ luồng đồng bộ liên tục chạy nền cho các page active đã chọn.">
+                                <field name="continuous_sync_active"/>
+                            </setting>
+                            <setting id="crm_dac_pancake_bulk_sync_settings"
+                                     string="Thiết lập đồng bộ toàn bộ"
+                                     help="Giữ block này gọn để xem preset, runner và các thông số dùng chung. Thiết lập chi tiết nằm ở màn Đồng bộ toàn bộ.">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-12 col-lg-6">
+                                            <field name="bulk_sync_preset_id"/>
+                                            <field name="sync_batch_size"/>
+                                            <field name="smart_recent_days"/>
+                                            <field name="deep_recent_days"/>
+                                        </div>
+                                        <div class="col-12 col-lg-6">
+                                            <field name="circuit_breaker_pause_minutes"/>
+                                            <field name="stale_timeout_minutes"/>
+                                            <field name="runner_active"/>
+                                            <field name="runner_interval_number"/>
+                                            <field name="runner_interval_type"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                        </block>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

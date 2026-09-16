@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--
+        DAC uses the backend asset stylesheets for its theme. The legacy
+        Chameleon layout injects global !important rules and duplicate home
+        styles, overriding those assets. Replace only that layout's style
+        block, keeping its configured application-menu logo.
+        Upgrade dac_erp to apply this inherited view to an existing database.
+    -->
+    <template id="chameleon_layout_asset_theme"
+              inherit_id="Chameleon.layout_inherit"
+              priority="90">
+        <xpath expr="//style[@type='text/css']" position="replace">
+            <style type="text/css" t-if="image_logo_homepage_64">
+                .oi-apps:before {
+                    content: url('data:image/png;base64,<t t-esc="image_logo_homepage_64"/>') !important;
+                }
+            </style>
+        </xpath>
+    </template>
+</odoo>

@@ -6,10 +6,152 @@ _logger = logging.getLogger(__name__)
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
+
+    # Bảng giá xe bán hàng theo (dài, rộng) cm và mã chất liệu.  Giá được
+    # áp dụng ở onchange để nhân viên vẫn có thể nhập đơn giá riêng cho các
+    # kích thước/chất liệu không nằm trong bảng này.
+    _CART_UNIT_PRICES = {
+        (80.0, 38.0): {
+            'hiflex_silver': 950000.0,
+            'formex': 1260000.0,
+            'alu': 1760000.0,
+        },
+        (100.0, 48.0): {
+            'hiflex_silver': 1135000.0,
+            'formex': 1395000.0,
+            'alu': 1890000.0,
+        },
+        (120.0, 58.0): {
+            'hiflex_silver': 1460000.0,
+            'formex': 1760000.0,
+            'alu': 2290000.0,
+        },
+    }
+
+    @api.model
+    def _is_cart_order_from_context(self):
+        order_id = self.env.context.get('default_order_id')
+        if order_id:
+            return self.env['sale.order'].browse(order_id).order_type == 'cart'
+        return self.env.context.get('default_order_type') == 'cart'
+
+    @api.model
+    def _default_cart_material(self):
+        return 'hiflex_silver' if self._is_cart_order_from_context() else False
+
+    @api.model
+    def _default_cart_dimension(self):
+        if not self._is_cart_order_from_context():
+            return False
+        return self.env.ref('dac_erp.cart_dimension_80x40', raise_if_not_found=False)
     
     description = fields.Text(string='Nội dung')
+    material = fields.Selection(
+        selection=[
+            ('hiflex_silver', 'Bạc Hiflex'),
+            ('formex', 'Formex'),
+            ('alu', 'Alu'),
+        ],
+        string='Chất liệu',
+        default=_default_cart_material,
+    )
+    material_id = fields.Many2one(
+        'dac.sale.material',
+        string='Chất liệu',
+        compute='_compute_material_id',
+        inverse='_inverse_material_id',
+        store=True,
+        ondelete='set null',
+    )
+    accessory_ids = fields.Many2many(
+        'dac.sale.order.accessory',
+        'sale_order_line_accessory_rel',
+        'sale_order_line_id',
+        'accessory_id',
+        string='Phụ kiện',
+    )
+    order_type = fields.Selection(related='order_id.order_type')
+    product_type = fields.Selection(related='product_id.type')
+    accessory_price_applied = fields.Float(
+        string='Giá phụ kiện đã cộng', default=0.0, copy=True,
+    )
     height = fields.Float(string='Chiều cao')
     width = fields.Float(string='Chiều ngang')
+    length = fields.Float(string='Chiều dài')
+    cart_dimension_id = fields.Many2one(
+        'dac.cart.dimension',
+        string='Kích thước',
+        default=_default_cart_dimension,
+        ondelete='restrict',
+        help='Kích thước xe đẩy theo định dạng Chiều dài x Chiều rộng. Chiều cao luôn là 195 cm.',
+    )
+
+    def _get_cart_unit_price(self):
+        """Trả giá xe theo bảng, cộng phần phụ thu của biến thể (nếu có)."""
+        self.ensure_one()
+        if not self.cart_dimension_id:
+            return False
+
+        material_code = self.material_id.code or self.material
+        dimensions = (self.cart_dimension_id.length, self.cart_dimension_id.width)
+        base_price = self._CART_UNIT_PRICES.get(dimensions, {}).get(material_code, False)
+        if base_price is False:
+            return False
+
+        variant_surcharge = sum(
+            self.product_id.product_template_attribute_value_ids.mapped('price_extra')
+        )
+        return base_price + variant_surcharge
+
+    @api.depends('material')
+    def _compute_material_id(self):
+        materials_by_code = {
+            material.code: material.id
+            for material in self.env['dac.sale.material'].search([])
+        }
+        for line in self:
+            line.material_id = materials_by_code.get(line.material, False)
+
+    def _inverse_material_id(self):
+        for line in self:
+            line.material = line.material_id.code or False
+
+    @api.onchange('cart_dimension_id')
+    def _onchange_cart_dimension(self):
+        """Đồng bộ kích thước ngay khi chọn một bản ghi trong dropdown."""
+        for line in self:
+            if line.cart_dimension_id:
+                line.length = line.cart_dimension_id.length
+                line.width = line.cart_dimension_id.width
+                line.height = line.cart_dimension_id.height
+
+    @api.onchange('product_id', 'material', 'material_id', 'cart_dimension_id')
+    def _onchange_cart_material_or_dimension(self):
+        """Tự điền giá xe và phụ thu biến thể khi người dùng chọn dữ liệu."""
+        for line in self:
+            price = line._get_cart_unit_price()
+            if price is not False:
+                line.price_unit = price + sum(line.accessory_ids.mapped('price'))
+                line.accessory_price_applied = sum(line.accessory_ids.mapped('price'))
+
+    @api.onchange('accessory_ids')
+    def _onchange_accessory_ids(self):
+        for line in self:
+            if line.display_type:
+                continue
+            total = sum(line.accessory_ids.mapped('price'))
+            line.price_unit += total - line.accessory_price_applied
+            line.accessory_price_applied = total
+
+    def _sync_accessory_unit_price(self):
+        """Apply only the difference, including writes from imports/API calls."""
+        for line in self.filtered(lambda record: not record.display_type):
+            total = sum(line.accessory_ids.mapped('price'))
+            if total != line.accessory_price_applied:
+                super(SaleOrderLine, line).write({
+                    'price_unit': line.price_unit + total - line.accessory_price_applied,
+                    'accessory_price_applied': total,
+                })
 
     # --- Helpers ---
     def _is_deposit_related(self):
@@ -30,9 +172,9 @@ class SaleOrderLine(models.Model):
 
     def unlink(self):
         user = self.env.user
-        is_admin = user.has_group('base.group_system')
-        is_manager = user.has_group('dac_erp.group_dac_erp_manager')
-        is_sale = user.has_group('dac_erp.group_dac_erp_sale')
+        is_admin = user._dac_is_admin()
+        is_manager = user._dac_is_manager()
+        is_sale = user._dac_is_sale()
 
         # III) Quyền xóa
         if not (is_admin or is_manager or is_sale):
@@ -53,8 +195,8 @@ class SaleOrderLine(models.Model):
         EPS = 1e-6
         for order, lines in lines_by_order.items():
             if is_sale and not (is_admin or is_manager):
-                # cấm xóa 3 dòng "khoản cọc"
-                if any(l._is_deposit_related() for l in lines):
+                # cấm xóa dòng cọc chỉ khi đã xác nhận cọc (is_deposit_confirmed)
+                if any(l._is_deposit_related() for l in lines) and order.is_deposit_confirmed:
                     raise AccessError("Bạn không thể thực hiện thao tác này!\nLiên hệ quản lý hoặc quản trị viên để được trợ giúp!")
                 # không xóa vượt tiền cọc đã thanh toán
                 positive_delete_total = sum(l.price_total for l in lines if not l.display_type and l.price_total > 0)
@@ -112,22 +254,23 @@ class SaleOrderLine(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
+        uom_unit = self.env.ref('uom.product_uom_unit', raise_if_not_found=False)
         for vals in vals_list:
-            # Nếu là dòng ghi chú (không sản phẩm, giá = 0, có tên, không display_type) thì gán là line_note
-            if (not vals.get('product_id') and vals.get('name') and 
-                not vals.get('display_type') and vals.get('price_unit', 0) == 0):
-                vals['display_type'] = 'line_note'
-                vals['product_uom_qty'] = 0
-            # Nếu là dòng section (tùy ý, nếu bạn muốn giữ logic cũ)
-            elif (not vals.get('product_id') and vals.get('name') and 
-                  not vals.get('display_type') and vals.get('price_unit', 0) == 0 and 
-                  ('mục' in vals.get('name', '').lower() or 'section' in vals.get('name', '').lower())):
-                vals['display_type'] = 'line_section'
-                vals['product_uom_qty'] = 0
             # Đảm bảo name không bị rỗng nếu là ghi chú/section
             if vals.get('display_type') and not vals.get('name'):
-                vals['name'] = vals.get('display_type') == 'line_section' and 'Đầu mục' or 'Ghi chú'
-        return super().create(vals_list)
+                vals['name'] = 'Đầu mục' if vals['display_type'] == 'line_section' else 'Ghi chú'
+            # A new editable line can be autosaved before a product is selected.
+            # sale.order.line.name is required, so keep a temporary label until
+            # the standard product onchange supplies the product description.
+            if not vals.get('display_type') and not vals.get('name'):
+                vals['name'] = 'Sản phẩm'
+            # Dòng tự do (không product_id, không section/note): gán UOM mặc định để tránh lỗi ORM
+            if (not vals.get('product_id') and not vals.get('display_type')
+                    and not vals.get('product_uom') and uom_unit):
+                vals['product_uom'] = uom_unit.id
+        lines = super().create(vals_list)
+        lines._sync_accessory_unit_price()
+        return lines
 
     def write(self, vals):
         # Ngăn việc xóa display_type
@@ -135,7 +278,10 @@ class SaleOrderLine(models.Model):
             current_display_type = self.display_type
             if current_display_type in ('line_section', 'line_note'):
                 vals.pop('display_type')
-        return super().write(vals)
+        result = super().write(vals)
+        if 'accessory_ids' in vals:
+            self._sync_accessory_unit_price()
+        return result
 
     @api.onchange('display_type')
     def _onchange_display_type(self):
@@ -144,5 +290,3 @@ class SaleOrderLine(models.Model):
             self.product_uom_qty = 0.0
             self.price_unit = 0.0
             self.product_uom = False
-
-

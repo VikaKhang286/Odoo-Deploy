@@ -9,11 +9,11 @@
       <field name="groups" eval="[(4, ref('base.group_system')), (4, ref('dac_erp.group_dac_erp_manager'))]"/>
     </record>
 
-    <!-- Người dùng nội bộ: chỉ thấy hội thoại mình phụ trách hoặc thuộc nhóm -->
+    <!-- Người dùng nội bộ: thấy toàn bộ hội thoại trên dashboard tin nhan -->
     <record id="crm_dac_rule_conv_personal" model="ir.rule">
-      <field name="name">Conversations: personal only</field>
+      <field name="name">Conversations: internal users see all</field>
       <field name="model_id" ref="model_page_fm_conversation"/>
-      <field name="domain_force">['|', ('owner_id','=',user.id), ('participant_user_ids','in',[user.id])]</field>
+      <field name="domain_force">[(1,'=',1)]</field>
       <field name="groups" eval="[(4, ref('base.group_user'))]"/>
       <field name="global" eval="False"/>
     </record>

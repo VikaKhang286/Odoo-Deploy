@@ -1,0 +1,30 @@
+/* Global CRM toggle override: boolean switches use gray when off and green when on */
+.o_web_client .o_boolean_toggle .form-check-input,
+.o_web_client .o_field_widget.o_field_boolean_toggle .form-check-input {
+  accent-color: #9ca3af;
+  background-color: #9ca3af;
+  border-color: #9ca3af;
+  cursor: pointer;
+}
+
+.o_web_client .o_boolean_toggle .form-check-input:checked,
+.o_web_client .o_boolean_toggle .form-check-input:checked:disabled,
+.o_web_client .o_field_widget.o_field_boolean_toggle .form-check-input:checked,
+.o_web_client .o_field_widget.o_field_boolean_toggle .form-check-input:checked:disabled {
+  accent-color: #22c55e !important;
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+  box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.24) inset;
+}
+
+.o_web_client .o_boolean_toggle .form-check-input:not(:checked),
+.o_web_client .o_field_widget.o_field_boolean_toggle .form-check-input:not(:checked) {
+  accent-color: #9ca3af !important;
+  background-color: #9ca3af !important;
+  border-color: #9ca3af !important;
+}
+
+.o_web_client .o_boolean_toggle .form-check-input:disabled,
+.o_web_client .o_field_widget.o_field_boolean_toggle .form-check-input:disabled {
+  opacity: 1;
+}

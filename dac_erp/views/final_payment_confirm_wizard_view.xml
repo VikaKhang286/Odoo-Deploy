@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_final_payment_confirm_wizard_form" model="ir.ui.view">
+            <field name="name">final.payment.confirm.wizard.form</field>
+            <field name="model">final.payment.confirm.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Xác nhận thanh toán cuối cùng">
+                    <field name="currency_id" invisible="1"/>
+
+                    <p class="text-muted mb-3">Chọn phương thức thanh toán để thu số tiền còn lại.</p>
+
+                    <group>
+                        <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}" readonly="1"/>
+                        <field name="journal_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="payment_date"/>
+                    </group>
+
+                    <footer>
+                        <button name="action_confirm" type="object" string="Xác nhận thanh toán" class="btn-primary" invisible="not journal_id or not payment_date"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

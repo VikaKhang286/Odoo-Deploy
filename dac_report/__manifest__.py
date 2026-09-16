@@ -1,7 +1,7 @@
 {
     # Tên module
     'name': 'DAC ERP Dashboard Report',
-    'version': '1.0',
+    'version': '3.0',
     
     # Loại module
     'category': '1. Duy An ERP',

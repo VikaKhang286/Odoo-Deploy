@@ -1,5 +1,9 @@
 # DAC ERP - Data Export API Documentation
 
+> Ghi chú: file này là tài liệu legacy, vẫn hữu ích để tham chiếu lịch sử nhưng không còn là bản đầy đủ nhất.
+> Bản reference hiện hành, đã bao gồm `v2`, `v3`, webhook, route legacy, debug, và internal routes, nằm tại:
+> [docs/DAC_ERP_CURRENT_API_REFERENCE.md](/home/administrator/odoo-antigravity/docs/DAC_ERP_CURRENT_API_REFERENCE.md)
+
 ## Tổng quan
 
 API này cung cấp khả năng export và quản lý toàn bộ dữ liệu từ hệ thống Odoo bao gồm:
@@ -418,6 +422,286 @@ Export dữ liệu nhân viên (từ res.users).
 
 - `limit` (int): Số lượng nhân viên (default: 500)
 
+---
+
+## API v2 For AI Agents
+
+Base URL mới:
+
+```text
+http(s)://<your-domain>/dac_erp/api/v2/
+```
+
+Các route cũ `/dac_erp/api/export/*` vẫn giữ nguyên để tương thích ngược. `v2` là route canonical cho AI Agent, tập trung vào business filters rõ nghĩa và response có metadata chuẩn:
+
+- `applied_filters`
+- `order`
+- `count`
+- `limit`
+- `offset`
+
+### 1. Conversations
+
+**GET** `/dac_erp/api/v2/conversations`
+
+Business filters:
+
+| filter | level | date anchor | notes |
+|---|---|---|---|
+| `unreplied=1|0` | conversation | `last_customer_message_at` | Logic nghiệp vụ: tin khách chưa được staff phản hồi |
+| `unreplied_date=today\|YYYY-MM-DD` | conversation | `last_customer_message_at` | Sugar cho 1 ngày; không dùng cùng `unreplied_date_from/to` |
+| `unreplied_date_from`, `unreplied_date_to` | conversation | `last_customer_message_at` | Khoảng ngày cho customer message cuối |
+| `staff_user_id` | message -> conversation | message timestamp | Staff đã trực tiếp nhắn trong conversation |
+| `assignee_user_id` | conversation | n/a | `owner_id` hoặc nằm trong `participant_user_ids` |
+
+Response bổ sung:
+
+- `last_customer_message_at`
+- `last_staff_reply_at`
+- `is_unreplied`
+- `unreplied_since`
+- `assignee_user_ids`
+
+Notes:
+
+- `unread` là cờ kỹ thuật ở `page.fm.conversation.is_unread_fm`.
+- `unreplied` là logic nghiệp vụ, khác với `unread`.
+- Khi dùng `unreplied=1`, sort mặc định là `last_customer_message_at desc, id desc`.
+
+Invalid combinations:
+
+- `unreplied_date` không được đi cùng `unreplied_date_from` hoặc `unreplied_date_to`.
+
+400 example:
+
+```json
+{
+  "success": false,
+  "error": "unreplied_date cannot be combined with unreplied_date_from or unreplied_date_to",
+  "status_code": 400
+}
+```
+
+### 2. Messages
+
+**GET** `/dac_erp/api/v2/messages`
+
+Business filters:
+
+| filter | level | date anchor | notes |
+|---|---|---|---|
+| `conversation_unreplied=1|0` | conversation -> message | `last_customer_message_at` | Chỉ lấy messages thuộc conversations đang unreplied |
+| `date`, `date_from`, `date_to` | message | `inserted_at_fm` | Hỗ trợ cross-conversation query |
+| `staff_user_id` | message | `inserted_at_fm` | Chỉ lấy messages do staff đó gửi |
+| `assignee_user_id` | conversation -> message | n/a | Lọc theo owner/participant của conversation |
+| `conversation_id`, `conversation_fm_id` | message | n/a | Drill-down theo conversation khi cần |
+
+Response bổ sung:
+
+- `sender_role=customer|staff|system|unknown`
+
+Invalid combinations:
+
+- Không hỗ trợ `unread`, `has_unread`, `unread_only` ở level message.
+
+400 example:
+
+```json
+{
+  "success": false,
+  "error": "Message-level unread filters are not supported. Allowed filters: date,date_from,date_to,conversation_unreplied,staff_user_id,assignee_user_id,conversation_id,conversation_fm_id",
+  "status_code": 400
+}
+```
+
+### 3. Orders
+
+**GET** `/dac_erp/api/v2/orders`
+
+Business filters:
+
+| filter | level | date anchor | notes |
+|---|---|---|---|
+| `deposit_event=invoice_created|payment_received` | order | deposit business event | Không suy diễn từ `has_deposit + date_order` |
+| `deposit_date=today\|YYYY-MM-DD` | invoice/payment -> order | `invoice_date` hoặc `payment.date` | Sugar cho 1 ngày |
+| `deposit_date_from`, `deposit_date_to` | invoice/payment -> order | `invoice_date` hoặc `payment.date` | Khoảng ngày cho event |
+| `has_deposit_invoice=1|0` | order | n/a | Có hay không có hóa đơn cọc hợp lệ |
+
+Response bổ sung:
+
+- `deposit_invoice_count`
+- `latest_deposit_invoice_id`
+- `latest_deposit_invoice_date`
+- `deposit_payment_count`
+- `latest_deposit_payment_id`
+- `latest_deposit_payment_date`
+
+Notes:
+
+- `invoice_created` dùng `account.move.dac_deposit_invoice=True`, ưu tiên `invoice_date`, fallback `create_date`.
+- `payment_received` dùng `account.payment.state='posted'` và reconcile với deposit invoice làm source of truth.
+
+Invalid combinations:
+
+- `deposit_date` không được đi cùng `deposit_date_from` hoặc `deposit_date_to`.
+
+400 example:
+
+```json
+{
+  "success": false,
+  "error": "deposit_date cannot be combined with deposit_date_from or deposit_date_to",
+  "status_code": 400
+}
+```
+
+### 4. Order Write APIs
+
+Canonical auth cho write API:
+
+- Header: `X-API-KEY`
+- System parameter: `dac_erp.api_v2_write_key`
+- Content-Type: `application/json`
+
+#### 4.1 Create Order
+
+**POST** `/dac_erp/api/v2/orders`
+
+Request fields:
+
+- `partner_id` bắt buộc
+- `conversation_id` tùy chọn, chỉ set lúc tạo
+- `user_id`, `client_order_ref`, `order_number`, `note`
+- `delivery_address`, `installation_address`
+- `has_deposit`, `deposit_amount`, `production_deadline`
+- `order_lines` là mảng line API-friendly
+
+Gửi các field workflow/internal như `order_state_custom`, `is_*_confirmed`, `production_group_ids` sẽ trả `400`.
+
+Ví dụ:
+
+```json
+{
+  "partner_id": 10,
+  "conversation_id": 123,
+  "user_id": 7,
+  "client_order_ref": "WRITE-001",
+  "order_number": "SO-WRITE-001",
+  "note": "Created from API",
+  "delivery_address": "123 API Street",
+  "installation_address": "456 Builder Lane",
+  "has_deposit": true,
+  "deposit_amount": 250,
+  "production_deadline": "2026-04-23",
+  "order_lines": [
+    {
+      "product_id": 55,
+      "quantity": 2,
+      "price_unit": 3210,
+      "tax_ids": [3]
+    },
+    {
+      "display_type": "line_note",
+      "name": "Customer note"
+    }
+  ]
+}
+```
+
+#### 4.2 Update Order
+
+**PATCH** `/dac_erp/api/v2/orders/<order_id>`
+
+Rules:
+
+- Partial update only
+- `partner_id` và `conversation_id` là immutable sau khi tạo
+- Nếu có `order_lines` thì bắt buộc có `line_mode=replace|patch`
+
+`line_mode=replace`
+
+- thay toàn bộ line editable
+- giữ nguyên line hệ thống/đặt cọc
+
+`line_mode=patch`
+
+- `action=upsert`: update theo `id` hoặc create mới nếu không có `id`
+- `action=delete`: bắt buộc có `id`, chỉ xóa line editable
+
+Line schema:
+
+| field | meaning |
+|---|---|
+| `id` | line hiện có khi patch |
+| `product_id` | bắt buộc cho product line |
+| `display_type` | `line_note` hoặc `line_section` cho display line |
+| `name` | bắt buộc cho display line |
+| `quantity` | map xuống `product_uom_qty` |
+| `price_unit` | phải `>= 0` với product line; phải `0` với display line |
+| `tax_ids` | mảng `account.tax` ids |
+| `description`, `height`, `width` | field tùy chọn |
+| `action` | chỉ dùng ở patch: `upsert|delete` |
+
+Validation notes:
+
+- Không cho tạo/sửa/xóa line âm tiền hoặc line deposit/system
+- Không cho display line giả mạo deposit như “Khoản cọc”, “Tiền cọc”, `deposit`
+- `delete` không được gửi kèm các field line khác ngoài `id` và `action`
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Order updated successfully",
+  "data": {
+    "id": 1,
+    "name": "S00001",
+    "order_number": "SO-WRITE-001",
+    "client_order_ref": "WRITE-001",
+    "note": "Created from API",
+    "delivery_address": "123 API Street",
+    "installation_address": "456 Builder Lane",
+    "production_deadline": "2026-04-23",
+    "order_lines": [
+      {
+        "id": 10,
+        "product_id": 55,
+        "name": "API V2 Product",
+        "description": null,
+        "quantity": 2,
+        "price_unit": 3210,
+        "tax_ids": [3],
+        "height": 0,
+        "width": 0,
+        "display_type": null
+      }
+    ]
+  },
+  "status_code": 200
+}
+```
+
+Invalid payload examples:
+
+```json
+{
+  "success": false,
+  "message": "partner_id cannot be updated via this API",
+  "error": "partner_id cannot be updated via this API",
+  "status_code": 400
+}
+```
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized: Invalid or missing X-API-KEY",
+  "error": "Unauthorized: Invalid or missing X-API-KEY",
+  "status_code": 401
+}
+```
+
 ## Error Response Format
 
 ```json
@@ -571,4 +855,186 @@ fetch(`${BASE_URL}/dac_erp/api/export/sales?limit=50&date_from=2025-01-01`)
     console.log("Total items:", data.count);
   })
   .catch((error) => console.error("Error:", error));
+```
+
+## API v2 Read Filters For OpenClaw
+
+### Conversations
+
+Canonical route:
+
+- `GET /dac_erp/api/v2/conversations`
+
+Useful filters:
+
+- `conversation_id`
+- `page_id`
+- `page_fm_id_str`
+- `platform`
+- `status`
+- `require_processing`
+- `has_unread`
+- `is_internal`
+- `owner_id`
+- `participant_id`
+- `assignee_user_id`
+- `date`
+- `date_from`
+- `date_to`
+- `date_field=updated_at_fm|last_message_at_fm`
+- `days`
+- `unreplied`
+- `unreplied_date`
+- `unreplied_date_from`
+- `unreplied_date_to`
+- `staff_user_id`
+- `tag_code`
+- `tag_mode=any|all`
+
+### Messages
+
+Canonical route:
+
+- `GET /dac_erp/api/v2/messages`
+
+Useful filters:
+
+- `conversation_id`
+- `conversation_fm_id`
+- `page_id`
+- `page_fm_id_str`
+- `staff_user_id`
+- `assignee_user_id`
+- `sender_role=customer|staff|system|unknown`
+- `type_content`
+- `platform`
+- `tag_code`
+- `date`
+- `date_from`
+- `date_to`
+- `conversation_unreplied`
+
+## API v3 AI Write APIs
+
+Base URL:
+
+```text
+http(s)://<your-domain>/dac_erp/api/v3/
+```
+
+Authentication:
+
+- Header: `X-API-KEY`
+- System parameter: `dac_erp.api_v3_ai_write_key`
+
+Idempotency:
+
+- Every write request must include `request_id`
+- Reusing the same `request_id` with the same payload returns a replayed response
+- Reusing the same `request_id` with a different payload returns `409`
+
+### 1. AI Summary
+
+**POST** `/dac_erp/api/v3/conversations/<id>/ai-summary`
+
+```json
+{
+  "request_id": "oclaw-001",
+  "agent_name": "OpenClaw",
+  "model_name": "gpt-5",
+  "summary_text": "Khach dang cho phan hoi ve tien do giao hang",
+  "reason": "customer_follow_up",
+  "confidence": 0.91
+}
+```
+
+### 2. AI Note
+
+**POST** `/dac_erp/api/v3/conversations/<id>/ai-note`
+
+```json
+{
+  "request_id": "oclaw-002",
+  "agent_name": "OpenClaw",
+  "model_name": "gpt-5",
+  "note_text": "Khach co dau hieu sot ruot, can theo doi sat",
+  "note_type": "internal_note"
+}
+```
+
+### 3. Follow-up Activity
+
+**POST** `/dac_erp/api/v3/conversations/<id>/activities`
+
+```json
+{
+  "request_id": "oclaw-003",
+  "agent_name": "OpenClaw",
+  "model_name": "gpt-5",
+  "summary": "Goi lai khach de cap nhat lich giao hang",
+  "note": "Tin nhan moi nhat cua khach chua duoc phan hoi",
+  "user_id": 17,
+  "deadline_date": "2026-04-29"
+}
+```
+
+### 4. Triage Update
+
+**PATCH** `/dac_erp/api/v3/conversations/<id>/triage`
+
+```json
+{
+  "request_id": "oclaw-004",
+  "agent_name": "OpenClaw",
+  "model_name": "gpt-5",
+  "status_state": "recontact",
+  "require_processing": true,
+  "mark_read": true,
+  "reason": "customer_waiting_for_reply"
+}
+```
+
+### 5. Tag Replace
+
+**PUT** `/dac_erp/api/v3/conversations/<id>/tags`
+
+```json
+{
+  "request_id": "oclaw-005",
+  "agent_name": "OpenClaw",
+  "model_name": "gpt-5",
+  "tag_codes": ["CONSULTING", "VIP"],
+  "reason": "conversation_tagging"
+}
+```
+
+Tag write notes:
+
+- Tags are selected by `page.fm.tag.odoo_tag_code`
+- Tag sync is immediate against Pancake
+- Tag write does not automatically change `status_state` or `require_processing`
+
+### Response shape
+
+```json
+{
+  "success": true,
+  "message": "Conversation tags updated successfully",
+  "status_code": 200,
+  "data": {
+    "conversation_id": 123,
+    "log_id": 456,
+    "idempotent_replay": false,
+    "changed_fields": {},
+    "conversation": {
+      "id": 123,
+      "conversation_fm_id": "conv_abc",
+      "status_state": "recontact",
+      "require_processing": true,
+      "is_unread": false,
+      "last_suggestion_at": "2026-04-29T08:15:00",
+      "suggestion_note": "..."
+    }
+  }
+}
 ```

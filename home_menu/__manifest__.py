@@ -1,7 +1,7 @@
 {
     # Tên module
     'name': 'Home Menu',
-    'version': '1.0',
+    'version': '3.0',
     
     # Loại module
     'category': '1. Duy An ERP',
@@ -47,6 +47,7 @@
     ## + t
     'assets': {  
         'web.assets_backend': [
+            'home_menu/static/src/css/backend/home_menu.css',
             'home_menu/static/src/js/backend/**/*',
             'home_menu/static/src/xml/backend/**/*',
         ],

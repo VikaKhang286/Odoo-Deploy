@@ -2,68 +2,33 @@
 import { WebClient } from "@web/webclient/webclient";
 import { user } from "@web/core/user";
 import { useService } from "@web/core/utils/hooks";
-import { registry } from "@web/core/registry";
 import { patch } from "@web/core/utils/patch";
-import { UserMenu } from "@web/webclient/user_menu/user_menu";
-import { onWillStart, useState, onMounted } from "@odoo/owl";
+
 patch(WebClient.prototype, {
   setup() {
     super.setup();
+    this.actionService = useService("action");
   },
 
   async _loadDefaultApp() {
-    // Selects the first root menu if any
-    let root;
-    let firstApp;
-    if (await user.hasGroup("base.group_system"))
+    if (await user.hasGroup("base.group_system")) {
       return super._loadDefaultApp();
-
+    }
     if (await user.hasGroup("dac_erp.group_dac_erp_manager")) {
-      const filteredArray = this.menuService
-        .getApps()
-        .filter(
-          (item) => item.xmlid === "dac_report.dac_manager_dashboard_menu_root"
-        );
-      root = filteredArray[0];
-      firstApp = root?.appID;
-    } else if (await user.hasGroup("dac_erp.group_dac_erp_sale")) {
-      const filteredArray = this.menuService
-        .getApps()
-        .filter(
-          (item) => item.xmlid === "dac_report.dac_sale_dashboard_menu_root"
-        );
-      root = filteredArray[0];
-      firstApp = root?.appID;
-    } else if (await user.hasGroup("dac_erp.group_dac_erp_design")) {
-      const filteredArray = this.menuService
-        .getApps()
-        .filter((item) => item.xmlid === "dac_erp.dac_design_root_menu");
-      root = filteredArray[0];
-      firstApp = root?.appID;
-    } else if (await user.hasGroup("dac_erp.group_dac_erp_production")) {
-      const filteredArray = this.menuService
-        .getApps()
-        .filter((item) => item.xmlid === "dac_erp.dac_production_root_menu");
-      root = filteredArray[0];
-      firstApp = root?.appID;
-    } else {
-      const filteredArray = this.menuService
-        .getApps()
-        .filter((item) => item.xmlid === "home_menu.home_root");
-      root = filteredArray[0];
-      firstApp = root?.appID;
+      return this.actionService.doAction("dac_report.dac_manager_dashboard_action");
     }
-
-    if (firstApp) {
-      return this.menuService.selectMenu(firstApp);
+    if (await user.hasGroup("dac_erp.group_dac_erp_sale")) {
+      return this.actionService.doAction("dac_report.dac_sale_dashboard_action");
     }
-    // const filteredArray = this.menuService
-    //   .getApps()
-    //   .filter((item) => item.xmlid === "home_menu.home_root");
-    // const root = filteredArray[0];
-    // const firstApp = root?.appID;
-    // if (firstApp) {
-    //   return this.menuService.selectMenu(firstApp);
-    // }
+    if (await user.hasGroup("dac_erp.group_dac_erp_design_production")) {
+      return this.actionService.doAction("dac_erp.dac_production_dashboard_action");
+    }
+    if (await user.hasGroup("dac_erp.group_dac_erp_design")) {
+      return this.actionService.doAction("dac_erp.dac_design_dashboard_action");
+    }
+    if (await user.hasGroup("dac_erp.group_dac_erp_production")) {
+      return this.actionService.doAction("dac_erp.dac_production_dashboard_action");
+    }
+    return super._loadDefaultApp();
   },
 });

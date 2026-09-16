@@ -33,22 +33,6 @@
             <!-- active_ids sẽ do Odoo tự bơm khi mở từ form/list conversation -->
         </record>
 
-        <!-- NEW: gắn nút vào form page.fm.conversation (chỉ quản lý thấy) -->
-        <record id="view_page_fm_conversation_form_syncbtn" model="ir.ui.view">
-            <field name="name">page.fm.conversation.form.sync.btn</field>
-            <field name="model">page.fm.conversation</field>
-            <field name="inherit_id" ref="CRM_DAC.view_page_fm_conversation_form"/>
-            <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button type="action"
-                        name="%(action_conversation_message_sync_wizard)d"
-                        string="Đồng bộ tin nhắn"
-                        class="btn-secondary"
-                        groups="dac_erp.group_dac_erp_manager"/>
-            </xpath>
-            </field>
-        </record>
-
         <!-- OPTIONAL: thêm vào menu “Hành động” của list conversation (multi-select) -->
         <record id="action_server_open_sync_wizard" model="ir.actions.server">
             <field name="name">Đồng bộ tin nhắn…</field>

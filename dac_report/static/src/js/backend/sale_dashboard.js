@@ -243,6 +243,10 @@ class DacSaleDashboard extends Component {
     });
   }
 
+  openConversationQueue() {
+    return this.action.doAction("CRM_DAC.action_page_fm_conversation_queue");
+  }
+
   //--------------------------------------------------------------------
   // Viewport helpers
   //--------------------------------------------------------------------
@@ -309,6 +313,14 @@ class DacSaleDashboard extends Component {
       });
     });
     this._bak.clear();
+  }
+
+  openTaskOrder(task) {
+    if (!task || !task.id) return;
+    if (task.order_id) {
+      return this.openForm('sale.order', task.order_id);
+    }
+    return this.openForm('dac.work.task', task.id);
   }
 
   // mở list theo box, bật filter tương ứng

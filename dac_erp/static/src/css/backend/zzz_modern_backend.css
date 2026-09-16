@@ -1,0 +1,301 @@
+.o_dac_dashboard {
+  --dac-surface: rgba(255, 255, 255, 0.94);
+  --dac-border: rgba(148, 163, 184, 0.18);
+  --dac-text: #0f172a;
+  --dac-muted: #64748b;
+  --dac-danger-soft: #fee2e2;
+  --dac-warning-soft: #fef3c7;
+  --dac-success-soft: #dcfce7;
+  --dac-violet-soft: #ede9fe;
+  --dac-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+  color: var(--dac-text);
+}
+
+.o_dac_dashboard .dac-dashboard-header {
+  margin-bottom: 18px;
+}
+
+.o_dac_dashboard .dac-card,
+.o_dac_dashboard .k-card,
+.o_dac_dashboard .ticket,
+.o_dac_dashboard .dac-ticket {
+  border: 1px solid var(--dac-border) !important;
+  border-radius: 8px !important;
+  background: var(--dac-surface) !important;
+  box-shadow: var(--dac-shadow);
+}
+
+.o_dac_dashboard .dac-card,
+.o_dac_dashboard .k-card {
+  padding: 20px;
+}
+
+.o_dac_dashboard .sec-title,
+.o_dac_dashboard .k-title,
+.o_dac_dashboard .k-label {
+  color: var(--dac-muted) !important;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.o_dac_dashboard .k-value {
+  margin-top: 8px;
+  color: var(--dac-text) !important;
+  font-size: clamp(30px, 4vw, 40px) !important;
+  line-height: 1;
+  font-weight: 800 !important;
+}
+
+.o_dac_dashboard .nav-tabs {
+  gap: 8px;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(226, 232, 240, 0.55);
+}
+
+.o_dac_dashboard .nav-tabs .nav-link {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: var(--dac-muted);
+  font-weight: 600;
+}
+
+.o_dac_dashboard .nav-tabs .nav-link.active {
+  border-color: var(--dac-border);
+  background: #ffffff;
+  color: var(--dac-text);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.o_dac_dashboard .ticket,
+.o_dac_dashboard .dac-ticket {
+  padding: 16px !important;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.o_dac_dashboard .ticket:hover,
+.o_dac_dashboard .dac-ticket:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 44px rgba(15, 23, 42, 0.12);
+}
+
+.o_dac_dashboard .ticket__title,
+.o_dac_dashboard .dac-ticket__title,
+.o_dac_dashboard .task-card-header {
+  color: var(--dac-text);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.o_dac_dashboard .text-muted,
+.o_dac_dashboard .small,
+.o_dac_dashboard .no-data {
+  color: var(--dac-muted) !important;
+}
+
+.o_dac_dashboard .no-data {
+  padding: 24px 0;
+  text-align: center;
+}
+
+.o_dac_dashboard .badge,
+.o_dac_dashboard .badge-priority,
+.o_dac_dashboard .badge-today,
+.o_dac_dashboard .badge-due,
+.o_dac_dashboard .badge-late,
+.o_dac_dashboard .badge-done,
+.o_dac_dashboard .badge-missing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.o_dac_dashboard .badge-priority {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+
+.o_dac_dashboard .badge-today,
+.o_dac_dashboard .badge-late {
+  background: var(--dac-danger-soft) !important;
+  color: #b91c1c !important;
+}
+
+.o_dac_dashboard .badge-due,
+.o_dac_dashboard .bg-warning.text-dark {
+  background: var(--dac-warning-soft) !important;
+  color: #92400e !important;
+}
+
+.o_dac_dashboard .badge-done {
+  background: var(--dac-success-soft) !important;
+  color: #166534 !important;
+}
+
+.o_dac_dashboard .badge-missing {
+  background: var(--dac-violet-soft) !important;
+  color: #6d28d9 !important;
+}
+
+.o_dac_dashboard .ticket-new,
+.o_dac_dashboard .ticket-inprod,
+.o_dac_dashboard .k-inprod,
+.o_dac_dashboard .k-card.k-inprod,
+.o_dac_dashboard.dac-theme-design .kpi-row > .col-lg-3:nth-child(1) .dac-card {
+  border-left: 4px solid #60a5fa !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
+}
+
+.o_dac_dashboard .ticket-inprogress,
+.o_dac_dashboard.dac-theme-design .kpi-row > .col-lg-3:nth-child(2) .dac-card {
+  border-left: 4px solid #8b5cf6 !important;
+}
+
+.o_dac_dashboard .ticket-warning,
+.o_dac_dashboard .ticket-missing,
+.o_dac_dashboard .k-dueSoon,
+.o_dac_dashboard .k-needMark,
+.o_dac_dashboard.dac-theme-design .kpi-row > .col-lg-3:nth-child(4) .dac-card {
+  border-left: 4px solid #f59e0b !important;
+}
+
+.o_dac_dashboard .ticket-completed,
+.o_dac_dashboard .ticket-done,
+.o_dac_dashboard .k-doneWeek,
+.o_dac_dashboard.dac-theme-design .kpi-row > .col-lg-3:nth-child(5) .dac-card {
+  border-left: 4px solid #22c55e !important;
+}
+
+.o_dac_dashboard .ticket-late,
+.o_dac_dashboard .ticket-urgent,
+.o_dac_dashboard .k-priority,
+.o_dac_dashboard .k-overdue,
+.o_dac_dashboard.dac-theme-design .kpi-row > .col-lg-3:nth-child(3) .dac-card {
+  border-left: 4px solid #ef4444 !important;
+}
+
+.o_dac_dashboard .list-scroll,
+.o_dac_dashboard .work-scroll,
+.o_dac_dashboard .prod-grid {
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.o_dac_dashboard .list-scroll::-webkit-scrollbar,
+.o_dac_dashboard .work-scroll::-webkit-scrollbar,
+.o_dac_dashboard .prod-grid::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.o_dac_dashboard .list-scroll::-webkit-scrollbar-thumb,
+.o_dac_dashboard .work-scroll::-webkit-scrollbar-thumb,
+.o_dac_dashboard .prod-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.o_dac_dashboard .vip-customer::before,
+.o_dac_dashboard .loyal-customer::before {
+  content: none !important;
+}
+
+.o_dac_dashboard .dac-ticket.vip-customer,
+.o_dac_dashboard .ticket.vip-customer {
+  border-left: 4px solid #f59e0b !important;
+  background: linear-gradient(180deg, #ffffff 0%, #fffaf0 100%) !important;
+  box-shadow: 0 18px 42px rgba(245, 158, 11, 0.12) !important;
+}
+
+.o_dac_dashboard .dac-ticket.loyal-customer,
+.o_dac_dashboard .ticket.loyal-customer {
+  border-left: 4px solid #3b82f6 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%) !important;
+}
+
+.o_dac_dashboard .dac-ticket.vip-customer.loyal-customer,
+.o_dac_dashboard .ticket.vip-customer.loyal-customer {
+  border-left-color: #8b5cf6 !important;
+  background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%) !important;
+}
+
+/* ── KPI filter: active card + badge ── */
+.o_dac_dashboard .dac-card.kpi-filter-active {
+  outline: 2px solid rgba(37, 99, 235, 0.55);
+  outline-offset: 1px;
+  background: #f0f7ff !important;
+  transform: translateY(-1px);
+  transition: outline 100ms, background 100ms, transform 100ms;
+}
+
+.o_dac_dashboard .kpi-urgent-value {
+  color: #7c3aed;
+}
+
+.kpi-active-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms;
+}
+
+.kpi-active-filter-badge:hover {
+  background: #1d4ed8;
+}
+
+/* ── Resize handle cho task-list boxes ── */
+.dac-list-resize-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12px;
+  margin-top: 6px;
+  cursor: row-resize;
+  border-radius: 0 0 10px 10px;
+}
+
+.dac-list-resize-grip {
+  display: block;
+  width: 40px;
+  height: 4px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  transition: background 120ms, width 120ms;
+}
+
+.dac-list-resize-handle:hover .dac-list-resize-grip,
+.dac-list-resize-handle.is-dragging .dac-list-resize-grip {
+  background: #94a3b8;
+  width: 56px;
+}
+
+@media (max-width: 991.98px) {
+  .o_dac_dashboard .dac-card,
+  .o_dac_dashboard .k-card {
+    padding: 16px;
+    border-radius: 8px !important;
+  }
+
+  .o_dac_dashboard .nav-tabs {
+    overflow: auto;
+    white-space: nowrap;
+  }
+}

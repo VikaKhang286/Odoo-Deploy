@@ -1,0 +1,186 @@
+/* DAC Mobile Bottom Nav — hiển thị duy nhất trên màn hình nhỏ, không ảnh hưởng desktop */
+
+.dac-mobile-nav-root,
+.dac-mobile-nav {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .dac-mobile-nav-root {
+        display: block;
+    }
+
+    /* Backdrop mờ khi submenu mở */
+    .dac-mobile-nav-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1048;
+        background: rgba(15, 23, 42, 0.35);
+    }
+
+    /* ---- Submenu "Tạo đơn" ---- */
+    .dac-create-order-menu {
+        position: fixed;
+        bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(320px, calc(100vw - 32px));
+        z-index: 1049;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 -4px 32px rgba(15, 23, 42, 0.18), 0 8px 24px rgba(15, 23, 42, 0.12);
+        padding: 8px;
+        animation: dac-menu-slide-up 160ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    @keyframes dac-menu-slide-up {
+        from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .dac-create-order-menu-title {
+        padding: 6px 12px 10px;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .dac-create-order-option {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        width: 100%;
+        padding: 12px 14px;
+        border: none;
+        background: transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        text-align: left;
+        transition: background-color 100ms ease;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .dac-create-order-option:active {
+        background: #f1f5f9;
+    }
+
+    .dac-create-order-option-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    /* Màu riêng cho từng option */
+    .dac-create-order-option:nth-child(2) .dac-create-order-option-icon {
+        background: #ecfdf5; color: #059669; /* Tạo từ ảnh - xanh lá */
+    }
+    .dac-create-order-option:nth-child(3) .dac-create-order-option-icon {
+        background: #fef3c7; color: #d97706; /* Pancake - cam */
+    }
+    .dac-create-order-option:nth-child(4) .dac-create-order-option-icon {
+        background: #f0f9ff; color: #0284c7; /* Đơn mới - xanh dương */
+    }
+
+    .dac-create-order-option-body {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+    }
+
+    .dac-create-order-option-label {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+    }
+
+    .dac-create-order-option-desc {
+        font-size: 12px;
+        color: #94a3b8;
+        line-height: 1.2;
+    }
+
+    .dac-create-order-option-arrow {
+        color: #cbd5e1;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    /* ---- Bottom nav bar ---- */
+    .dac-mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        background: #ffffff;
+        border-top: 1px solid rgba(148, 163, 184, 0.25);
+        box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.1);
+        padding: 4px 0;
+        padding-bottom: max(4px, env(safe-area-inset-bottom));
+    }
+
+    .dac-mobile-nav-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 8px 4px;
+        border: none;
+        background: transparent;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 8px;
+        margin: 2px;
+        min-height: 52px;
+        transition: color 100ms ease, background-color 100ms ease;
+        /* Tắt highlight xanh khi tap trên Android/iOS */
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .dac-mobile-nav-item i {
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .dac-mobile-nav-item:active {
+        color: #2563eb;
+        background-color: #eff6ff;
+        transform: scale(0.93);
+    }
+
+    .dac-mobile-nav-item--accent {
+        color: #2563eb;
+    }
+
+    .dac-mobile-nav-item--accent i {
+        font-size: 24px;
+    }
+
+    .dac-mobile-nav-item--active {
+        color: #2563eb;
+        background-color: #eff6ff;
+    }
+
+    /* Đẩy nội dung trang lên khỏi nav bar */
+    body.dac-has-mobile-nav .o_action_manager {
+        padding-bottom: 68px;
+    }
+}

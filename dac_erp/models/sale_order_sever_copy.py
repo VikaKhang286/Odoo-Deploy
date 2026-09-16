@@ -1,3 +1,4 @@
+import ast
 import json
 import logging
 
@@ -176,6 +177,120 @@ class SaleOrderInherit(models.Model):
             # '11': 'draft', # Đang vận chuyển
             # '12': 'cancel', # Chuyển hoàn
         }
+
+    @api.model
+    def _parse_pancake_payload(self, payload):
+        if not payload:
+            return {}
+        if isinstance(payload, dict):
+            return payload
+        if isinstance(payload, bytes):
+            try:
+                payload = payload.decode('utf-8')
+            except Exception:
+                return {}
+        if not isinstance(payload, str):
+            return {}
+
+        payload = payload.strip()
+        if not payload:
+            return {}
+
+        for parser in (json.loads, ast.literal_eval):
+            try:
+                parsed = parser(payload)
+            except Exception:
+                continue
+            if isinstance(parsed, dict):
+                return parsed
+        return {}
+
+    @api.model
+    def _resolve_safe_pancake_conversation_link(self, payload):
+        payload = self._parse_pancake_payload(payload)
+        raw_conversation_id = str(payload.get('conversation_id') or '').strip()
+        raw_page_id = str(payload.get('page_id') or '').strip()
+
+        result = {
+            'raw_conversation_id': raw_conversation_id,
+            'raw_page_id': raw_page_id,
+            'conversation': False,
+            'match_count': 0,
+            'status': 'missing_raw_conversation_id',
+            'reason': _('Pancake payload is missing conversation_id'),
+        }
+
+        if not raw_conversation_id:
+            return result
+
+        Conversation = self.env['page.fm.conversation'].sudo()
+        base_domain = [('conversation_fm_id', '=', raw_conversation_id)]
+        if 'is_internal_conversation' in Conversation._fields:
+            base_domain.append(('is_internal_conversation', '=', False))
+
+        page_record = False
+        if raw_page_id and 'page_fm_id_str' in self.env['page.fm.page']._fields:
+            page_record = self.env['page.fm.page'].sudo().search([
+                ('page_fm_id_str', '=', raw_page_id)
+            ], limit=1)
+            if page_record:
+                page_matches = Conversation.search(
+                    base_domain + [('page_fm_page_id', '=', page_record.id)],
+                    limit=2,
+                )
+                if len(page_matches) == 1:
+                    conversation = page_matches[0]
+                    result.update({
+                        'conversation': conversation,
+                        'match_count': 1,
+                        'status': 'safe_to_link',
+                        'reason': _('Exact raw conversation_id matched one external conversation on the same page'),
+                    })
+                    return result
+                if len(page_matches) > 1:
+                    result.update({
+                        'match_count': len(page_matches),
+                        'status': 'multiple_conversation_match',
+                        'reason': _('Raw conversation_id matched multiple external conversations on the raw page'),
+                    })
+                    return result
+
+        raw_matches = Conversation.search(base_domain, limit=2)
+        if len(raw_matches) == 1:
+            conversation = raw_matches[0]
+            result.update({
+                'conversation': conversation,
+                'match_count': 1,
+                'status': 'safe_to_link',
+                'reason': _('Exact raw conversation_id matched one external conversation'),
+            })
+            return result
+        if len(raw_matches) > 1:
+            result.update({
+                'match_count': len(raw_matches),
+                'status': 'multiple_conversation_match',
+                'reason': _('Raw conversation_id matched multiple external conversations'),
+            })
+            return result
+
+        result.update({
+            'status': 'no_conversation_match',
+            'reason': _('Raw conversation_id did not match any external conversation'),
+        })
+        return result
+
+    @api.model
+    def _get_sale_order_conversation_id_sql(self, order_id):
+        self.env.cr.execute("SELECT conversation_id FROM sale_order WHERE id = %s", [order_id])
+        row = self.env.cr.fetchone()
+        return row[0] if row else False
+
+    @api.model
+    def _set_sale_order_conversation_id_sql(self, order_id, conversation_id):
+        self.env.cr.execute(
+            "UPDATE sale_order SET conversation_id = %s WHERE id = %s",
+            [conversation_id or None, order_id],
+        )
 
     @api.model
     def action_sync_pancake_all_orders(self, *args, **kwargs):
@@ -710,6 +825,29 @@ class SaleOrderInherit(models.Model):
                 p_page_name = (order_data.get('page').get('name')
                                if isinstance(order_data.get('page'), dict) else None)
 
+                # --- Find Conversation from Pancake conversation_id ---
+                pancake_conversation_link_bulk = self._resolve_safe_pancake_conversation_link(order_data)
+                odoo_conversation_bulk = pancake_conversation_link_bulk['conversation']
+                if odoo_conversation_bulk:
+                    _logger.info(
+                        "✅ Linked conversation: %s -> Odoo ID %s for order %s",
+                        pancake_conversation_link_bulk['raw_conversation_id'],
+                        odoo_conversation_bulk.id,
+                        p_order_id,
+                    )
+                elif pancake_conversation_link_bulk['status'] == 'multiple_conversation_match':
+                    _logger.warning(
+                        "⚠️ Raw conversation %s matched multiple external conversations for order %s",
+                        pancake_conversation_link_bulk['raw_conversation_id'],
+                        p_order_id,
+                    )
+                elif pancake_conversation_link_bulk['status'] == 'no_conversation_match':
+                    _logger.info(
+                        "ℹ️ Raw conversation %s not yet synced for order %s",
+                        pancake_conversation_link_bulk['raw_conversation_id'],
+                        p_order_id,
+                    )
+
                 # --- Prepare Sale Order Values ---
                 order_vals = {
                     'pancake_order_id': p_order_id,
@@ -823,7 +961,6 @@ class SaleOrderInherit(models.Model):
                         'name': shipping_product.name,
                         'product_uom_qty': 1,
                         'price_unit': p_shipping_fee,
-                        'is_delivery': True,
                         'company_id': current_company_id,  # Đã đảm bảo current_company_id luôn có giá trị
                     }))
 
@@ -853,6 +990,23 @@ class SaleOrderInherit(models.Model):
                     current_sale_order = self.sudo().create(order_vals) 
                     created_count +=1
                     _logger.info(f"Created SaleOrder Odoo ID: {current_sale_order.id} ({current_sale_order.name}) for Pancake Order ID: {p_order_id}")
+
+                if odoo_conversation_bulk and current_sale_order:
+                    current_conversation_id = self._get_sale_order_conversation_id_sql(current_sale_order.id)
+                    if current_conversation_id and current_conversation_id != odoo_conversation_bulk.id:
+                        _logger.warning(
+                            "⚠️ Preserving existing conversation %s for Pancake order %s; raw conversation is %s",
+                            current_conversation_id,
+                            p_order_id,
+                            odoo_conversation_bulk.id,
+                        )
+                    elif current_conversation_id != odoo_conversation_bulk.id:
+                        self._set_sale_order_conversation_id_sql(current_sale_order.id, odoo_conversation_bulk.id)
+                        _logger.info(
+                            "✅ Set conversation_id=%s for Pancake order %s using raw conversation_id",
+                            odoo_conversation_bulk.id,
+                            p_order_id,
+                        )
                 
                 # Logic chuyển trạng thái Odoo sau khi đồng bộ
                 if current_sale_order:
@@ -1180,14 +1334,31 @@ class SaleOrderInherit(models.Model):
                 return SaleOrder
 
             Partner = self.env['res.partner'].sudo()
+            PancakeCustomer = self.env['page.fm.customer'].sudo()
 
-            # ƯU TIÊN 1: tìm theo pancake_id
+            from .phone_utils import normalize_phone_vn
+            phone_norm = normalize_phone_vn(customer_phone)
+
+            # ƯU TIÊN 1: tìm qua alias table page.fm.customer
             if p_customer_id:
-                partner = Partner.search([('pancake_id', '=', p_customer_id)] + company_domain, limit=1)
+                alias = PancakeCustomer.search([('pancake_customer_id', '=', p_customer_id)], limit=1)
+                if alias:
+                    partner = alias.partner_id
 
-            # ƯU TIÊN 2: fallback phone/email + name
-            if not partner and customer_phone and customer_name:
-                partner = Partner.search([('phone', '=', customer_phone), ('name', '=', customer_name)] + company_domain, limit=1)
+            # ƯU TIÊN 2: tìm theo pancake_id (backward compat) → migrate sang alias
+            if not partner and p_customer_id:
+                partner = Partner.search([('pancake_id', '=', p_customer_id)] + company_domain, limit=1)
+                if partner:
+                    PancakeCustomer.link_or_create_alias(p_customer_id, partner)
+
+            # ƯU TIÊN 3: phone chuẩn hoá (auto-link khách vãng lai)
+            if not partner and phone_norm:
+                partner = Partner.search([('phone_normalized', '=', phone_norm)] + company_domain, limit=1)
+                if partner:
+                    _logger.info('Order %s: auto-linked walk-in partner %s via phone_normalized=%s', p_order_id, partner.name, phone_norm)
+                    PancakeCustomer.link_or_create_alias(p_customer_id, partner)
+
+            # ƯU TIÊN 4: email + name
             if not partner and customer_email and customer_name:
                 partner = Partner.search([('email', '=ilike', customer_email), ('name', '=', customer_name)] + company_domain, limit=1)
 
@@ -1201,13 +1372,14 @@ class SaleOrderInherit(models.Model):
                     'street': customer_info.get('address') or customer_info.get('street'),
                     'city': customer_info.get('city'),
                     'zip': customer_info.get('zip'),
-                    # Gán pancake_id NGAY LÚC TẠO
                     'pancake_id': p_customer_id or False,
                 }
                 partner = Partner.create(partner_vals)
                 _logger.info(f"Created new partner: {partner.name} (ID: {partner.id}) for Pancake order {p_order_id}")
+                if p_customer_id:
+                    PancakeCustomer.link_or_create_alias(p_customer_id, partner)
             else:
-                # Nếu tìm bằng phone/email mà partner CHƯA có pancake_id → ghi bù để chốt liên kết lâu dài
+                # Backfill pancake_id nếu tìm qua phone/email
                 if p_customer_id and not partner.pancake_id:
                     partner.write({'pancake_id': p_customer_id})
                 # Cập nhật địa chỉ nếu có thay đổi
@@ -1296,6 +1468,29 @@ class SaleOrderInherit(models.Model):
                         'price_unit': variation_info.get('retail_price', 0.0),
                         'company_id': current_company_id,  # QUAN TRỌNG: Phải có company_id
                     }))
+
+            # --- 6b. Find Conversation from Pancake raw conversation_id (safe exact only) ---
+            pancake_conversation_link = self._resolve_safe_pancake_conversation_link(order_data)
+            odoo_conversation = pancake_conversation_link['conversation']
+
+            if odoo_conversation:
+                _logger.info(
+                    "✅ [WEBHOOK] Linked raw conversation %s -> Odoo ID %s",
+                    pancake_conversation_link['raw_conversation_id'],
+                    odoo_conversation.id,
+                )
+            elif pancake_conversation_link['status'] == 'multiple_conversation_match':
+                _logger.warning(
+                    "⚠️ [WEBHOOK] Raw conversation %s matched multiple external conversations for order %s",
+                    pancake_conversation_link['raw_conversation_id'],
+                    p_order_id,
+                )
+            elif pancake_conversation_link['status'] == 'no_conversation_match':
+                _logger.info(
+                    "ℹ️ [WEBHOOK] Raw conversation %s not found in Odoo yet for order %s",
+                    pancake_conversation_link['raw_conversation_id'],
+                    p_order_id,
+                )
 
             # --- 7. Prepare Main Order Values ---
             p_status_key = str(order_data.get('status'))
@@ -1403,7 +1598,6 @@ class SaleOrderInherit(models.Model):
                 order_vals['user_id_design'] = user_id_design
             if user_id_production:
                 order_vals['user_id_production'] = user_id_production
-
             # --- 8. Create or Update Sale Order ---
             existing_order = SaleOrder.search([('pancake_order_id', '=', p_order_id), ('company_id', '=', current_company_id)], limit=1)
             
@@ -1422,6 +1616,23 @@ class SaleOrderInherit(models.Model):
                     tracking_disable=True             # Disable tracking hoàn toàn
                 ).create(order_vals)
                 _logger.info(f"✅ Created SaleOrder Odoo ID: {current_sale_order.id} for Pancake Order ID: {p_order_id}")
+
+            if odoo_conversation and current_sale_order:
+                current_conversation_id = self._get_sale_order_conversation_id_sql(current_sale_order.id)
+                if current_conversation_id and current_conversation_id != odoo_conversation.id:
+                    _logger.warning(
+                        "⚠️ [WEBHOOK] Preserving existing conversation %s for Pancake order %s; raw conversation is %s",
+                        current_conversation_id,
+                        p_order_id,
+                        odoo_conversation.id,
+                    )
+                elif current_conversation_id != odoo_conversation.id:
+                    self._set_sale_order_conversation_id_sql(current_sale_order.id, odoo_conversation.id)
+                    _logger.info(
+                        "✅ [WEBHOOK] Set conversation_id=%s for Pancake order %s from raw conversation_id",
+                        odoo_conversation.id,
+                        p_order_id,
+                    )
             
             # --- 9. Final State Transition ---
             if odoo_state == 'sale' and current_sale_order.state == 'draft':
@@ -1472,3 +1683,190 @@ class SaleOrderInherit(models.Model):
             _logger.error(f"CRITICAL ERROR processing Pancake Order ID {p_order_id}: {e}", exc_info=True)
             self.env.cr.rollback()
             return SaleOrder
+
+    @api.model
+    def action_backfill_pancake_conversation_links_from_raw_payload(self, dry_run=True, limit=None):
+        summary = {
+            'total_checked': 0,
+            'safe_to_link': 0,
+            'linked': 0,
+            'missing_raw_conversation_id': 0,
+            'no_conversation_match': 0,
+            'multiple_conversation_match': 0,
+            'existing_same_link': 0,
+            'existing_conflict': 0,
+            'skipped_no_raw_payload': 0,
+            'errors': 0,
+            'results': [],
+        }
+
+        orders = self.sudo()
+        if orders:
+            orders = orders.filtered(lambda order: order.pancake_order_id)
+            if limit is not None:
+                orders = orders[:limit]
+        else:
+            orders = self.sudo().search(
+                [('pancake_order_id', '!=', False)],
+                order='id asc',
+                limit=limit,
+            )
+
+        for order in orders:
+            summary['total_checked'] += 1
+            try:
+                current_conversation_id = self._get_sale_order_conversation_id_sql(order.id)
+                payload = self._parse_pancake_payload(order.pancake_raw_data)
+                if not payload:
+                    summary['skipped_no_raw_payload'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': False,
+                        'resolved_conversation_id': False,
+                        'resolved_conversation_fm_id': False,
+                        'status': 'skipped_no_raw_payload',
+                        'reason': 'Raw payload is empty or unparseable',
+                    })
+                    continue
+
+                raw_conversation_id = str(payload.get('conversation_id') or '').strip()
+                if not raw_conversation_id:
+                    summary['missing_raw_conversation_id'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': False,
+                        'resolved_conversation_id': False,
+                        'resolved_conversation_fm_id': False,
+                        'status': 'missing_raw_conversation_id',
+                        'reason': 'Raw payload does not contain conversation_id',
+                    })
+                    continue
+
+                resolution = self._resolve_safe_pancake_conversation_link(payload)
+                conversation = resolution.get('conversation')
+                status = resolution.get('status')
+                reason = resolution.get('reason')
+
+                if status == 'multiple_conversation_match':
+                    summary['multiple_conversation_match'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': False,
+                        'resolved_conversation_fm_id': False,
+                        'status': status,
+                        'reason': reason,
+                    })
+                    continue
+
+                if not conversation:
+                    summary['no_conversation_match'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': False,
+                        'resolved_conversation_fm_id': False,
+                        'status': 'no_conversation_match',
+                        'reason': reason,
+                    })
+                    continue
+
+                if current_conversation_id == conversation.id:
+                    summary['existing_same_link'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': conversation.id,
+                        'resolved_conversation_fm_id': conversation.conversation_fm_id,
+                        'status': 'existing_same_link',
+                        'reason': 'Conversation already linked',
+                    })
+                    continue
+
+                if current_conversation_id and current_conversation_id != conversation.id:
+                    summary['existing_conflict'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': conversation.id,
+                        'resolved_conversation_fm_id': conversation.conversation_fm_id,
+                        'status': 'existing_conflict',
+                        'reason': 'Existing conversation_id differs from safe raw match',
+                    })
+                    continue
+
+                summary['safe_to_link'] += 1
+                if dry_run:
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': conversation.id,
+                        'resolved_conversation_fm_id': conversation.conversation_fm_id,
+                        'status': 'safe_to_link',
+                        'reason': reason,
+                    })
+                    continue
+
+                try:
+                    self._set_sale_order_conversation_id_sql(order.id, conversation.id)
+                    summary['linked'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': conversation.id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': conversation.id,
+                        'resolved_conversation_fm_id': conversation.conversation_fm_id,
+                        'status': 'linked',
+                        'reason': reason,
+                    })
+                except Exception as write_error:
+                    summary['errors'] += 1
+                    summary['results'].append({
+                        'order_id': order.id,
+                        'order_name': order.name,
+                        'pancake_order_id': order.pancake_order_id,
+                        'current_conversation_id': current_conversation_id,
+                        'raw_conversation_id': raw_conversation_id,
+                        'resolved_conversation_id': conversation.id,
+                        'resolved_conversation_fm_id': conversation.conversation_fm_id,
+                        'status': 'error',
+                        'reason': str(write_error),
+                    })
+            except Exception as error:
+                summary['errors'] += 1
+                summary['results'].append({
+                    'order_id': order.id,
+                    'order_name': order.name,
+                    'pancake_order_id': order.pancake_order_id,
+                    'current_conversation_id': self._get_sale_order_conversation_id_sql(order.id),
+                    'raw_conversation_id': False,
+                    'resolved_conversation_id': False,
+                    'resolved_conversation_fm_id': False,
+                    'status': 'error',
+                    'reason': str(error),
+                })
+
+        return summary

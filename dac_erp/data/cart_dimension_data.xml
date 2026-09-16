@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cart_dimension_80x40" model="dac.cart.dimension">
+        <field name="sequence">10</field>
+        <field name="length">80</field>
+        <field name="width">38</field>
+        <field name="height">195</field>
+        <field name="is_standard">True</field>
+    </record>
+    <record id="cart_dimension_100x50" model="dac.cart.dimension">
+        <field name="sequence">20</field>
+        <field name="length">100</field>
+        <field name="width">48</field>
+        <field name="height">195</field>
+        <field name="is_standard">True</field>
+    </record>
+    <record id="cart_dimension_120x60" model="dac.cart.dimension">
+        <field name="sequence">30</field>
+        <field name="length">120</field>
+        <field name="width">58</field>
+        <field name="height">195</field>
+        <field name="is_standard">True</field>
+    </record>
+</odoo>

@@ -40,6 +40,7 @@
                         <field name="responsible_user_id"/>
                         <field name="participant_user_ids" widget="many2many_tags"/>
                         <field name="pancake_id" readonly="1" placeholder="Pancake Customer ID"/>
+                        <field name="phone_normalized" readonly="1" placeholder="Tự động từ SĐT"/>
                     </group>
                     <group string="Thẻ từ Pancake" name="pancake_tags_group">
                         <field name="pancake_tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" placeholder="Tags được đồng bộ từ conversation"/>
@@ -48,6 +49,18 @@
             </field>
         </record>
 
+
+        <!-- Icon Pancake trong danh sách khách hàng -->
+        <record id="view_partner_list_inherit_pancake_icon" model="ir.ui.view">
+            <field name="name">res.partner.list.pancake.icon</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='complete_name']" position="after">
+                    <field name="pancake_icon_html" widget="html" string="Pancake" optional="show"/>
+                </xpath>
+            </field>
+        </record>
 
         <!-- Bổ sung filter tìm nhanh khách từ Pancake -->
         <record id="view_res_partner_filter_inherit_pancake" model="ir.ui.view">

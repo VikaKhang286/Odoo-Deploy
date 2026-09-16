@@ -268,19 +268,19 @@ class AccountPayment(models.Model):
                     user = self.env.user
                     
                     # KIỂM TRA QUYỀN TRUY CẬP
-                    if (user.has_group('dac_erp.group_dac_erp_design') or 
-                        user.has_group('dac_erp.group_dac_erp_production')) and \
-                       not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                            user.has_group('dac_erp.group_dac_erp_sale') or
-                            user.has_group('base.group_system')):
-                        
-                        # Check access rights
-                        can_access = False
-                        if user.has_group('dac_erp.group_dac_erp_design'):
-                            can_access = (sale_order.user_id_design == user)
-                        elif user.has_group('dac_erp.group_dac_erp_production'):
-                            can_access = (sale_order.user_id_production == user or user in sale_order.production_group_ids)
-                        
+                    if user._dac_is_worker_only():
+
+                        # Check access rights. Dùng OR để dual-role (design +
+                        # production) tính cả 2 nhánh, không kẹt ở nhánh design.
+                        can_access = (
+                            user._dac_is_design() and sale_order.user_id_design == user
+                        ) or (
+                            user._dac_is_production() and (
+                                sale_order.user_id_production == user
+                                or user in sale_order.production_group_ids
+                            )
+                        )
+
                         if not can_access:
                             # User không có quyền → redirect về menu action với URL trực tiếp
                             import logging
@@ -299,11 +299,12 @@ class AccountPayment(models.Model):
                                 }
                             )
                             
-                            # Redirect về menu phù hợp theo group
-                            if user.has_group('dac_erp.group_dac_erp_design'):
-                                menu = self.env.ref('dac_erp.dac_sale_order_menu_design_only')
-                            elif user.has_group('dac_erp.group_dac_erp_production'):
+                            # Redirect về menu phù hợp theo group.
+                            # Dual-role ưu tiên production (đồng bộ dashboard routing).
+                            if user._dac_is_production():
                                 menu = self.env.ref('dac_erp.dac_sale_order_menu_production_only')
+                            elif user._dac_is_design():
+                                menu = self.env.ref('dac_erp.dac_sale_order_menu_design_only')
                             else:
                                 # Fallback: redirect về root menu "Đang sản xuất"
                                 menu = self.env.ref('dac_erp.dac_design_root_menu')
@@ -314,11 +315,12 @@ class AccountPayment(models.Model):
                                 'target': 'self',
                             }
                         
-                        # Có quyền → redirect về form view với action đúng theo group
-                        if user.has_group('dac_erp.group_dac_erp_design'):
-                            action = self.env.ref('dac_erp.dac_sale_order_action_design_only')
-                        elif user.has_group('dac_erp.group_dac_erp_production'):
+                        # Có quyền → redirect về form view với action đúng theo group.
+                        # Dual-role ưu tiên production (đồng bộ dashboard routing).
+                        if user._dac_is_production():
                             action = self.env.ref('dac_erp.dac_sale_order_action_production_only')
+                        elif user._dac_is_design():
+                            action = self.env.ref('dac_erp.dac_sale_order_action_design_only')
                         else:
                             # Manager/Sale/Admin - dùng action manager
                             action = self.env.ref('dac_erp.dac_sale_order_manager_action')

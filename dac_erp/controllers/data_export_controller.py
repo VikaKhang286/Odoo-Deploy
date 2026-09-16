@@ -19,7 +19,53 @@ class DataExportController(http.Controller):
     - /api/export/invoices - Get dữ liệu hóa đơn
     - /api/export/payments - Get dữ liệu phiếu thu
     - /api/export/employees - Get dữ liệu nhân viên
+
+    Phase 1 security: tất cả export routes yêu cầu X-API-KEY header khớp với
+    ICP param `dac_erp.export_api_key`. Nếu ICP param chưa cấu hình → routes
+    trả 503 (config_missing) để bắt buộc admin set key trước khi mở public.
     """
+
+    EXPORT_API_KEY_PARAM = 'dac_erp.export_api_key'
+
+    def _check_export_api_key(self):
+        """Trả None nếu OK, hoặc http.Response error nếu fail. Gọi ở đầu mọi route."""
+        expected = (request.env['ir.config_parameter'].sudo()
+                    .get_param(self.EXPORT_API_KEY_PARAM) or '').strip()
+        if not expected:
+            _logger.warning("Export API key not configured (ICP %s). Rejecting request.",
+                            self.EXPORT_API_KEY_PARAM)
+            return http.Response(
+                json.dumps({
+                    'success': False,
+                    'error': {
+                        'code': 'config_missing',
+                        'message': ('Export API key chưa được cấu hình. '
+                                    'Admin set ICP param %s trước khi gọi.' % self.EXPORT_API_KEY_PARAM),
+                    },
+                }, ensure_ascii=False),
+                content_type='application/json',
+                status=503,
+            )
+        provided = request.httprequest.headers.get('X-API-KEY')
+        if not provided:
+            return http.Response(
+                json.dumps({
+                    'success': False,
+                    'error': {'code': 'missing_api_key', 'message': 'Missing X-API-KEY header'},
+                }, ensure_ascii=False),
+                content_type='application/json',
+                status=401,
+            )
+        if str(provided).strip() != expected:
+            return http.Response(
+                json.dumps({
+                    'success': False,
+                    'error': {'code': 'invalid_api_key', 'message': 'Invalid X-API-KEY'},
+                }, ensure_ascii=False),
+                content_type='application/json',
+                status=403,
+            )
+        return None
 
     def _json_response(self, data, status_code=200):
         """Helper để trả response JSON chuẩn"""
@@ -78,6 +124,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/all', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_all_data(self, **kwargs):
         """API endpoint để get tất cả dữ liệu"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             _logger.info("API Export All Data được gọi")
             data = {
@@ -110,6 +159,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/sales', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_sales_data(self, **kwargs):
         """API endpoint để get dữ liệu đơn hàng"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_sales_data(**kwargs)
             return http.Response(
@@ -128,6 +180,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/debug/simple', type='http', auth='public', csrf=False, methods=['GET'])
     def debug_simple(self, **kwargs):
         """Debug endpoint đơn giản"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             partners = request.env['res.partner'].sudo().search([('is_company', '=', False)], limit=1)
             if partners:
@@ -157,6 +212,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/customers', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_customers_data(self, **kwargs):
         """API endpoint để get dữ liệu khách hàng với filter và limit mặc định"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             result = self._get_customers_data(**kwargs)
             return http.Response(
@@ -175,6 +233,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/invoices', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_invoices_data(self, **kwargs):
         """API endpoint để get dữ liệu hóa đơn"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_invoices_data(**kwargs)
             return http.Response(
@@ -193,6 +254,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/payments', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_payments_data(self, **kwargs):
         """API endpoint để get dữ liệu phiếu thu"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_payments_data(**kwargs)
             return http.Response(
@@ -211,6 +275,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/export/employees', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def export_employees_data(self, **kwargs):
         """API endpoint để get dữ liệu nhân viên"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_employees_data(**kwargs)
             return http.Response(
@@ -286,6 +353,9 @@ class DataExportController(http.Controller):
         - include_last_message: '1'/'0' - Bao gồm chi tiết tin nhắn cuối - 🆕
         - include_message_count: '1'/'0' - Đếm số tin nhắn - 🆕
         """
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_conversation_info(
                 limit=limit,
@@ -1653,6 +1723,9 @@ class DataExportController(http.Controller):
         Trả về danh sách message của 1 conversation, có lọc theo ngày.
         BẮT BUỘC truyền 1 trong 2: conversation_id (Odoo ID) hoặc conversation_fm_id (ID từ Pages/Pancake).
         """
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             data = self._get_messages_data(
                 conversation_id=conversation_id,
@@ -1794,6 +1867,9 @@ class DataExportController(http.Controller):
     @http.route('/dac_erp/api/debug/link_order_conversation', type='http', auth='public', csrf=False, methods=['GET', 'POST'])
     def debug_link_order_conversation(self, order_id=None, conversation_id=None, **kwargs):
         """Debug API để link order với conversation"""
+        auth_error = self._check_export_api_key()
+        if auth_error:
+            return auth_error
         try:
             if not order_id or not conversation_id:
                 return http.Response(

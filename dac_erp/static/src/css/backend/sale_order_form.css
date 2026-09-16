@@ -1,481 +1,1026 @@
-/* ===================================================================
-   DAC ERP - Sale Order Form Stylesheet
-   File: sale_order_form.css
-   Description: Tổng hợp tất cả styles cho Sale Order Form để dễ bảo trì
-   =================================================================== */
+/* DAC ERP - Sale Order Form polish.
+   Keep this file scoped to the sale order form and let conversation_widget.css
+   own the floating Pancake widget styling. */
 
-/* MARK: Import Base Styles từ dac_common.css */
-/* Các badge priority và state đã được định nghĩa trong dac_common.css */
-
-/* MARK: Sale Order Form Container */
 .dac-sale-form {
   position: relative;
 }
 
-/* MARK: Deposit Section */
-.dac-deposit-container {
-  max-width: 500px;
-  margin-bottom: 8px;
+.o_control_panel.dac-sale-order-control-panel-active {
+  display: block !important;
+  overflow: visible !important;
 }
 
-.dac-deposit-flex {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_main,
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_actions,
+.o_control_panel.dac-sale-order-control-panel-active .o_control_panel_navigation {
+  display: none !important;
 }
 
-.dac-deposit-label {
-  font-weight: 900; /* làm đậm hơn - từ 700 lên 900 */
-  font-size: 22px; /* tăng kích thước chữ - từ 20px lên 22px */
-  text-transform: uppercase; /* IN HOA chữ */
-  color: #0056b3; /* Màu xanh đậm */
-  margin-bottom: 0;
-  min-width: 80px; /* tăng khoảng trống */
-  white-space: nowrap;
-  letter-spacing: 0.8px; /* tăng letter-spacing cho chữ hoa dày hơn */
-  padding: 8px 12px; /* tăng padding để chữ to hơn có không gian */
-  border-radius: 6px;
-  background: rgba(0, 123, 255, 0.04); /* background của box */
-  border: 1px solid rgba(0, 123, 255, 0.08);
-}
-
-/* Stronger boxed modifier if you want the label to stand out more */
-.dac-deposit-label.boxed {
-  background: #fffbe6; /* match deposit amount container tone */
-  border: 1px solid #ffe066;
-  color: #007bff;
-  padding: 8px 12px; /* tăng padding cho chữ dày hơn */
-  font-weight: 900; /* làm đậm hơn */
-  font-size: 22px; /* tăng kích thước */
-  text-transform: uppercase; /* IN HOA cho boxed version */
-  letter-spacing: 0.8px; /* tăng letter-spacing */
-}
-
-.dac-deposit-amount-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fffbe6;
-  border-radius: 5px;
-  border: 1px solid #ffe066;
-  width: 180px;
-  padding: 3px 6px;
-}
-
-.dac-deposit-amount-inner {
-  display: flex;
-  align-items: center;
+.o_control_panel.dac-sale-order-control-panel-active .dac-sale-order-control-panel-slot {
   width: 100%;
-  justify-content: center;
+  overflow: visible;
 }
 
-.dac-deposit-amount-field {
-  font-size: 1.08rem;
-  font-weight: 600;
-  color: #e55353;
-  text-align: center;
-  border: none;
-  background: transparent;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
+.dac-control-panel-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 0;
-  margin: 0;
-  letter-spacing: 0.2px;
+  overflow: visible;
+  white-space: nowrap;
 }
 
-.dac-deposit-currency {
-  font-size: 1.08rem;
-  font-weight: 600;
-  color: #e55353;
-  margin-left: 4px;
+.dac-control-panel-main {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
-/* MARK: Production Deadline Section */
-.dac-deadline-container {
-  margin-bottom: 8px;
+.dac-control-panel-title {
+  margin-bottom: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.dac-control-panel-title .o_field_widget {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dac-control-panel-progress {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 0;
+}
+
+.dac-control-panel-tools {
+  flex: 0 0 auto;
+  margin-left: auto;
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #fffbe6;
-  border: 1px solid #ffc107;
-  border-radius: 5px;
-  padding: 4px 10px;
-  width: fit-content;
 }
 
-.dac-deadline-icon {
-  color: #ffc107;
+.o_web_client .dac-control-panel-tools .dac-save-btn {
+  position: relative;
+  background: #ffffff !important;
+  background-image: none !important;
+  background-color: #ffffff !important;
+  border-color: #2563eb !important;
+  color: #2563eb !important;
 }
 
-.dac-deadline-label {
-  font-weight: 600;
-  color: #e55353;
-  font-size: 13px;
-  line-height: 1.15; /* tighter line-height for compactness */
-  max-width: 210px; /* prevent the label from becoming too wide */
-  white-space: normal; /* allow wrapping if needed */
-  word-break: keep-all; /* prefer breaking between words */
-  display: inline-block;
-  vertical-align: middle;
+.o_web_client .dac-control-panel-tools .dac-save-btn:hover,
+.o_web_client .dac-control-panel-tools .dac-save-btn:focus,
+.o_web_client .dac-control-panel-tools .dac-save-btn:active {
+  background: #2563eb !important;
+  background-image: none !important;
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-color: #2563eb !important;
 }
 
-.dac-deadline-field {
-  font-size: 1em;
-  font-weight: 600;
-  color: #007bff;
-  width: 100px; /* slightly narrower for a more compact look */
-  background: #fff;
-  border: 1px solid #007bff;
-  border-radius: 3px;
-  padding: 2px 8px;
-  margin-left: 6px;
+.dac-control-panel-tools .dac-save-btn.dac-save-btn-dirty::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background: #dc3545;
+  border-radius: 50%;
+  border: 2px solid white;
+  pointer-events: none;
 }
 
-/* MARK: Production Image Section */
-.dac-production-image {
-  max-width: 360px;
-  max-height: 360px;
-}
-
-.dac-image-button {
-  margin-right: 6px;
-}
-
-/* MARK: Invoice Button Styles */
-.dac-invoice-button-container {
-  margin-bottom: 8px;
-}
-
-.dac-invoice-button {
-  min-width: 70px;
-  font-size: 0.98rem;
-  font-weight: 600;
-  padding: 7px 0;
+.dac-control-panel-pancake {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 420px;
   margin-left: 8px;
+  padding: 4px 10px;
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 999px;
+  background: #f8fbff;
 }
 
-.dac-invoice-button-standalone {
-  min-width: 80px;
-  font-size: 0.98rem;
-  font-weight: 600;
-  padding: 7px 0;
+.dac-control-panel-pancake-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-/* MARK: Summary Section (Tổng tiền) */
-.dac-summary-container {
-  text-align: right;
-  margin-top: 16px;
+.dac-control-panel-pancake-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  font-size: 11px;
+  font-weight: 800;
 }
 
-.dac-summary-row {
-  margin: 4px 0;
+.dac-control-panel-pancake-count .o_field_widget {
+  display: inline-flex;
 }
 
-.dac-summary-label {
-  font-weight: bold;
-}
-
-.dac-summary-value {
-  font-weight: bold;
-  margin-left: 16px;
-}
-
-.dac-summary-value--large {
-  font-size: 1.2em;
-}
-
-.dac-summary-value--highlight {
-  font-weight: bold;
-  color: #e55353;
-  font-size: 1.3em;
-  border: 2px solid #e55353;
-  padding: 4px 8px;
-  margin-left: 12px; /* add space between label and highlighted box */
-  border-radius: 4px;
-  background-color: #ffeaea;
-}
-
-.dac-summary-value--deposit {
-  font-weight: bold;
-  color: green;
-}
-
-/* MARK: Status Alert Messages */
-.dac-alert {
-  text-align: center;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 10px 0;
-  border: 1px solid transparent;
-}
-
-.dac-alert--completed {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-.dac-alert--cancel {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-/* MARK: Action Buttons Container */
-.dac-action-buttons {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  margin-top: 16px;
-}
-
-/* MARK: Conversation Widget */
-.conversation-widget-container {
-  position: fixed;
-  top: 2px;
-  right: 190px;
-  z-index: 1050;
-  width: 200px;
-}
-
-.conversation-widget {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border: 1px solid #dee2e6;
+.dac-control-panel-pancake-links {
+  min-width: 0;
   overflow: hidden;
 }
 
-.conversation-header {
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
-  padding: 10px 14px;
+.dac-control-panel-pancake-links .o_field_widget,
+.dac-control-panel-pancake-links .o_readonly,
+.dac-control-panel-pancake-links .o_readonly > div {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  user-select: none;
+  gap: 6px;
+  min-width: 0;
 }
 
-.conversation-header-left {
+.dac-control-panel-pancake-links .o_readonly > div {
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.dac-control-panel-pancake-links .conversation-btn {
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.dac-title-actions-toggle {
+  min-height: 38px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.dac-title-actions-menu {
+  min-width: 220px;
+  padding: 8px;
+  overflow: visible;
+  right: 0;
+  left: auto;
+  z-index: 1100;
+}
+
+.dac-title-actions-menu--floating {
+  width: max-content;
+  min-width: 260px;
+  max-width: min(420px, calc(100vw - 32px));
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.16);
+}
+
+.dac-title-actions-menu .dropdown-item {
   display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.dac-control-panel-progress .o_field_statusbar {
+  justify-content: flex-end;
+}
+
+.dac-control-panel-progress .o_statusbar_status {
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.dac-control-panel-progress .o_arrow_button {
+  flex: 0 0 auto;
+  margin-bottom: 0;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.dac-control-panel-progress .dropdown-toggle.o_arrow_button.d-none,
+.dac-control-panel-progress .o_statusbar_status > .btn.d-none {
+  display: none !important;
+}
+
+.dac-sale-form > header {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+}
+
+.dac-sale-form .oe_button_box {
+  margin-bottom: 12px;
+}
+
+.dac-sale-form .o_group {
+  margin-bottom: 0;
+}
+
+.dac-sale-form .o_notebook {
+  clear: both;
+}
+
+.dac-sale-form .o_notebook .tab-content {
+  background: #ffffff;
+}
+
+.dac-sale-form .o_notebook .tab-pane {
+  padding-top: 18px;
+}
+
+.dac-sale-form .o_field_x2many_list_row_add a,
+.dac-sale-form .o_list_button_add {
+  font-weight: 600;
+}
+
+.dac-order-lines-panel {
+  padding-top: 4px;
+}
+
+.dac-order-lines-panel .o_field_x2many .o_list_renderer {
+  margin-top: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table thead th {
+  border-bottom: 0;
+  background: #f8fafc;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody td {
+  background: #ffffff;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note) td:first-child {
+  border-left: 1px solid rgba(148, 163, 184, 0.22);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note) td:last-child {
+  border-right: 1px solid rgba(148, 163, 184, 0.22);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_data_row:not(.o_is_line_section):not(.o_is_line_note):hover td {
+  background: #f8fbff;
+  border-color: rgba(96, 165, 250, 0.35);
+}
+
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_is_line_section td,
+.dac-order-lines-panel .o_list_renderer .o_list_table tbody tr.o_is_line_note td {
+  background: transparent;
+}
+
+.dac-core-info-row {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.dac-box-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dac-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding-bottom: 0;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.dac-box-title i {
+  width: 18px;
+  color: #2563eb;
+  text-align: center;
+}
+
+.dac-box-client {
+  border-left: 0;
+}
+
+.dac-box-internal {
+  border-left: 0;
+}
+
+.dac-box-document {
+  border-left: 0;
+}
+
+.dac-title-client i,
+.dac-title-client {
+  color: #0f766e;
+}
+
+.dac-title-internal i,
+.dac-title-internal {
+  color: #b45309;
+}
+
+.dac-title-document i,
+.dac-title-document {
+  color: #be123c;
+}
+
+/* Task progress: stacked card layout.
+   Odoo 18 kanban mặc định flex-row với column-width cố định → phải clip overflow-x
+   ở toàn bộ chuỗi wrapper để tránh scroll ngang trống. */
+.dac-box-tasks,
+.dac-box-tasks .o_field_widget,
+.dac-box-tasks .o_view_controller,
+.dac-box-tasks .o_kanban_view {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.dac-box-tasks .o_kanban_view,
+.dac-box-tasks .o_view_controller {
+  padding: 0;
+  background: transparent;
+}
+
+.dac-box-tasks .o_pager,
+.dac-box-tasks .o_cp_pager,
+.dac-box-tasks .o_list_pagination {
+  display: none !important;
+}
+
+.dac-box-tasks .o_kanban_renderer {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 4px;
+  padding: 0;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  scrollbar-width: thin;
+}
+
+.dac-box-tasks .o_kanban_renderer.o_kanban_ungrouped {
+  flex-direction: row;
+  flex-wrap: wrap !important;
+}
+
+.dac-box-tasks .o_kanban_record:not(.o_kanban_ghost) {
+  margin: 0;
+  padding: 0;
+  flex: 0 0 calc(50% - 3px) !important;
+  width: calc(50% - 3px) !important;
+  max-width: calc(50% - 3px) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.09) !important;
+  background: #fff !important;
+  overflow: hidden;
+  transition: box-shadow 120ms ease, transform 120ms ease;
+}
+
+.o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    overflow: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    flex: 2 1 990px;
+    flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  /* FormCompiler still emits flex-column below Odoo's native XXL breakpoint. */
+  .o_form_view.o_xxl_form_view .o_form_renderer {
+    flex-flow: row nowrap !important;
+    height: 100% !important;
+  }
+  .o_form_view.o_xxl_form_view .o_form_sheet_bg {
+    overflow: auto;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    flex: 2 1 990px;
+    flex-shrink: 0;
+}
+}
+
+.dac-box-tasks .o_kanban_record:not(.o_kanban_ghost):hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
+  transform: translateY(-1px);
+}
+
+.o_kanban_renderer.o_kanban_ungrouped .o_kanban_record:not(.o_legacy_kanban) {
+  flex-grow: 0 !important;
+}
+
+.dac-task-card-inner {
+  border-left: 3px solid #cbd5e1;
+  padding: 9px 10px;
+}
+
+.dac-task-priority-urgent { border-left-color: #dc2626; }
+.dac-task-priority-high   { border-left-color: #d97706; }
+.dac-task-priority-normal { border-left-color: #2563eb; }
+
+.dac-task-card-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.dac-task-name {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f172a;
+}
+
+.dac-task-assignee {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dac-task-assignee-name {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dac-task-edit-btn {
+  opacity: 0.4;
+  flex-shrink: 0;
+  font-size: 11px;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dac-task-edit-btn:hover { opacity: 1; }
+
+.dac-task-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dac-task-state-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.dac-state-draft       { background: #f1f5f9; color: #64748b; }
+.dac-state-in_progress { background: #dbeafe; color: #1d4ed8; }
+.dac-state-done        { background: #dcfce7; color: #166534; }
+.dac-state-cancelled   { background: #f1f5f9; color: #94a3b8; }
+
+.dac-task-days-left {
+  font-size: 11px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.dac-urgent-btn {
+  padding: 2px 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+}
+
+.dac-urgent-active   { background: #fef2f2; color: #dc2626; border-color: rgba(220, 38, 38, 0.22); }
+.dac-urgent-inactive { background: transparent; color: #cbd5e1; border-color: #e2e8f0; }
+.dac-urgent-btn:hover { opacity: 0.8; }
+
+.dac-action-bar-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 0px;
+  padding: 0px 0px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.o_form_view .o_inner_group {
+    --columns: 1;
+    gap: 8px 16px;
+    margin-bottom: 0px;
+}
+
+.dac-action-bar-flags,
+.dac-action-bar-money,
+.dac-action-bar-ai {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  min-width: 0;
+}
+
+.dac-invoice-reader-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.conversation-header-icon {
-  font-size: 14px;
+.dac-invoice-reader-inline .o_field_binary_file {
+  max-width: 200px;
 }
 
-.conversation-header-title {
-  font-weight: 600;
+.dac-ai-summarize-btn,
+.dac-ai-invoice-btn {
+  white-space: nowrap;
+}
+
+.dac-order-ai-panel {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(148, 163, 184, 0.24);
+}
+
+.dac-order-ai-title {
+  display: flex;
+  align-items: center;
+  margin: 0 0 8px;
+  color: #475569;
   font-size: 13px;
+  font-weight: 700;
 }
 
-.conversation-header-count {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 10px;
+.dac-order-ai-panel .dac-action-bar-ai {
+  justify-content: flex-end;
+  margin-top: 8px;
+  gap: 8px;
 }
 
-.conversation-header-right {
+.dac-order-ai-panel .dac-action-bar-ai .btn {
+  min-height: 32px;
+}
+
+.dac-action-bar-money {
+  justify-content: flex-start;
+}
+
+.dac-toggle-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(220, 38, 38, 0.16);
+  border-radius: 6px;
+  background: #fff7f7;
+  color: #b91c1c;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.dac-deposit-inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.dac-deposit-label {
+  color: #b45309;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dac-deposit-amount-field {
+  max-width: 132px;
+  min-width: 110px;
+  font-weight: 700;
+}
+
+.dac-deposit-currency {
+  color: #92400e;
+  font-weight: 700;
+}
+
+.dac-invoice-button {
+  margin-left: 2px;
+}
+
+.dac-deposit-cta {
+  position: relative;
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-inline,
+.o_action_manager.dac-order-state-deposit .dac-deposit-inline,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-inline {
+  border-color: rgba(220, 38, 38, 0.2);
+  background: #fff1f2;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.08);
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-label,
+.o_web_client.dac-order-state-deposit .dac-deposit-currency,
+.o_action_manager.dac-order-state-deposit .dac-deposit-label,
+.o_action_manager.dac-order-state-deposit .dac-deposit-currency,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-label,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-currency {
+  color: #b91c1c;
+}
+
+.o_web_client.dac-order-state-deposit .dac-deposit-cta::after,
+.o_action_manager.dac-order-state-deposit .dac-deposit-cta::after,
+.dac-sale-form.dac-order-state-deposit .dac-deposit-cta::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #dc2626;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.dac-workflow-panel,
+.dac-production-media-card {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.dac-workflow-panel {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.dac-workflow-panel-title {
+  display: block;
+  margin-bottom: 10px;
+  color: #475569;
+  font-weight: 700;
+}
+
+.dac-delay-date .o_input,
+.dac-delay-date input {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.dac-production-media-card {
+  padding: 16px;
+  text-align: center;
+}
+
+.dac-production-image {
+  width: 100%;
+  max-width: 250px;
+}
+
+.dac-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.dac-summary-container {
+  display: grid;
+  gap: 4px;
+  width: min(100%, 380px);
+  margin: 20px 0 0 auto;
+  padding: 16px 18px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 8px;
+  background: #fbfcff;
+}
+
+.dac-summary-row {
   display: flex;
   align-items: center;
-}
-
-.conversation-toggle {
-  font-size: 12px;
-  transition: transform 0.3s ease;
-  cursor: pointer;
-  transform: rotate(180deg);
-}
-
-.conversation-content {
-  padding: 14px;
-  max-height: 300px;
-  overflow-y: auto;
-  background: #fafafa;
-  display: none;
-}
-
-.conversation-quick-actions {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #e9ecef;
-  display: flex;
   justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.dac-summary-row:last-child {
+  border-bottom: 0;
+}
+
+.dac-summary-label {
+  margin: 0;
+  color: #475569;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dac-summary-label--highlight {
+  color: #b91c1c;
+  font-weight: 800;
+}
+
+.dac-summary-value {
+  min-width: 0;
+  color: #0f172a;
+  font-weight: 700;
+  text-align: right;
+}
+
+.dac-summary-value--large {
+  font-size: 1.12rem;
+}
+
+/* Keep editable amounts and their currency in one normal-flow control. */
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) {
+  width: 160px;
+  max-width: 100%;
+  margin-bottom: 0;
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) > div:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) .position-absolute {
+  display: none !important;
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) > div > .opacity-0 {
+  opacity: 1 !important;
+  color: rgb(15, 23, 42);
+}
+
+.dac-summary-container .o_field_monetary:is([name="shipping_fee"], [name="promotion_amount"]) input.o_input {
+  min-width: 0;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: #ffffff;
+  box-shadow: none;
+  text-align: right;
+  font-weight: 700;
+}
+
+.dac-summary-value--deposit {
+  color: #047857;
+}
+
+.dac-summary-value--highlight {
+  display: inline-flex;
+  justify-content: flex-end;
+  min-width: 130px;
+  padding: 5px 8px;
+  border: 1px solid rgba(220, 38, 38, 0.24);
+  border-radius: 6px;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-size: 1.08rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.dac-alert {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.dac-alert--completed {
+  border-color: rgba(22, 163, 74, 0.22);
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.dac-alert--cancel {
+  border-color: rgba(220, 38, 38, 0.22);
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.dac-action-buttons {
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
 }
 
-.conversation-view-all-btn {
+.dac-action-buttons button {
+  min-width: 116px;
+  max-width: 100%;
+  min-height: 38px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  white-space: normal;
+}
+
+.dac-action-buttons button[name="action_cancel_order"],
+.dac-action-buttons button[name="action_back_custom_step"] {
+  margin-right: auto;
+}
+
+.conversation-bubble-icon {
+  font-size: 20px;
+}
+
+.conversation-bubble-count {
+  margin-top: 2px;
   font-size: 10px;
-  padding: 3px 10px;
 }
 
-.conversation-view-all-btn i {
-  margin-right: 3px;
+.bubble-toggle-btn {
+  margin-right: 8px;
+  cursor: pointer;
 }
 
-.conversation-hint {
-  font-size: 10px;
-  color: #6c757d;
-  font-style: italic;
+.dac-sale-form .conversation-widget-container {
+  top: 90px;
+  right: 20px;
 }
 
-/* MARK: Responsive Design */
-@media (max-width: 768px) {
-  .dac-deposit-flex {
-    flex-direction: column;
+@media (max-width: 991.98px) {
+  .dac-action-bar-top,
+  .dac-action-bar-flags,
+  .dac-action-bar-money {
     align-items: flex-start;
-    gap: 8px;
+    justify-content: flex-start;
   }
 
-  .dac-deposit-amount-container {
+  .dac-action-bar-money {
     width: 100%;
-    max-width: 300px;
+    margin-left: 0;
   }
 
-  .dac-action-buttons {
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .conversation-widget-container {
-    position: relative;
-    top: auto;
-    right: auto;
-    width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .dac-deadline-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .dac-deadline-field {
-    width: 100%;
+  .dac-summary-container {
     margin-left: 0;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 575.98px) {
+  .dac-box-tasks .o_kanban_record:not(.o_kanban_ghost) {
+    flex-basis: 100% !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .dac-control-panel-title {
+    font-size: 22px;
+  }
+
+  .dac-control-panel-main {
+    min-width: max-content;
+  }
+
+  .dac-control-panel-progress {
+    min-width: 240px;
+  }
+
+  .dac-control-panel-progress .o_field_statusbar,
+  .dac-control-panel-progress .o_statusbar_status {
+    justify-content: flex-end;
+  }
+
+  .dac-box-card,
+  .dac-action-bar-top,
+  .dac-workflow-panel,
+  .dac-production-media-card,
   .dac-summary-container {
+    padding: 13px;
+  }
+
+  .dac-toggle-field,
+  .dac-deposit-inline,
+  .dac-action-buttons button,
+  .dac-summary-container {
+    width: 100%;
+  }
+
+  .dac-action-buttons {
+    align-items: stretch;
+  }
+
+  .dac-action-buttons button[name="action_cancel_order"],
+  .dac-action-buttons button[name="action_back_custom_step"] {
+    margin-right: 0;
+  }
+
+  .dac-summary-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .dac-summary-value,
+  .dac-summary-value--highlight {
+    justify-content: flex-start;
     text-align: left;
   }
 
-  .dac-summary-value {
-    margin-left: 8px;
-  }
-
-  /* Ensure highlighted box doesn't push layout too far on small screens */
-  .dac-summary-value--highlight {
-    margin-left: 6px;
-    display: inline-block;
-  }
-
-  .dac-production-image {
+  .conversation-widget-container {
+    width: 100%;
     max-width: 100%;
-    max-height: 250px;
+    margin: 16px 0;
   }
 }
 
-/* MARK: Print Styles */
 @media print {
   .conversation-widget-container,
   .dac-action-buttons,
   .oe_button_box {
     display: none !important;
   }
-
-  .dac-summary-container {
-    margin-top: 24px;
-  }
-
-  .dac-alert {
-    border: 2px solid !important;
-  }
 }
 
-/* MARK: High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .dac-deposit-amount-container,
-  .dac-deadline-container {
-    border-width: 2px;
-  }
-
-  .conversation-widget {
-    border-width: 2px;
-  }
-
-  .dac-summary-value--highlight {
-    border-width: 3px;
-  }
-}
-
-/* MARK: Reduced Motion Support */
 @media (prefers-reduced-motion: reduce) {
-  .conversation-toggle {
-    transition: none;
-  }
-
+  .conversation-widget,
+  .conversation-toggle,
   .dac-ticket {
-    transition: none;
+    transition: none !important;
   }
-}
-
-/* MARK: Dark Mode Support (future-proofing) */
-@media (prefers-color-scheme: dark) {
-  .conversation-widget {
-    background: #2d3748;
-    border-color: #4a5568;
-  }
-
-  .conversation-content {
-    background: #1a202c;
-  }
-
-  .dac-deposit-amount-container,
-  .dac-deadline-container {
-    background: #2d3748;
-    border-color: #4a5568;
-  }
-
-  .dac-deadline-field {
-    background: #2d3748;
-    border-color: #4a5568;
-    color: #e2e8f0;
-  }
-
-  .dac-alert--completed {
-    background: #22543d;
-    border-color: #38a169;
-    color: #9ae6b4;
-  }
-
-  .dac-alert--cancel {
-    background: #742a2a;
-    border-color: #e53e3e;
-    color: #feb2b2;
-  }
-}
-
-.dac-deposit-container .dac-deposit-label {
-  background: #fffbe6; /* cùng tông với ô tiền cọc */
-  border: 1px solid #ffe066;
-  color: #b35a00; /* tương phản tốt trên nền vàng */
-  font-weight: 900; /* sửa từ 10000 thành 900 (hợp lệ) */
-  font-size: 18px; /* tăng kích thước */
-  padding: 8px 12px; /* tăng padding */
-  border-radius: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px; /* tăng letter-spacing */
-  box-shadow: inset 0 1px 0 rgba(255, 193, 7, 0.35);
 }

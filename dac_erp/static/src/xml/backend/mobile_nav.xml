@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dac_erp.DacMobileNavBar">
+        <div t-if="state.visible" class="dac-mobile-nav-root">
+
+            <!-- Backdrop: bấm ra ngoài để đóng submenu -->
+            <div t-if="state.showCreateMenu"
+                 class="dac-mobile-nav-backdrop"
+                 t-on-click="() => this.closeCreateMenu()"/>
+
+            <!-- Submenu "Tạo đơn" -->
+            <div t-if="state.showCreateMenu" class="dac-create-order-menu">
+                <div class="dac-create-order-menu-title">Chọn loại đơn</div>
+                <t t-foreach="createOptions" t-as="opt" t-key="opt.key">
+                    <button class="dac-create-order-option"
+                            t-on-click="() => this.onCreateOptionClick(opt.key)">
+                        <span class="dac-create-order-option-icon">
+                            <i t-att-class="opt.icon"/>
+                        </span>
+                        <span class="dac-create-order-option-body">
+                            <span class="dac-create-order-option-label" t-esc="opt.label"/>
+                            <span class="dac-create-order-option-desc" t-esc="opt.desc"/>
+                        </span>
+                        <i class="fa fa-chevron-right dac-create-order-option-arrow"/>
+                    </button>
+                </t>
+            </div>
+
+            <!-- Bottom nav bar -->
+            <div class="dac-mobile-nav">
+                <t t-foreach="navItems" t-as="item" t-key="item.key">
+                    <button
+                        class="dac-mobile-nav-item"
+                        t-att-class="{
+                            'dac-mobile-nav-item--accent': item.key === 'new_order',
+                            'dac-mobile-nav-item--active': item.key === 'new_order' and state.showCreateMenu
+                        }"
+                        t-on-click="() => this.onNavItemClick(item)"
+                    >
+                        <i t-att-class="item.icon"/>
+                        <span t-esc="item.label"/>
+                    </button>
+                </t>
+            </div>
+
+        </div>
+    </t>
+</templates>

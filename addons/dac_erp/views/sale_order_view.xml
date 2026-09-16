@@ -424,13 +424,6 @@
                                     <field name="amount_tax" readonly="1" widget="monetary"/>
                                 </span>
                             </div>
-                            <div class="dac-summary-row">
-                                <label for="shipping_fee" class="dac-summary-label">Phí vận chuyển:</label>
-                                <span class="dac-summary-value">
-                                    <field name="shipping_fee" widget="monetary" 
-                                            readonly="is_order_completed or order_state_custom == 'cancel'"/>
-                                </span>
-                            </div>
                             <!-- 2b. Khuyến mãi toàn đơn -->
                             <div class="dac-summary-row">
                                 <label for="promotion_amount" class="dac-summary-label">Khuyến mãi:</label>

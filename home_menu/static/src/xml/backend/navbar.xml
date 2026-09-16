@@ -7,23 +7,33 @@
             </t>
         </xpath>
         <xpath expr="//t[@t-call='web.NavBar.AppsMenu']" position="replace">
-                <t t-if="state.isMenuBlocked || state.inventory">
-                <!-- Home Button -->
-                    <div class="o-dropdown dropdown o_navbar_apps_menu o-dropdown--no-caret">
-                        <button t-if="homeButton" 
-                                t-att-id="homeButton.id"
-                                t-att-title="homeButton.title"
-                                t-on-click="homeButton.callback"
-                                class="dropdown-toggle" style="color: transparent !important">
-                            <i t-att-class="homeButton.icon"/>
-                        </button>
-                    </div>
+            <t t-if="state.isMenuBlocked || state.inventory">
+                <!-- Home Button: icon only, no label -->
+                <div class="o-dropdown dropdown o_navbar_apps_menu o-dropdown--no-caret">
+                    <button t-if="homeButton"
+                            t-att-id="homeButton.id"
+                            t-att-title="homeButton.title"
+                            t-on-click="homeButton.callback"
+                            class="dropdown-toggle o_home_menu_button">
+                        <i t-att-class="homeButton.icon"/>
+                    </button>
+                </div>
+            </t>
+            <t t-else="">
+                <t t-call="web.NavBar.AppsMenu">
+                    <t t-set="apps" t-value="menuService.getApps()"  />
                 </t>
-                <t t-else="">
-                    <t t-call="web.NavBar.AppsMenu">
-                        <t t-set="apps" t-value="menuService.getApps()"  />
-                    </t>
-                </t>
+            </t>
+        </xpath>
+        <!-- Ẩn tên app (App Brand) khi menu bị khoá theo role -->
+        <xpath expr="//DropdownItem[contains(@class,'o_menu_brand')]" position="replace">
+            <DropdownItem
+                t-if="!env.isSmall and currentApp and !state.isMenuBlocked"
+                t-esc="currentApp.name"
+                class="'o_menu_brand d-flex'"
+                onSelected="() => this.onNavBarDropdownItemSelection(currentApp)"
+                attrs="{ href: getMenuItemHref(currentApp), 'data-menu-xmlid': currentApp.xmlid, 'data-section': currentApp.id }"
+            />
         </xpath>
     </t>
 </templates>

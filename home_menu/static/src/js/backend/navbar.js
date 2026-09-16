@@ -73,6 +73,16 @@ patch(NavBar.prototype, {
         console.log("Sale menu found:", rootMenuItem);
         this.state.isMenuBlocked = true;
         this.state.rootMenuActionID = rootMenuItem?.actionID;
+      } else if (
+        await user.hasGroup("dac_erp.group_dac_erp_design_production")
+      ) {
+        // Dual-role: đồng bộ với web_client (landing = Production dashboard)
+        const rootMenuItem = menuItems.find(
+          (item) => item.xmlid === "dac_erp.dac_production_root_menu"
+        );
+        console.log("Design+Production menu found:", rootMenuItem);
+        this.state.isMenuBlocked = true;
+        this.state.rootMenuActionID = rootMenuItem?.actionID;
       } else if (await user.hasGroup("dac_erp.group_dac_erp_design")) {
         const rootMenuItem = menuItems.find(
           (item) => item.xmlid === "dac_erp.dac_design_root_menu"

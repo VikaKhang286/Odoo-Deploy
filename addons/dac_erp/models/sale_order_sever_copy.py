@@ -961,7 +961,6 @@ class SaleOrderInherit(models.Model):
                         'name': shipping_product.name,
                         'product_uom_qty': 1,
                         'price_unit': p_shipping_fee,
-                        'is_delivery': True,
                         'company_id': current_company_id,  # Đã đảm bảo current_company_id luôn có giá trị
                     }))
 

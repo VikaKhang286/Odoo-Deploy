@@ -15,13 +15,9 @@ class AccountPayment(models.Model):
         """Override read để chặn Design/Production users truy cập phiếu thu"""
         user = self.env.user
         
-        # Chặn Design và Production (không phải Manager/Admin/Sale)
-        if (user.has_group('dac_erp.group_dac_erp_design') or 
-            user.has_group('dac_erp.group_dac_erp_production')) and \
-           not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                user.has_group('dac_erp.group_dac_erp_sale') or
-                user.has_group('base.group_system')):
-            
+        # Chặn Design và Production thuần (không phải Manager/Admin/Sale)
+        if user._dac_is_worker_only():
+
             _logger.warning(f"BLOCKED READ: User {user.name} (ID: {user.id}) tried to read account.payment {self.ids}")
             
             raise AccessError(
@@ -38,13 +34,9 @@ class AccountPayment(models.Model):
         """Override web_read để chặn JSON-RPC calls từ Design/Production users"""
         user = self.env.user
         
-        # Chặn Design và Production (không phải Manager/Admin/Sale)
-        if (user.has_group('dac_erp.group_dac_erp_design') or 
-            user.has_group('dac_erp.group_dac_erp_production')) and \
-           not (user.has_group('dac_erp.group_dac_erp_manager') or 
-                user.has_group('dac_erp.group_dac_erp_sale') or
-                user.has_group('base.group_system')):
-            
+        # Chặn Design và Production thuần (không phải Manager/Admin/Sale)
+        if user._dac_is_worker_only():
+
             _logger.warning(f"BLOCKED WEB_READ: User {user.name} (ID: {user.id}) tried to web_read account.payment {self.ids}")
             
             raise AccessError(
@@ -198,9 +190,9 @@ class AccountPayment(models.Model):
         """Kiểm tra quyền xóa phiếu thu - CHỈ ÁP DỤNG CHO SALES USERS"""
         for payment in self:
             # Nếu user là DAC sale (không phải manager hoặc admin) -> không cho xóa
-            if (self.env.user.has_group('dac_erp.group_dac_erp_sale') and 
-                not self.env.user.has_group('dac_erp.group_dac_erp_manager') and
-                not self.env.user.has_group('base.group_system')):
+            if (self.env.user._dac_is_sale() and
+                not self.env.user._dac_is_manager() and
+                not self.env.user._dac_is_admin()):
                 raise AccessError(
                     f"Bạn không có quyền xóa phiếu thu {payment.name}!\n"
                     "Liên hệ quản lý để được hỗ trợ."
@@ -233,13 +225,17 @@ class AccountPaymentRegister(models.TransientModel):
                     ])
                     
                     # Tìm POSTED payments chưa reconcile cho invoice này
-                    existing_posted_payments = self.env['account.payment'].search([
+                    potential_payments = self.env['account.payment'].search([
                         ('name', 'like', move.name),
                         ('state', '=', 'posted'),
                         ('payment_type', '=', 'inbound'),
                         ('partner_id', '=', move.partner_id.id),
-                        ('reconciled_invoice_ids', 'not in', [move.id])  # Chưa reconcile với invoice này
+                        ('is_reconciled', '=', False)
                     ])
+                    # Lọc trong Python để tránh lỗi ORM 'NotImplementedType' 
+                    existing_posted_payments = potential_payments.filtered(
+                        lambda p: hasattr(p, 'reconciled_invoice_ids') and move.id not in p.reconciled_invoice_ids.ids
+                    )
                     
                     # Ưu tiên DRAFT payments
                     if existing_draft_payments:

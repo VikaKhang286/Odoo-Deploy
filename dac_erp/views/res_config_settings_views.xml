@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_res_config_settings_inherit_dac_erp_production" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.dac.erp.production</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='invite_users']" position="after">
+                    <div id="dac_erp_production_settings" groups="base.group_system">
+                        <block title="Thiết lập sản xuất" name="dac_erp_production_settings_block">
+                            <setting id="dac_erp_production_default_deadline_days"
+                                     string="Số ngày hoàn thành mặc định"
+                                     help="Dùng để gợi ý nhanh ngày hoàn thành khi bấm Tiến hành sản xuất mà đơn hàng chưa có ngày hoàn thành.">
+                                <field name="production_default_deadline_days"/>
+                            </setting>
+                        </block>
+                        <block title="DAC ERP / OpenClaw MCP" name="dac_erp_openclaw_mcp_settings_block">
+                            <setting id="dac_erp_mcp_customer_care_sla_minutes_default"
+                                     string="Customer-care SLA mặc định"
+                                     help="Dùng cho queue/action-plan khi request không gửi sla_minutes.">
+                                <field name="mcp_customer_care_sla_minutes_default"/>
+                            </setting>
+                            <setting id="dac_erp_mcp_customer_care_urgent_minutes_default"
+                                     string="Ngưỡng urgent mặc định"
+                                     help="Dùng cho queue/action-plan khi request không gửi urgent_minutes.">
+                                <field name="mcp_customer_care_urgent_minutes_default"/>
+                            </setting>
+                            <setting id="dac_erp_mcp_customer_care_default_policy"
+                                     string="Policy customer-care mặc định">
+                                <field name="mcp_customer_care_default_policy"/>
+                            </setting>
+                            <setting id="dac_erp_mcp_working_hours"
+                                     string="Giờ làm việc OpenClaw"
+                                     help="Dùng để gợi ý deadline cho follow-up khi request không gửi default_deadline_date.">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_morning_start"/>
+                                            <field name="mcp_working_hours_morning_start"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_morning_end"/>
+                                            <field name="mcp_working_hours_morning_end"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_afternoon_start"/>
+                                            <field name="mcp_working_hours_afternoon_start"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_afternoon_end"/>
+                                            <field name="mcp_working_hours_afternoon_end"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_working_days"/>
+                                            <field name="mcp_working_hours_working_days"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_timezone_mode"/>
+                                            <field name="mcp_working_hours_timezone_mode"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_working_hours_fixed_timezone"/>
+                                            <field name="mcp_working_hours_fixed_timezone"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_mcp_activity_type_mapping"
+                                     string="Mapping loại activity customer-care">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-4">
+                                            <label for="mcp_activity_type_todo_xmlid"/>
+                                            <field name="mcp_activity_type_todo_xmlid"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_activity_type_call_xmlid"/>
+                                            <field name="mcp_activity_type_call_xmlid"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_activity_type_followup_xmlid"/>
+                                            <field name="mcp_activity_type_followup_xmlid"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-3">
+                                            <label for="mcp_customer_care_urgent_activity_type"/>
+                                            <field name="mcp_customer_care_urgent_activity_type"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="mcp_customer_care_high_activity_type"/>
+                                            <field name="mcp_customer_care_high_activity_type"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="mcp_customer_care_medium_activity_type"/>
+                                            <field name="mcp_customer_care_medium_activity_type"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <label for="mcp_customer_care_low_activity_type"/>
+                                            <field name="mcp_customer_care_low_activity_type"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_mcp_internal_scope"
+                                     string="Internal conversation read scope">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_conversation_default_scope"/>
+                                            <field name="mcp_conversation_default_scope"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_conversation_allow_internal_read"/>
+                                            <field name="mcp_conversation_allow_internal_read"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_mcp_order_money_confirmation"
+                                     string="Money change confirmation policy">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_order_money_change_confirmation_required"/>
+                                            <field name="mcp_order_money_change_confirmation_required"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_order_money_change_fields"/>
+                                            <field name="mcp_order_money_change_fields"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_mcp_customer_care_auto_run"
+                                     string="Mode C customer-care auto-run">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_enabled"/>
+                                            <field name="mcp_customer_care_auto_run_enabled"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_dry_run_default"/>
+                                            <field name="mcp_customer_care_auto_run_dry_run_default"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_batch_limit"/>
+                                            <field name="mcp_customer_care_auto_run_batch_limit"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_execute_followups"/>
+                                            <field name="mcp_customer_care_auto_run_execute_followups"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_execute_notes"/>
+                                            <field name="mcp_customer_care_auto_run_execute_notes"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_execute_triage"/>
+                                            <field name="mcp_customer_care_auto_run_execute_triage"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_exclude_internal"/>
+                                            <field name="mcp_customer_care_auto_run_exclude_internal"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_allow_mark_read"/>
+                                            <field name="mcp_customer_care_auto_run_allow_mark_read"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_allow_done"/>
+                                            <field name="mcp_customer_care_auto_run_allow_done"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt16">
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_cron_enabled"/>
+                                            <field name="mcp_customer_care_auto_run_cron_enabled"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_cron_interval_minutes"/>
+                                            <field name="mcp_customer_care_auto_run_cron_interval_minutes"/>
+                                        </div>
+                                        <div class="col-4">
+                                            <label for="mcp_customer_care_auto_run_working_hours_only"/>
+                                            <field name="mcp_customer_care_auto_run_working_hours_only"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_mcp_operational_guardrails"
+                                     string="Operational MCP guardrails"
+                                     help="Giới hạn batch và guardrail vận hành cơ bản cho OpenClaw MCP.">
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <div class="col-6">
+                                            <label for="mcp_max_batch_limit_default"/>
+                                            <field name="mcp_max_batch_limit_default"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="mcp_auto_run_min_interval_seconds"/>
+                                            <field name="mcp_auto_run_min_interval_seconds"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </setting>
+                        </block>
+                        <block title="AI Tóm tắt đơn hàng (OpenAI-compatible)" name="dac_erp_ai_summary_settings_block">
+                            <setting id="dac_erp_ai_summary_endpoint"
+                                     string="AI Endpoint"
+                                     help="URL gốc của API tương thích OpenAI, ví dụ: https://api.openai.com/v1">
+                                <field name="ai_summary_endpoint" placeholder="https://api.openai.com/v1"/>
+                            </setting>
+                            <setting id="dac_erp_ai_summary_api_key"
+                                     string="API Key">
+                                <field name="ai_summary_api_key" password="True"/>
+                            </setting>
+                            <setting id="dac_erp_ai_available_models"
+                                     string="Danh sách model khả dụng"
+                                     help="Bấm nút bên dưới để đồng bộ danh sách các model từ API, sau đó tích chọn các model muốn sử dụng.">
+                                <button string="Đồng bộ model từ API"
+                                        name="action_fetch_ai_models"
+                                        type="object"
+                                        class="btn btn-secondary btn-sm mb-2"
+                                        icon="fa-refresh"/>
+                                <div class="content-group mt-2" style="width: 100%;">
+                                    <field name="ai_model_ids" widget="many2many">
+                                        <list editable="bottom" create="true" delete="true">
+                                            <field name="name" string="Tên Model" required="1"/>
+                                            <field name="is_active" string="Chọn dùng"/>
+                                        </list>
+                                    </field>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_ai_selected_models"
+                                     string="Thứ tự ưu tiên model đã chọn"
+                                     help="Kéo thả các dòng để sắp xếp thứ tự ưu tiên (model ở trên cùng sẽ được ưu tiên chạy trước).">
+                                <div class="content-group mt-2" style="width: 100%;">
+                                    <field name="ai_selected_model_ids" widget="many2many">
+                                        <list editable="bottom" create="false" delete="false">
+                                            <field name="sequence" widget="handle"/>
+                                            <field name="name" string="Tên Model" readonly="1"/>
+                                        </list>
+                                    </field>
+                                </div>
+                            </setting>
+                            <setting id="dac_erp_ai_summary_system_prompt"
+                                     string="System Prompt"
+                                     help="Hướng dẫn cho AI. Để trống sẽ dùng prompt mặc định.">
+                                <field name="ai_summary_system_prompt" widget="text"/>
+                            </setting>
+                            <setting id="dac_erp_ai_summary_user_prompt"
+                                     string="User Prompt Template"
+                                     help="Template prompt người dùng. Biến: {partner_name}, {order_name}, {order_lines}, {amount_total}, {note}. Để trống dùng mặc định.">
+                                <field name="ai_summary_user_prompt" widget="text"/>
+                            </setting>
+                        </block>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

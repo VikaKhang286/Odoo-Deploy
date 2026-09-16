@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Wizard form view — list view nhúng thẳng vào field để tránh lỗi views attribute -->
+        <record id="view_dac_create_order_wizard_form" model="ir.ui.view">
+            <field name="name">dac.create.order.wizard.form</field>
+            <field name="model">dac.create.order.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Tạo đơn hàng">
+                    <sheet>
+                        <div class="oe_title">
+                            <h2>Chọn hội thoại Pancake để tạo đơn</h2>
+                        </div>
+
+                        <field name="has_more" invisible="1"/>
+
+                        <!-- Thanh tìm kiếm: lọc theo tên khách, SĐT hoặc nội dung tin nhắn (live qua onchange) -->
+                        <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="fa fa-search"/></span>
+                            <field name="search_query" nolabel="1"
+                                   placeholder="Tìm theo tên khách, SĐT hoặc nội dung tin nhắn..."
+                                   class="o_input"/>
+                            <button name="action_search"
+                                    type="object"
+                                    string="Tìm kiếm"
+                                    class="btn btn-primary"/>
+                        </div>
+
+                        <field name="conversation_ids" nolabel="1" mode="list">
+                            <list create="false" delete="false" open_form_view="false" string="Danh sách hội thoại">
+                                <field name="customer_avatar" string="Ảnh"
+                                       widget="image" options="{'size': [45, 45]}"/>
+                                <field name="customer_name_fm" string="Tên khách"/>
+                                <field name="last_message_snippet_clean" string="Tin nhắn cuối" widget="text"/>
+                                <field name="last_message_at_fm" string="Thời gian nhắn"/>
+                                <field name="platform_fm" string="Nguồn" optional="show"/>
+                                <button name="action_open_on_pancake"
+                                        type="object"
+                                        string="Xem tin nhắn"
+                                        icon="fa-external-link"
+                                        title="Mở đúng hội thoại này trên Pancake"/>
+                                <button name="action_create_order_from_wizard"
+                                        type="object"
+                                        string="Tạo đơn"
+                                        icon="fa-plus-circle"
+                                        title="Tạo đơn hàng cho khách hàng này"/>
+                            </list>
+                        </field>
+                        <div class="text-center mt-2" invisible="not has_more">
+                            <button name="action_load_more"
+                                    type="object"
+                                    string="Tải thêm hội thoại cũ hơn"
+                                    class="btn btn-secondary btn-sm"/>
+                        </div>
+                    </sheet>
+                    <footer>
+                        <button string="Hủy"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Dropdown "Tạo đơn" / "Nhập đơn" trên header list view Sale.
+             Dùng js_class custom (xem create_order_list_view.js); bỏ nút "Mới" mặc định
+             vì "Đơn khách vãng lai" trong dropdown đã thay thế. -->
+        <record id="view_sale_order_list_sale_pancake_btn" model="ir.ui.view">
+            <field name="name">sale.order.list.sale.pancake.btn</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_list_sale"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="attributes">
+                    <attribute name="js_class">dac_create_order_list</attribute>
+                    <attribute name="create">0</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Dropdown "Tạo đơn" / "Nhập đơn" trên header list view Manager -->
+        <record id="view_sale_order_list_manager_pancake_btn" model="ir.ui.view">
+            <field name="name">sale.order.list.manager.pancake.btn</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list" position="attributes">
+                    <attribute name="js_class">dac_create_order_list</attribute>
+                    <attribute name="create">0</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Server action xuất hiện trong Action menu của danh sách đơn hàng -->
+        <record id="action_open_create_order_wizard_from_sale" model="ir.actions.server">
+            <field name="name">Tạo đơn từ Pancake</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_type">action</field>
+            <field name="state">code</field>
+            <field name="code">action = env['dac.create.order.wizard'].sudo().action_open_wizard()</field>
+            <field name="groups_id" eval="[(6, 0, [ref('dac_erp.group_dac_erp_sale'), ref('dac_erp.group_dac_erp_manager')])]"/>
+        </record>
+
+    </data>
+</odoo>

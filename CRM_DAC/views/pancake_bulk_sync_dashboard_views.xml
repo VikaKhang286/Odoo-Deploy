@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_pancake_bulk_sync_dashboard_form" model="ir.ui.view">
+            <field name="name">pancake.bulk.sync.dashboard.form</field>
+            <field name="model">pancake.bulk.sync.dashboard</field>
+            <field name="arch" type="xml">
+                <form string="Đồng bộ toàn bộ Pancake" create="false" edit="true" delete="false">
+                    <header>
+                        <button name="action_save_configuration" type="object" string="Lưu thiết lập" class="btn-primary"/>
+                        <button name="action_check_access_token" type="object" string="Kiểm tra token" class="btn-secondary"/>
+                        <button name="action_load_pages_from_token" type="object" string="Tải Page và tạo token trang" class="btn-secondary"/>
+                        <button name="action_start_bulk_sync" type="object" string="Bắt đầu đồng bộ toàn bộ" class="btn-primary"/>
+                        <button name="action_stop_bulk_sync" type="object" string="Yêu cầu dừng" class="btn-warning"/>
+                        <button name="action_reload_dashboard" type="object" string="Tải lại" class="btn-secondary"/>
+                    </header>
+                    <sheet class="o_pancake_console_sheet" data-pancake-bulk-console="1">
+                        <div class="oe_title o_pancake_console_title">
+                            <h1>Đồng bộ toàn bộ Pancake</h1>
+                            <div class="text-muted">
+                                Màn hình này chạy job thủ công theo <strong>snapshot page active đã chọn</strong>, lấy toàn bộ dữ liệu conversation/message của snapshot đó,
+                                đồng thời giữ nguyên dữ liệu Pancake đã có trong Odoo để tra cứu.
+                            </div>
+                        </div>
+
+                        <notebook class="o_pancake_console_notebook">
+                            <page string="Điều hành">
+                                <div class="o_pancake_console_live_state" data-pancake-live-state="1">
+                                    <span class="o_pancake_console_live_dot"/>
+                                    <span class="o_pancake_console_live_text">Đang chờ snapshot live đầu tiên...</span>
+                                </div>
+
+                                <group>
+                                    <group string="Tiến độ tổng">
+                                        <field name="active_job_progress" widget="progressbar" readonly="1"/>
+                                        <field name="active_job_state" readonly="1"/>
+                                        <field name="active_job_started_at" readonly="1"/>
+                                        <field name="active_job_finished_at" readonly="1"/>
+                                    </group>
+                                    <group string="Tiến độ pha hiện tại">
+                                        <field name="active_job_phase_progress" widget="progressbar" readonly="1"/>
+                                        <field name="active_job_phase" readonly="1"/>
+                                        <field name="active_job_phase_done_count" readonly="1"/>
+                                        <field name="active_job_phase_total_count" readonly="1"/>
+                                    </group>
+                                </group>
+
+                                <div class="o_pancake_console_section" data-pancake-live-section="status">
+                                    <div class="o_pancake_console_empty">Đang tải trạng thái...</div>
+                                </div>
+                                <div class="o_pancake_console_section" data-pancake-live-section="overview">
+                                    <div class="o_pancake_console_empty">Đang tải tổng quan...</div>
+                                </div>
+                                <div class="o_pancake_console_dual">
+                                    <div class="o_pancake_console_section" data-pancake-live-section="system">
+                                        <div class="o_pancake_console_empty">Đang tải sức khỏe hệ thống...</div>
+                                    </div>
+                                    <div class="o_pancake_console_section" data-pancake-live-section="job">
+                                        <div class="o_pancake_console_empty">Đang tải trạng thái job...</div>
+                                    </div>
+                                </div>
+                                <div class="o_pancake_console_section" data-pancake-live-section="scope">
+                                    <div class="o_pancake_console_empty">Đang tải phạm vi đồng bộ...</div>
+                                </div>
+
+                                <group>
+                                    <group>
+                                        <button name="action_open_active_job" type="object" string="Mở job hiện tại" class="btn-secondary" invisible="not active_job_id"/>
+                                        <button name="action_open_job_history" type="object" string="Mở toàn bộ lịch sử" class="btn-secondary"/>
+                                        <button name="action_open_page_selection" type="object" string="Mở danh sách page chi tiết" class="btn-secondary"/>
+                                    </group>
+                                    <group>
+                                        <div class="text-muted">
+                                            <strong>Đồng bộ liên tục</strong> là luồng khác và có thể bật/tắt riêng ở màn dashboard còn lại.
+                                            Khi job thủ công này đang chạy, các cron liên tục sẽ tự thoát sớm để tránh tranh chấp.
+                                        </div>
+                                    </group>
+                                </group>
+                            </page>
+
+                            <page string="Page active đã chọn">
+                                <group>
+                                    <group>
+                                        <button name="action_select_all_pages" type="object" string="Chọn tất cả active" class="btn-secondary"/>
+                                        <button name="action_select_pages_with_token" type="object" string="Chỉ chọn page có token" class="btn-secondary"/>
+                                        <button name="action_clear_all_pages" type="object" string="Bỏ chọn tất cả" class="btn-secondary"/>
+                                    </group>
+                                    <group>
+                                        <div class="text-muted">
+                                            Tick trực tiếp page cần đồng bộ. Trạng thái chọn sẽ được ghi ngược về cờ <strong>sync_enabled</strong> của page để các lần mở sau vẫn giữ nguyên.
+                                        </div>
+                                    </group>
+                                </group>
+
+                                <field name="page_line_ids" nolabel="1">
+                                    <list editable="bottom" create="false" delete="false">
+                                        <field name="sync_enabled"/>
+                                        <field name="name" readonly="1"/>
+                                        <field name="page_fm_id_str" readonly="1"/>
+                                        <field name="catalog_status" readonly="1"/>
+                                        <field name="page_token_cached" readonly="1"/>
+                                        <field name="page_token_cached_at" readonly="1"/>
+                                        <field name="conversation_count" readonly="1"/>
+                                        <field name="last_message_sync_at" readonly="1"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Thiết lập">
+                                <group invisible="1">
+                                    <field name="token_configured"/>
+                                </group>
+                                <group string="Preset cấu hình">
+                                    <group>
+                                        <field name="preset_id" options="{'no_open': False}"/>
+                                        <field name="preset_description" readonly="1" widget="text"/>
+                                        <field name="custom_preset_name" placeholder="Ví dụ: Đêm quét sâu êm tải"/>
+                                    </group>
+                                    <group>
+                                        <button name="action_apply_preset" type="object" string="Áp dụng preset" class="btn-primary"/>
+                                        <button name="action_save_custom_preset" type="object" string="Lưu preset mới" class="btn-secondary"/>
+                                        <button name="action_update_custom_preset" type="object" string="Cập nhật preset hiện tại" class="btn-secondary" invisible="not preset_id or preset_id.preset_type != 'custom'"/>
+                                    </group>
+                                </group>
+
+                                <group string="Thiết lập vận hành">
+                                    <group>
+                                        <label for="access_token"/>
+                                        <field name="access_token" placeholder="Nhập main access token từ Pancake..."/>
+                                        <div class="text-muted">Main access token dùng để lấy catalog page và tự sinh page access token theo từng page.</div>
+
+                                        <label for="sync_batch_size"/>
+                                        <field name="sync_batch_size"/>
+                                        <div class="text-muted">Số conversation tối đa xử lý trong mỗi nhịp queue.</div>
+
+                                        <label for="smart_recent_days"/>
+                                        <field name="smart_recent_days"/>
+                                        <div class="text-muted">Khoảng dữ liệu gần đây để ưu tiên conversation có hoạt động mới.</div>
+
+                                        <label for="deep_recent_days"/>
+                                        <field name="deep_recent_days"/>
+                                        <div class="text-muted">Khoảng ngày dùng cho quét sâu và bù dữ liệu.</div>
+                                    </group>
+                                    <group>
+                                        <label for="circuit_breaker_pause_minutes"/>
+                                        <field name="circuit_breaker_pause_minutes"/>
+                                        <div class="text-muted">Thời gian nghỉ sau chuỗi lỗi liên tiếp.</div>
+
+                                        <label for="stale_timeout_minutes"/>
+                                        <field name="stale_timeout_minutes"/>
+                                        <div class="text-muted">Nếu heartbeat quá mốc này, runner sẽ reclaim job cũ và tiếp tục từ queue.</div>
+
+                                        <label for="runner_active"/>
+                                        <field name="runner_active"/>
+                                        <div class="text-muted">Runner chuẩn duy nhất chịu trách nhiệm claim job, timeout, retry và cập nhật snapshot live.</div>
+
+                                        <label for="runner_interval_number"/>
+                                        <div class="o_row">
+                                            <field name="runner_interval_number" class="oe_inline"/>
+                                            <field name="runner_interval_type" class="oe_inline"/>
+                                        </div>
+                                        <div class="text-muted">Khuyến nghị giữ 1 phút cho runner cron.</div>
+
+                                        <field name="runner_nextcall" readonly="1"/>
+                                    </group>
+                                </group>
+
+                                <div class="o_pancake_console_section">
+                                    <field name="console_setup_help_html" widget="html" readonly="1" nolabel="1"/>
+                                </div>
+                            </page>
+
+                            <page string="Log &amp; Báo cáo">
+                                <div class="o_pancake_console_report_state" data-pancake-report-state="1">
+                                    <span class="o_pancake_console_live_dot"/>
+                                    <span class="o_pancake_console_live_text">Báo cáo sẽ tự làm mới riêng với chu kỳ dài hơn.</span>
+                                </div>
+
+                                <div class="o_pancake_console_section" data-pancake-live-section="live_feed">
+                                    <div class="o_pancake_console_empty">Đang tải log live...</div>
+                                </div>
+                                <div class="o_pancake_console_dual">
+                                    <div class="o_pancake_console_section" data-pancake-report-section="report_24h">
+                                        <div class="o_pancake_console_empty">Đang tải báo cáo 24 giờ qua...</div>
+                                    </div>
+                                    <div class="o_pancake_console_section" data-pancake-report-section="report_7d">
+                                        <div class="o_pancake_console_empty">Đang tải báo cáo 7 ngày qua...</div>
+                                    </div>
+                                </div>
+                            </page>
+
+                            <page string="Lịch sử">
+                                <group>
+                                    <group>
+                                        <button name="action_open_running_jobs" type="object" string="Đang chạy" class="btn-secondary"/>
+                                        <button name="action_open_done_jobs" type="object" string="Hoàn tất" class="btn-secondary"/>
+                                        <button name="action_open_done_with_warning_jobs" type="object" string="Hoàn tất có cảnh báo" class="btn-secondary"/>
+                                        <button name="action_open_failed_jobs" type="object" string="Lỗi / Dừng" class="btn-secondary"/>
+                                        <button name="action_open_recovered_jobs" type="object" string="Đã phục hồi" class="btn-secondary"/>
+                                    </group>
+                                    <group>
+                                        <div class="text-muted">
+                                            Danh sách dưới đây là các job gần đây nhất. Dùng filter nhanh để mở lịch sử đầy đủ theo trạng thái hoặc các job đã recovered.
+                                        </div>
+                                    </group>
+                                </group>
+
+                                <div class="o_pancake_console_section" data-pancake-report-section="history">
+                                    <div class="o_pancake_console_empty">Đang tải lịch sử...</div>
+                                </div>
+
+                                <field name="recent_job_ids" readonly="1" context="{'list_view_ref': 'CRM_DAC.view_pancake_message_sync_job_tree'}" nolabel="1">
+                                    <list create="false" delete="false">
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                        <field name="phase"/>
+                                        <field name="progress_percent" widget="progressbar"/>
+                                        <field name="phase_progress_percent" widget="progressbar"/>
+                                        <field name="completed_task_count"/>
+                                        <field name="failed_task_count"/>
+                                        <field name="resume_count"/>
+                                        <field name="last_checkpoint_at"/>
+                                        <field name="started_at"/>
+                                        <field name="finished_at"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_pancake_bulk_sync_dashboard" model="ir.actions.server">
+            <field name="name">Đồng bộ toàn bộ Pancake</field>
+            <field name="model_id" ref="model_pancake_bulk_sync_dashboard"/>
+            <field name="state">code</field>
+            <field name="code">action = model.action_open_dashboard()</field>
+        </record>
+    </data>
+</odoo>

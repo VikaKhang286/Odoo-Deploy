@@ -19,7 +19,7 @@
     # Module dựa trên các category nào
     # Khi hoạt động, category trong 'depends' phải được install
     ### rồi module này mới đc install
-    'depends': ['base','web',],
+    'depends': ['base', 'web', 'base_setup'],
 
     # Module có được phép install hay không
     # Nếu bạn thắc mắc nếu tắt thì làm sao để install
@@ -46,6 +46,8 @@
     ## + t
     'assets': {
         'web.assets_backend': [
+            'Chameleon/static/src/scss/theme_style.scss',
+            'Chameleon/static/src/scss/backend_modern.scss',
             'Chameleon/static/src/js/settings.js',
         ],
        

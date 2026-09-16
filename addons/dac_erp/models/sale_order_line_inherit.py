@@ -1,7 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
 import logging
-import re
 
 _logger = logging.getLogger(__name__)
 
@@ -79,21 +78,6 @@ class SaleOrderLine(models.Model):
     height = fields.Float(string='Chiều cao')
     width = fields.Float(string='Chiều ngang')
     length = fields.Float(string='Chiều dài')
-    dimension = fields.Char(
-        string='Kích thước',
-        compute='_compute_dimension',
-        inverse='_inverse_dimension',
-        store=True,
-    )
-    dimension_constant = fields.Selection(
-        selection=[
-            ('80x38x195', '80 cm x 38 cm'),
-            ('100x48x195', '1 m x 48 cm'),
-            ('120x58x195', '1,2 m x 58 cm'),
-        ],
-        string='Kích thước',
-        default='',
-    )
     cart_dimension_id = fields.Many2one(
         'dac.cart.dimension',
         string='Kích thước',
@@ -131,42 +115,6 @@ class SaleOrderLine(models.Model):
     def _inverse_material_id(self):
         for line in self:
             line.material = line.material_id.code or False
-
-    @api.depends('height', 'width', 'length')
-    def _compute_dimension(self):
-        for line in self:
-            values = (line.height, line.width, line.length)
-            line.dimension = ' x '.join(f'{value:g}' for value in values) if any(values) else ''
-
-    def _inverse_dimension(self):
-        for line in self:
-            value = (line.dimension or '').strip()
-            if not value:
-                line.height = line.width = line.length = 0.0
-                continue
-
-            parts = re.split(r'\s*[xX]\s*', value)
-            if len(parts) != 3:
-                raise UserError("Kích thước phải có dạng: cao x ngang x dài")
-            try:
-                height, width, length = (float(part) for part in parts)
-            except ValueError as error:
-                raise UserError("Kích thước chỉ được chứa số, theo dạng: cao x ngang x dài") from error
-            line.height = height
-            line.width = width
-            line.length = length
-
-    @api.onchange('dimension_constant')
-    def _onchange_dimension_constant(self):
-        """Áp dụng bộ thông số cố định đã chọn cho xe đẩy."""
-        dimensions = {
-            '80x38x195': (80.0, 38.0, 195.0),
-            '100x48x195': (100.0, 48.0, 195.0),
-            '120x58x195': (120.0, 58.0, 195.0),
-        }
-        for line in self:
-            if line.dimension_constant:
-                line.length, line.width, line.height = dimensions[line.dimension_constant]
 
     @api.onchange('cart_dimension_id')
     def _onchange_cart_dimension(self):

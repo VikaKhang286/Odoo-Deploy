@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!--
+        Kế thừa web.Many2OneField để thêm icon 💬 inline ngay sau tên khách hàng.
+        - readonly mode (có link): inject sau <span t-esc="displayName"/> bên trong <a>
+        - readonly mode (no link): inject sau <span t-esc="displayName"/> bên trong <span>
+        - edit mode: inject sau <div class="o_field_many2one_selection"/>
+    -->
+    <t t-name="CRM_DAC.PancakeMany2OneField"
+       t-inherit="web.Many2OneField"
+       t-inherit-mode="primary">
+
+        <!-- Readonly: icon sau tên (bao gồm cả trường hợp có link lẫn không link) -->
+        <xpath expr="//span[@t-esc='displayName']" position="after">
+            <i t-if="isPancakeCustomer"
+               class="fa fa-comments ms-1"
+               title="Khách từ Pancake"
+               style="color:#0084ff;font-size:11px;vertical-align:middle;"/>
+        </xpath>
+
+        <!-- Edit mode: icon sau ô nhập liệu -->
+        <xpath expr="//div[hasclass('o_field_many2one_selection')]" position="after">
+            <i t-if="isPancakeCustomer"
+               class="fa fa-comments ms-1"
+               title="Khách từ Pancake"
+               style="color:#0084ff;font-size:11px;vertical-align:middle;"/>
+        </xpath>
+
+    </t>
+</templates>

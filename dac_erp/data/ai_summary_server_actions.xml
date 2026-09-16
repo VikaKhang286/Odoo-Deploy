@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="action_bulk_ai_summarize_orders" model="ir.actions.server">
+            <field name="name">Tóm tắt AI (Bulk)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">records.action_bulk_ai_summarize()</field>
+        </record>
+    </data>
+</odoo>

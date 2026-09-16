@@ -617,17 +617,12 @@
      - Hoặc dùng pixel: 500px, 600px, 700px */
 }
 
-/* 2️⃣ CHIỀU CAO 2 Ô DƯỚI (Đã hoàn thành sản xuất) */
-/* Chỉ áp dụng cho .list-scroll KHÔNG NẰM trong .prod-top-row */
+/* list-scroll: tự co dãn theo nội dung, không khoá chiều cao */
 .dac-theme-production .list-scroll {
-  max-height: 22vh !important;
-  /* 👆 Đổi giá trị này:
-     - 10vh (thấp hơn)
-     - 12vh (hiện tại)
-     - 20vh (cao hơn)
-     - Hoặc dùng pixel: 200px, 300px, 400px */
-  min-height: 14vh; /* Chiều cao tối thiểu, tránh co quá nhỏ */
-  overflow: auto; /* Bật thanh cuộn khi nội dung tràn */
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 
 /* 2) CHỈ áp height cho card cha trực tiếp trong 2 cột của hàng trên */
@@ -676,13 +671,58 @@
   margin-bottom: 0;
 }
 
-/* ============================================================
-   GHI ĐÈ: Ô "Đã hoàn thành" bên DƯỚI (KHÔNG có .prod-top-row)
-   ============================================================ */
+/* list-scroll trong row thường: auto theo nội dung */
 .dac-theme-production .row:not(.prod-top-row) .list-scroll {
-  max-height: 30vh !important;
-  /* 👆 ĐIỀU CHỈNH CHIỀU CAO Ô "ĐÃ HOÀN THÀNH SẢN XUẤT" TẠI ĐÂY */
-  min-height: 15vh !important;
-  flex: initial !important; /* Gỡ flex từ rule trên */
-  overflow: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  flex: initial !important;
+}
+
+/* ============================================================
+   SUB-STATE PROGRESS CHIPS — tiến độ thiết kế & sản xuất
+   Hiển thị dưới thanh trạng thái trong form đơn hàng
+   ============================================================ */
+.dac-substatus-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.dac-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.dac-chip--done {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.dac-chip--pending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.dac-chip--unassigned {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* Badge trạng thái sản xuất trễ hạn — đỏ nổi bật */
+.dac-badge--production-overdue {
+  background-color: #dc2626 !important;
+  color: #fff !important;
 }

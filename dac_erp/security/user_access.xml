@@ -20,6 +20,12 @@
             <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
         </record>
 
+        <!-- Giữ nhóm này vì các record rule và vai trò DAC vẫn tham chiếu. -->
+        <record id="group_dac_erp_sale_all" model="res.groups">
+            <field name="name">DAC Sale (Xem tất cả đơn)</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_sale'))]"/>
+        </record>
+
         <!-- Nhóm sản xuất -->
         <record id="group_dac_erp_production" model="res.groups">
             <field name="name">DAC Production</field>
@@ -30,6 +36,15 @@
         <record id="group_dac_erp_design" model="res.groups">
             <field name="name">DAC Design</field>
             <field name="category_id" ref="dac_erp.cate_groups_dac_erp"/>
+        </record>
+        <record id="group_dac_erp_design_production" model="res.groups">
+            <field name="name">DAC Design + Production</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_design')), (4, ref('dac_erp.group_dac_erp_production'))]"/>
+        </record>
+
+        <record id="group_dac_erp_full_stack" model="res.groups">
+            <field name="name">DAC Full-stack (Sale + Thiết kế + Sản xuất)</field>
+            <field name="implied_ids" eval="[(4, ref('dac_erp.group_dac_erp_sale_all')), (4, ref('dac_erp.group_dac_erp_design')), (4, ref('dac_erp.group_dac_erp_production'))]"/>
         </record>
     </data>
 </odoo>

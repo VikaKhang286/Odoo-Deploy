@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Icon Pancake trong danh sách đơn hàng (Sale view) -->
+        <record id="dac_sale_order_list_sale_inherit_pancake" model="ir.ui.view">
+            <field name="name">sale.order.list.sale.pancake.icon</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_list_sale"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="partner_pancake_icon_html" widget="html" string="Pancake" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Icon Pancake trong danh sách đơn hàng (Manager view) -->
+        <record id="dac_sale_order_list_manager_inherit_pancake" model="ir.ui.view">
+            <field name="name">sale.order.list.manager.pancake.icon</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_list"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="partner_pancake_icon_html" widget="html" string="Pancake" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+        <!-- Icon Pancake trong form đơn hàng — inject trực tiếp vào trong tên qua custom widget -->
+        <record id="dac_sale_order_form_inherit_pancake" model="ir.ui.view">
+            <field name="name">sale.order.form.pancake.icon</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Field ẩn để widget đọc trạng thái Pancake -->
+                <xpath expr="//field[@name='partner_vip_class']" position="after">
+                    <field name="partner_is_pancake" invisible="1"/>
+                </xpath>
+                <!-- Nhóm Design/Production: readonly + icon inline trong tên -->
+                <xpath expr="//field[@name='partner_id'][@groups='dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production']" position="replace">
+                    <field name="partner_id"
+                           groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production"
+                           options="{'no_open': True, 'no_create_edit': True}"
+                           context="{'show_address': False, 'show_vat': False}"
+                           readonly="1"
+                           string="Họ và tên"
+                           widget="pancake_many2one"/>
+                </xpath>
+                <!-- Nhóm Sale/Manager: editable + icon inline trong tên -->
+                <xpath expr="//field[@name='partner_id'][@groups='dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager']" position="replace">
+                    <field name="partner_id"
+                           groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"
+                           options="{'no_create_edit': True}"
+                           context="{'show_address': False, 'show_vat': False}"
+                           string="Họ và tên"
+                           widget="pancake_many2one"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

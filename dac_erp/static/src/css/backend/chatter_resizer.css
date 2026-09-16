@@ -1,0 +1,61 @@
+/* Drag Resizer for Odoo Chatter */
+.dac-chatter-resizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10px;
+  cursor: col-resize;
+  position: relative;
+  z-index: 100;
+  background: transparent;
+  align-self: stretch;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background-color 0.2s ease;
+  border-left: 1px solid rgba(148, 163, 184, 0.08);
+  border-right: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.dac-chatter-resizer::after {
+  content: "";
+  display: block;
+  width: 2px;
+  height: 48px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.35);
+  transition: background-color 0.2s ease, height 0.2s ease, width 0.2s ease;
+}
+
+.dac-chatter-resizer:hover {
+  background-color: rgba(37, 99, 235, 0.04);
+}
+
+.dac-chatter-resizer:hover::after,
+.dac-chatter-resizer.is-dragging::after {
+  background-color: #2563eb;
+  height: 80px;
+  width: 4px;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Global body state during dragging to prevent text selection and show proper cursor */
+body.dac-resizing-chatter {
+  cursor: col-resize !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.dac-resizing-chatter * {
+  pointer-events: none !important;
+}
+
+body.dac-resizing-chatter .dac-chatter-resizer {
+  pointer-events: auto !important;
+}
+
+/* Hide resizer on small/medium screens */
+@media (max-width: 991.98px) {
+  .dac-chatter-resizer {
+    display: none !important;
+  }
+}

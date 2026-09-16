@@ -226,12 +226,21 @@ class SaleOrder(models.Model):
         help="Ghi chú nội dung khuyến mãi (VD: Khách VIP, giới thiệu...).",
     )
 
+    # Compatibility field for databases that already installed version 18.0.8.0.
+    # Shipping is represented by a regular order line; do not include this value
+    # in totals or expose it in new views.
     shipping_fee = fields.Monetary(
-        string="Phí vận chuyển",
+        string="Phí vận chuyển (cũ)",
         currency_field='currency_id',
-        default=0.0,
-        tracking=True,
+        compute='_compute_legacy_shipping_fee',
+        store=False,
+        readonly=True,
+        help="Trường tương thích dữ liệu cũ; phí vận chuyển được lưu bằng dòng đơn hàng.",
     )
+
+    def _compute_legacy_shipping_fee(self):
+        for order in self:
+            order.shipping_fee = 0.0
 
     # Field đánh dấu đơn 0đ (cơ hội) - STORED để dùng trong domain filter
     is_zero_amount = fields.Boolean(

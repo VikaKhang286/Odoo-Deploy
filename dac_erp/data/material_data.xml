@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="material_hiflex_silver" model="dac.sale.material">
+        <field name="name">Bạc Hiflex</field><field name="code">hiflex_silver</field><field name="sequence">1</field>
+    </record>
+    <record id="material_formex" model="dac.sale.material">
+        <field name="name">Formex</field><field name="code">formex</field><field name="sequence">2</field>
+    </record>
+    <record id="material_alu" model="dac.sale.material">
+        <field name="name">Alu</field><field name="code">alu</field><field name="sequence">3</field>
+    </record>
+</odoo>

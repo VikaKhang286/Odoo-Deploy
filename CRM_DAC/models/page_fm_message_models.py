@@ -12,6 +12,13 @@ class PageFmMessage(models.Model):
     _name = 'page.fm.message'
     _description = 'Page.fm Message'
     _order = 'inserted_at_fm desc, id desc'
+    SYNC_ORIGIN_SELECTION = [
+        ('continuous', 'Đồng bộ liên tục'),
+        ('manual_window', 'Đồng bộ cửa sổ'),
+        ('manual_full', 'Đồng bộ toàn bộ'),
+        ('manual_single', 'Đồng bộ một hội thoại'),
+        ('wizard', 'Đồng bộ từ wizard'),
+    ]
 
     name = fields.Char(string="Short Content",
                     compute="_compute_display_name", 
@@ -58,6 +65,15 @@ class PageFmMessage(models.Model):
     previous_time = fields.Datetime(string="Time previous message (FM)")
 
     raw_json_message = fields.Text(string="Raw JSON Message", help="Toàn bộ JSON của tin nhắn từ API để tham khảo")
+
+    sync_origin = fields.Selection(
+        SYNC_ORIGIN_SELECTION,
+        string="Nguồn đồng bộ",
+        default='manual_single',
+        copy=False,
+        index=True,
+    )
+    sync_window_key = fields.Char(string="Nhóm cửa sổ đồng bộ", copy=False)
 
     _sql_constraints = [
         ('message_fm_id_conversation_uniq', 'unique(message_fm_id, conversation_id)', 'Message FM ID phải là duy nhất cho mỗi hội thoại!')

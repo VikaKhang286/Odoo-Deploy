@@ -442,6 +442,62 @@ class SaleOrderDashboardService(models.Model):
             "date": (so.date_order or fields.Datetime.now()).date().isoformat(),
         } for so in recent]
 
+        # ---- TASK OVERVIEW (tasks trên đơn của tôi hoặc được giao cho tôi) ----
+        Task = self.env['dac.work.task'].sudo()
+        now_dt = fields.Datetime.now()
+        task_base_dom = [
+            ('state', 'not in', ['done', 'cancelled']),
+            '|',
+            ('order_id.user_id', '=', uid),
+            ('assigned_user_id', '=', uid),
+        ]
+
+        def _pack_task_sale(t):
+            dl = t.deadline
+            is_overdue = bool(dl and dl < now_dt)
+            days_left = False
+            if dl and not is_overdue:
+                days_left = max(0, int((dl - now_dt).total_seconds() / 86400))
+            dl_str = False
+            if dl:
+                dl_loc = fields.Datetime.context_timestamp(self, dl)
+                dl_str = dl_loc.strftime('%d/%m/%Y %H:%M')
+            return {
+                'id': t.id,
+                'name': t.name or '',
+                'task_type': t.task_type or 'other',
+                'state': t.state,
+                'priority': t.priority,
+                'deadline_str': dl_str,
+                'is_overdue': is_overdue,
+                'days_left': days_left,
+                'order_id': t.order_id.id if t.order_id else False,
+                'order_name': t.order_id.name if t.order_id else False,
+                'order_number': (t.order_id.order_number or False) if t.order_id else False,
+                'assigned_user_name': t.assigned_user_id.name if t.assigned_user_id else '',
+            }
+
+        _design_tasks = Task.search(
+            task_base_dom + [('task_type', '=', 'design')],
+            order='deadline asc nulls last, priority desc', limit=20,
+        )
+        _prod_tasks = Task.search(
+            task_base_dom + [('task_type', 'in', ['production', 'survey', 'supplement', 'other'])],
+            order='deadline asc nulls last, priority desc', limit=20,
+        )
+        task_overview = {
+            'design': {
+                'total': len(_design_tasks),
+                'overdue': sum(1 for t in _design_tasks if t.deadline and t.deadline < now_dt),
+                'tasks': [_pack_task_sale(t) for t in _design_tasks],
+            },
+            'production': {
+                'total': len(_prod_tasks),
+                'overdue': sum(1 for t in _prod_tasks if t.deadline and t.deadline < now_dt),
+                'tasks': [_pack_task_sale(t) for t in _prod_tasks],
+            },
+        }
+
         # Tổng tiền cho các bảng dưới
         receivables_total_val = sum(m.amount_residual for m in receivables)  # Từ hóa đơn
         # Cộng thêm tiền từ đơn hàng chưa có hóa đơn cuối
@@ -495,8 +551,9 @@ class SaleOrderDashboardService(models.Model):
                 "recent_customers": recent_list,
                 "completed_customers": completed_list,
             },
-            "sums": sums,  # Tổng tiền cho các bảng dưới
-            "user_name": user_name, # Tên người dùng hiện tại
+            "sums": sums,
+            "task_overview": task_overview,
+            "user_name": user_name,
         }
 
     @api.model

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="login_page_version" inherit_id="web.login">
+        <xpath expr="//form[@role='form']" position="after">
+            <p t-if="dac_version"
+               class="text-center text-muted mt-3"
+               style="font-size: 11px; opacity: 0.55; letter-spacing: 0.3px;">
+                DAC ERP &#160; v<t t-esc="dac_version"/>
+            </p>
+        </xpath>
+    </template>
+</odoo>

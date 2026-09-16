@@ -160,13 +160,19 @@ function setupDragAndDrop() {
   if (!container || !header) return;
 
   // Make container draggable
+  header.removeEventListener("mousedown", startDrag);
   header.addEventListener("mousedown", startDrag);
+  document.removeEventListener("mousemove", handleDrag);
   document.addEventListener("mousemove", handleDrag);
+  document.removeEventListener("mouseup", endDrag);
   document.addEventListener("mouseup", endDrag);
 
   // Touch events for mobile
+  header.removeEventListener("touchstart", startDrag);
   header.addEventListener("touchstart", startDrag);
+  document.removeEventListener("touchmove", handleDrag);
   document.addEventListener("touchmove", handleDrag);
+  document.removeEventListener("touchend", endDrag);
   document.addEventListener("touchend", endDrag);
 }
 
@@ -322,8 +328,8 @@ function handleResponsiveConversationWidget() {
     conversationWidget.style.left = "auto";
     conversationWidget.style.right = "auto";
 
-    // Move to bottom of sheet
-    const sheet = document.querySelector(".sheet");
+    // Move to bottom of the Odoo form sheet on compact screens.
+    const sheet = document.querySelector(".dac-sale-form .o_form_sheet, .o_form_sheet");
     if (sheet && conversationWidget.parentNode !== sheet) {
       sheet.appendChild(conversationWidget);
     }
@@ -344,6 +350,7 @@ function handleResponsiveConversationWidget() {
 
 // Setup responsive handling
 function setupResponsiveHandling() {
+  window.removeEventListener("resize", handleResponsiveConversationWidget);
   window.addEventListener("resize", handleResponsiveConversationWidget);
   handleResponsiveConversationWidget(); // Initial check
 }

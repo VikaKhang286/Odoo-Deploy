@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dac_erp.CartProductFilters" t-inherit="web.SearchBarMenu" t-inherit-mode="extension">
+        <xpath expr="//t[@t-foreach='filterItems']/t[@t-if='item.options']" position="before">
+            <t t-if="item.cartChildren">
+                <div class="d-flex align-items-center">
+                    <CheckboxItem class="{ 'o_menu_item text-truncate flex-grow-1': true, selected: item.isActive }"
+                                  checked="item.isActive" closingMode="'none'"
+                                  onSelected="() => this.onCartFilterSelected(item.id)">
+                        <t t-esc="item.description"/>
+                    </CheckboxItem>
+                    <button type="button" class="btn btn-sm px-2"
+                            title="Mở nhóm Xe đẩy" aria-label="Mở nhóm Xe đẩy"
+                            t-att-aria-expanded="cartFilterState.expanded ? 'true' : 'false'"
+                            t-on-click.stop="() => cartFilterState.expanded = !cartFilterState.expanded">
+                        <i t-att-class="cartFilterState.expanded ? 'fa fa-caret-down' : 'fa fa-caret-right'"/>
+                    </button>
+                </div>
+                <div t-if="cartFilterState.expanded" class="ps-3">
+                    <t t-foreach="item.cartChildren" t-as="child" t-key="child.id">
+                        <CheckboxItem class="{ 'o_menu_item text-truncate': true, selected: child.isActive }"
+                                      checked="child.isActive" closingMode="'none'"
+                                      onSelected="() => this.onCartFilterSelected(child.id)">
+                            <t t-esc="child.description"/>
+                        </CheckboxItem>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-foreach='filterItems']/t[@t-if='item.options']" position="attributes">
+            <attribute name="t-if"/>
+            <attribute name="t-elif">item.options</attribute>
+        </xpath>
+    </t>
+</templates>

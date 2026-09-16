@@ -43,6 +43,16 @@ class PageFmTag(models.Model):
     active = fields.Boolean(default=True)
     color = fields.Integer("Màu")  # palette Odoo (tùy chọn)
 
+    # ----- AI management flag -----
+    managed_by_ai = fields.Boolean(
+        'AI có thể quản lý',
+        default=False,
+        help=(
+            "True = AI/OpenClaw có thể thêm/gỡ tag này khi dùng mode replace_ai_scope. "
+            "False = chỉ thao tác thủ công; AI không được touch trong replace_ai_scope."
+        ),
+    )
+
     # Preview màu đúng như Pancake
     badge_preview = fields.Html("Preview", compute="_compute_badge_preview", sanitize=False, readonly=True)
 
@@ -239,6 +249,95 @@ class PageFmTag(models.Model):
 
         _logger.info("SYNC TAGS DONE: created=%s, updated=%s", total_new, total_update)
         return True
+
+    # ========================= Seed bo tag chuan ==========================
+    # (name_pattern_lower, odoo_tag_code, display_name, managed_by_ai)
+    _STANDARD_TAG_SEED = [
+        ('cần xử lý',         'needs_action',                 'Cần xử lý',          True),
+        ('chờ khách phản hồi', 'waiting_customer_reply', 'Chờ khách phản hồi', True),
+        ('chăm lại',           'recontact_needed',             'Chăm lại',           True),
+        ('chưa thu tiền',       'payment_due_after_production', 'Chưa thu tiền',      True),
+        ('đã mua hàng',        'customer_purchased',           'Đã mua hàng',         True),
+        ('khách quen',          'customer_repeat',              'Khách quen',          True),
+        ('fail',               'lost_or_cold',                 'Fail',                True),
+        ('done',               'done',                         'Done',                True),
+        ('khách lớn',          'customer_vip',                 'Khách lớn',          False),
+    ]
+
+    @api.model
+    def action_seed_standard_tag_codes(self, dry_run=False, page_ids=None):
+        """Seed odoo_tag_code cho tag hien co va tao tag con thieu.
+
+        An toan: chi ghi khi can, khong xoa tag cu.
+        dry_run=True => chi tra bao cao, khong ghi.
+        page_ids => gioi han page; None = toan bo page.
+        """
+        Page = self.env['page.fm.page'].sudo()
+        Tag = self.sudo()
+
+        pages = Page.browse(page_ids) if page_ids else Page.search([])
+        if not pages:
+            return {'pages_processed': 0, 'mapped': [], 'created': [], 'skipped': [], 'dry_run': dry_run}
+
+        report = {'pages_processed': 0, 'mapped': [], 'created': [], 'skipped': [], 'dry_run': dry_run}
+
+        for page in pages:
+            report['pages_processed'] += 1
+            for name_pattern, code, display_name, ai_flag in self._STANDARD_TAG_SEED:
+                # 1) Da co tag voi dung code -> cap nhat managed_by_ai neu lech
+                existing_by_code = Tag.search([
+                    ('page_id', '=', page.id),
+                    ('odoo_tag_code', '=', code),
+                ], limit=1)
+                if existing_by_code:
+                    if existing_by_code.managed_by_ai != ai_flag:
+                        if not dry_run:
+                            existing_by_code.write({'managed_by_ai': ai_flag})
+                        report['mapped'].append({
+                            'page': page.name, 'code': code,
+                            'action': 'update_ai_flag', 'tag': existing_by_code.name,
+                        })
+                    else:
+                        report['skipped'].append({'page': page.name, 'code': code, 'reason': 'already_set'})
+                    continue
+
+                # 2) Chua co code -> tim tag theo ten
+                all_page_tags = Tag.search([('page_id', '=', page.id), ('active', '=', True)])
+                matched = all_page_tags.filtered(
+                    lambda t, p=name_pattern: (
+                        (t.name or '').strip().lower() == p
+                        or (t.fm_text or '').strip().lower() == p
+                    )
+                )
+                if matched:
+                    tag = matched[0]
+                    if not dry_run:
+                        tag.write({'odoo_tag_code': code, 'odoo_tag_label': display_name, 'managed_by_ai': ai_flag})
+                    report['mapped'].append({
+                        'page': page.name, 'code': code,
+                        'action': 'mapped', 'tag': tag.name, 'tag_id': tag.id,
+                    })
+                    continue
+
+                # 3) Khong tim thay -> tao local tag
+                if not dry_run:
+                    Tag.create({
+                        'name': display_name,
+                        'fm_text': display_name,
+                        'tag_fm_id': 'local::' + code,
+                        'page_id': page.id,
+                        'odoo_tag_code': code,
+                        'odoo_tag_label': display_name,
+                        'managed_by_ai': ai_flag,
+                    })
+                report['created'].append({'page': page.name, 'code': code, 'name': display_name})
+
+        _logger.info(
+            "SEED TAG CODES: pages=%s mapped=%s created=%s skipped=%s dry_run=%s",
+            report['pages_processed'], len(report['mapped']), len(report['created']),
+            len(report['skipped']), dry_run,
+        )
+        return report
 
     # Tiện ích: tìm/tạo nhanh theo mã nội bộ trong 1 Page
     @api.model
