@@ -20,5 +20,19 @@
       <field name="domain">[]</field>
       <field name="groups_id" eval="[(4, ref('dac_erp.group_dac_erp_manager'))]"/>
     </record>
+    <record id="dac_customer_select_list" model="ir.ui.view">
+      <field name="name">dac.customer.select.list</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_tree"/>
+      <field name="mode">primary</field>
+      <field name="priority">99</field>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='street']" position="attributes">
+          <attribute name="string">Địa chỉ</attribute>
+          <attribute name="optional">show</attribute>
+          <attribute name="readonly">1</attribute>
+        </xpath>
+      </field>
+    </record>
   </data>
 </odoo>

@@ -39,7 +39,7 @@
                     <field name="partner_id"
                            groups="dac_erp.group_dac_erp_design,dac_erp.group_dac_erp_production"
                            options="{'no_open': True, 'no_create_edit': True}"
-                           context="{'show_address': False, 'show_vat': False}"
+                           context="{'show_address': False, 'show_vat': False, 'list_view_ref': 'dac_erp.dac_customer_select_list'}"
                            readonly="1"
                            string="Họ và tên"
                            widget="pancake_many2one"/>
@@ -49,7 +49,7 @@
                     <field name="partner_id"
                            groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"
                            options="{'no_create_edit': True}"
-                           context="{'show_address': False, 'show_vat': False}"
+                           context="{'show_address': False, 'show_vat': False, 'list_view_ref': 'dac_erp.dac_customer_select_list'}"
                            string="Họ và tên"
                            widget="pancake_many2one"/>
                 </xpath>

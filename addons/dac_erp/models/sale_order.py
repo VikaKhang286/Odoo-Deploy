@@ -238,7 +238,7 @@ class SaleOrder(models.Model):
         currency_field='currency_id',
         default=0.0,
         tracking=True,
-        help="Phí vận chuyển nhập riêng, được cộng vào tổng giá trị đơn hàng.",
+        help="Phí vận chuyển được cộng vào tổng giá trị đơn hàng.",
     )
 
     # Field đánh dấu đơn 0đ (cơ hội) - STORED để dùng trong domain filter
@@ -520,7 +520,7 @@ class SaleOrder(models.Model):
     customer_address = fields.Char(
         string='Địa chỉ', compute='_compute_customer_address',
         inverse='_inverse_customer_address', readonly=False,
-        help='Nhập theo dạng: Đường, Phường, Thành phố (Tỉnh), Quốc gia.',
+        help='Nhập địa chỉ khách hàng.',
     )
     customer_address_manual = fields.Char(copy=True)
     phone = fields.Char(string="Số điện thoại", related='partner_id.phone', store=True, readonly=False, tracking=True)
@@ -556,52 +556,12 @@ class SaleOrder(models.Model):
             order.customer_address_manual = order.customer_address or False
 
     def _inverse_customer_address(self):
-        """Lưu địa chỉ nhập ở đơn hàng vào đúng các cột của hồ sơ khách hàng."""
+        """Lưu nguyên văn địa chỉ tự do vào cột Đường của khách hàng."""
         for order in self:
             address = (order.customer_address or '').strip()
             order.customer_address_manual = address or False
-            if not order.partner_id or not address:
-                continue
-
-            parts = [part.strip() for part in address.split(',') if part.strip()]
-            if len(parts) < 4:
-                raise UserError(
-                    'Địa chỉ phải có dạng: Đường, Thành phố, Tên Trạng thái, Quốc gia.'
-                )
-
-            street = ', '.join(parts[:-3])
-            city, state_name, country_name = parts[-3:]
-            country = self.env['res.country'].search([
-                ('name', '=ilike', country_name),
-            ], limit=1)
-            if not country:
-                raise UserError('Không tìm thấy quốc gia: %s.' % country_name)
-
-            state = self.env['res.country.state'].search([
-                ('name', '=ilike', state_name),
-                ('country_id', '=', country.id),
-            ], limit=1)
-            if not state:
-                # Dữ liệu chuẩn dùng "TP Hồ Chí Minh", còn người dùng thường
-                # nhập "TP. Hồ Chí Minh". Bỏ dấu chấm để đối chiếu linh hoạt.
-                normalized_state_name = ' '.join(state_name.replace('.', ' ').split())
-                state = self.env['res.country.state'].search([
-                    ('name', '=ilike', normalized_state_name),
-                    ('country_id', '=', country.id),
-                ], limit=1)
-            if not state:
-                raise UserError(
-                    'Không tìm thấy trạng thái "%s" thuộc quốc gia "%s".'
-                    % (state_name, country_name)
-                )
-
-            order.partner_id.write({
-                'street': street,
-                'street2': False,
-                'city': city,
-                'state_id': state.id,
-                'country_id': country.id,
-            })
+            if order.partner_id:
+                order.partner_id.write({'street': address or False})
 
     # Đơn hàng ưu tiên và ưu tiên trong ngày
     is_priority = fields.Boolean(string="Đơn hàng ưu tiên", default=False, tracking=True)
