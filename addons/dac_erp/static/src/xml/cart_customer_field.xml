@@ -1,14 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="dac_erp.CartCustomerField">
-        <div class="dac-cart-customer">
+        <div class="dac-cart-customer" style="min-width: 220px;">
             <t t-call="web.Many2OneField"/>
-            <div t-if="props.record.data.customer_address" class="text-muted small text-wrap mt-1" style="min-width: 180px; max-width: 320px;">
-                <span t-esc="props.record.data.customer_address"/>
+            <div>
+            <t t-if="!props.readonly">
+                <textarea t-ref="customerAddress" class="o_input mt-1" rows="1"
+                          placeholder="Địa chỉ" aria-label="Địa chỉ"
+                          t-on-keydown="onAddressKeydown"/>
+            </t>
+            <t t-else="">
+                <div t-if="props.record.data.customer_address" class="text-muted small mt-1"
+                     style="white-space: pre-wrap; overflow-wrap: anywhere; max-width: 320px;">
+                    <t t-esc="props.record.data.customer_address"/>
+                </div>
+            </t>
             </div>
-            <div t-if="props.record.data.phone" class="text-muted small mt-1">
-                <span t-esc="props.record.data.phone"/>
-            </div>
+            <div>
+            <t t-if="!props.readonly">
+            <input t-ref="customerPhone" type="tel" class="o_input mt-1"
+                       placeholder="Số điện thoại" aria-label="Số điện thoại"/>
+            </t>
+            <t t-else="">
+                <div t-if="props.record.data.phone" class="text-muted small mt-1">
+                    <t t-esc="props.record.data.phone"/>
+                </div>
+            </t>
+        </div>
         </div>
     </t>
 </templates>
