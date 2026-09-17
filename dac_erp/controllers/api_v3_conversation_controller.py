@@ -6,7 +6,6 @@ import logging
 from odoo import fields, http
 from odoo.http import request
 
-from odoo.addons.CRM_DAC.models.page_fm_conversation_models import PancakeTagSyncError
 from .api_v2_controller import DataExportV2Controller
 
 _logger = logging.getLogger(__name__)
@@ -541,6 +540,9 @@ class ConversationAIV3Controller(DataExportV2Controller):
         }
 
     def _replace_conversation_tags(self, env, conversation, normalized_payload, payload_fingerprint):
+        # CRM_DAC depends on dac_erp; import only after the registry is loaded.
+        from odoo.addons.CRM_DAC.models.page_fm_conversation_models import PancakeTagSyncError
+
         mode = normalized_payload.get('mode', 'replace_ai_scope')
         dry_run = bool(normalized_payload.get('dry_run', False))
         evidence = normalized_payload.get('evidence') or []
