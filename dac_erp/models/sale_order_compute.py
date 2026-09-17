@@ -51,14 +51,15 @@ class SaleOrderCompute(models.Model):
             product_lines = order.order_line.filtered(lambda l: not l.display_type and l.price_unit >= 0)
             order.amount_tax = sum(product_lines.mapped('price_tax'))
 
-    @api.depends('amount_untaxed_original', 'amount_tax', 'promotion_amount')
+    @api.depends('amount_untaxed_original', 'amount_tax', 'promotion_amount', 'shipping_fee')
     def _compute_amount_total_positive_lines(self):
-        """Tính tổng tiền; phí vận chuyển đã nằm trong dòng đơn hàng."""
+        """Tính tổng tiền gồm phí vận chuyển nhập riêng và khuyến mãi."""
         for order in self:
             order.amount_total = (
                 order.amount_untaxed_original
                 + order.amount_tax
                 - order.promotion_amount
+                + order.shipping_fee
             )
 
     @api.depends('amount_total', 'total_deposit_paid', 'is_order_completed', 'order_state_custom')

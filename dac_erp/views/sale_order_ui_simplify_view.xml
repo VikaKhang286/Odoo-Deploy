@@ -22,7 +22,7 @@
                         <group>
                             <group>
                                 <field name="amount_untaxed_original" readonly="1" widget="monetary" string="Thành tiền"/>
-                                <field name="amount_tax" readonly="1" widget="monetary" string="Thuế"/>
+                                <field name="amount_tax" readonly="1" widget="monetary" string="Thuế" invisible="order_type == 'cart'"/>
                                 <field name="amount_total" readonly="1" widget="monetary" string="Tổng giá trị"/>
                             </group>
                             <group>

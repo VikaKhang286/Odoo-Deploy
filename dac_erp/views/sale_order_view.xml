@@ -265,7 +265,7 @@
                                             <field name="product_uom_qty" string="SL" invisible="display_type"/>
                                             <field name="price_unit" string="Đơn giá" widget="integer" invisible="display_type" column_invisible="parent.is_design_user or parent.is_production_user"/>
                                             <field name="discount" string="CK %" invisible="display_type" column_invisible="parent.is_design_user or parent.is_production_user" optional="hide"/>
-                                            <field name="tax_id" string="Thuế" widget="many2many_tags" invisible="display_type" column_invisible="parent.is_design_user or parent.is_production_user" optional="hide"/>
+                                            <field name="tax_id" string="Thuế" widget="many2many_tags" invisible="display_type" column_invisible="parent.order_type == 'cart' or parent.is_design_user or parent.is_production_user" optional="hide"/>
                                             <field name="price_subtotal" string="Thành tiền" readonly="1" invisible="display_type" column_invisible="parent.is_design_user or parent.is_production_user"/>
                                             <field name="company_id" invisible="1" optional="hide"/>
                                             <field name="currency_id" invisible="1" optional="hide"/>
@@ -281,13 +281,10 @@
                                     <field name="cart_design_link" string="Link file thiết kế"
                                            placeholder="Dán link file thiết kế xe đẩy..." widget="url"
                                            readonly="is_production_user"/>
-                                    <field name="cart_design_description" string="Thông tin thiết kế chữ (Nội dung, Font, Màu sắc...)"
-                                           placeholder="Nhập nội dung chữ cần thiết kế trên xe..."
+                                    <field name="cart_design_description" string="Thông tin thiết kế"
+                                           placeholder="Nhập thông tin cần thiết kế"
                                            widget="text" readonly="is_production_user"/>
-                                    <field name="cart_design_image_description"
-                                           string="Thông tin thiết kế hình ảnh (Logo, Hình minh họa, Phong cách...)"
-                                           placeholder="Mô tả hình ảnh, logo hoặc phong cách thiết kế mong muốn..."
-                                           widget="text" readonly="is_production_user"/>
+                                     
                                 </group>
                                 <div class="row mt-2">
                                     <div class="col-md-4">
@@ -417,11 +414,18 @@
                                     <field name="amount_untaxed_original" readonly="1" widget="monetary"/>
                                 </span>
                             </div>
-                            <!-- 2. Thuế (bắt buộc có) -->
-                            <div class="dac-summary-row">
+                            <!-- 2. Thuế: ẩn trên đơn hàng xe đẩy -->
+                            <div class="dac-summary-row" invisible="order_type == 'cart'">
                                 <label for="amount_tax" class="dac-summary-label">Thuế:</label>
                                 <span class="dac-summary-value">
                                     <field name="amount_tax" readonly="1" widget="monetary"/>
+                                </span>
+                            </div>
+                            <div class="dac-summary-row">
+                                <label for="shipping_fee" class="dac-summary-label">Phí vận chuyển:</label>
+                                <span class="dac-summary-value">
+                                    <field name="shipping_fee" widget="monetary"
+                                           readonly="is_order_completed or order_state_custom == 'cancel'"/>
                                 </span>
                             </div>
                             <!-- 2b. Khuyến mãi toàn đơn -->
@@ -440,6 +444,7 @@
                                            readonly="is_order_completed or order_state_custom == 'cancel'"/>
                                 </span>
                             </div>
+                            
                             <!-- 3. Tổng (bắt buộc có) -->
                             <div class="dac-summary-row">
                                 <label for="amount_total" class="dac-summary-label">Tổng:</label>
@@ -881,13 +886,19 @@
                            readonly="order_state_custom in ['delivery', 'installation', 'payment', 'completed', 'cancel']"/>
                     <field name="date" string="Ngày đơn hàng"
                            readonly="order_state_custom in ['delivery', 'installation', 'payment', 'completed', 'cancel']"/>
-                    <field name="partner_id" widget="many2one"
+                    <field name="customer_address" column_invisible="1"/>
+                    <field name="phone" column_invisible="1"/>
+                    <field name="currency_id" column_invisible="1"/>
+                    <field name="partner_id" widget="dac_cart_customer"
                            readonly="order_state_custom not in ['quotation', 'deposit']"/>
+                    <field name="cart_design_description" string="Thông tin thiết kế" optional="show"/>
                     <field name="cart_sample_image" string="Mẫu xe" widget="image" options="{'size': [60, 60]}"/>
                     <field name="cart_design_approval_image" string="Duyệt thiết kế" widget="image" options="{'size': [60, 60]}"/>
                     <field name="user_id" widget="many2one_avatar_user" string="Sale phụ trách"/>
                     <field name="user_id_design" widget="many2one_avatar_user" string="Người thiết kế"/>
                     <field name="amount_total" sum="Total" widget="monetary" readonly="1"/>
+                    <field name="total_deposit_paid" string="Đặt cọc" widget="monetary" optional="show"/>
+                    <field name="remaining_amount_display" string="Còn phải thu" widget="monetary" readonly="1" optional="show"/>
                     <field name="order_state_select" string="Trạng thái"/>
                     <field name="production_deadline" string="Ngày hoàn tất sản xuất"
                            readonly="order_state_custom not in ['quotation', 'deposit']"/>

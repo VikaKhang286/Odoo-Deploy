@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dac_erp.CartCustomerField">
+        <div class="dac-cart-customer">
+            <t t-call="web.Many2OneField"/>
+            <div t-if="props.record.data.customer_address" class="text-muted small text-wrap mt-1" style="min-width: 180px; max-width: 320px;">
+                <span t-esc="props.record.data.customer_address"/>
+            </div>
+            <div t-if="props.record.data.phone" class="text-muted small mt-1">
+                <span t-esc="props.record.data.phone"/>
+            </div>
+        </div>
+    </t>
+</templates>

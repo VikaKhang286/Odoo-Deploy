@@ -233,21 +233,13 @@ class SaleOrder(models.Model):
         help="Ghi chú nội dung khuyến mãi (VD: Khách VIP, giới thiệu...).",
     )
 
-    # Compatibility field for databases that already installed version 18.0.8.0.
-    # Shipping is represented by a regular order line; do not include this value
-    # in totals or expose it in new views.
     shipping_fee = fields.Monetary(
-        string="Phí vận chuyển (cũ)",
+        string="Phí vận chuyển",
         currency_field='currency_id',
-        compute='_compute_legacy_shipping_fee',
-        store=False,
-        readonly=True,
-        help="Trường tương thích dữ liệu cũ; phí vận chuyển được lưu bằng dòng đơn hàng.",
+        default=0.0,
+        tracking=True,
+        help="Phí vận chuyển nhập riêng, được cộng vào tổng giá trị đơn hàng.",
     )
-
-    def _compute_legacy_shipping_fee(self):
-        for order in self:
-            order.shipping_fee = 0.0
 
     # Field đánh dấu đơn 0đ (cơ hội) - STORED để dùng trong domain filter
     is_zero_amount = fields.Boolean(
@@ -738,16 +730,10 @@ class SaleOrder(models.Model):
         tracking=True,
     )
     cart_design_description = fields.Text(
-        string="Thông tin thiết kế chữ (Nội dung, Font, Màu sắc...)",
-        help="Mô tả chi tiết yêu cầu hoặc nội dung thiết kế của đơn hàng xe đẩy",
-        tracking=True,
-    )
-
-    cart_design_image_description = fields.Text(
-        string="Thông tin thiết kế hình ảnh (Logo, Hình minh họa, Phong cách...)",
-        help="Mô tả hình ảnh, logo hoặc phong cách thiết kế mong muốn cho xe đẩy.",
-        tracking=True,
-    )
+            string="Thông tin thiết kế",
+            help="Mô tả thông tin thiết kế của đơn hàng xe đẩy",
+            tracking=True,
+        )
 
     #========== Lựa chọn 2 nhánh sau sản xuất: giao hàng hoặc lắp đặt ===========
     fulfillment_method = fields.Selection([
