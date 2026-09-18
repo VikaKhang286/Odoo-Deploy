@@ -19,7 +19,10 @@ Thumbs.db
 
 # IDE
 .vscode/settings.json
+.git/
 .idea/
+.claude/
+.commandcode/
 
 # Secrets
 config/odoo.conf
