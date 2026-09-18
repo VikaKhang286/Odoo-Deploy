@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_inherit_sale_ai_invoice_reader" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.sale_ai_invoice_reader</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('dac-action-bar-ai')]" position="inside">
+                <button name="action_open_upload_dialog"
+                        string="Nhập hóa đơn bằng ảnh"
+                        type="object"
+                        class="btn btn-primary btn-sm dac-ai-invoice-btn"
+                        icon="fa-file-image-o"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Server action binding: Actions menu on sale order list view -->
+    <record id="action_sale_order_from_invoice" model="ir.actions.server">
+        <field name="name">Nhập hóa đơn bằng ảnh</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = env['sale.order'].action_open_upload_dialog_new_order()</field>
+    </record>
+
+    <!-- ================================================================ -->
+    <!--  Wizard: Xem trước và đối chiếu Hóa đơn AI                      -->
+    <!-- ================================================================ -->
+    <record id="view_gemini_create_partner_wizard_form" model="ir.ui.view">
+        <field name="name">gemini.create.partner.wizard.form</field>
+        <field name="model">gemini.create.partner.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Xem trước Hóa đơn AI">
+                <sheet>
+                    <field name="partner_found" invisible="1"/>
+                    <field name="mode" invisible="1"/>
+                    <field name="is_manual" invisible="1"/>
+                    <field name="pancake_total" invisible="1"/>
+                    <field name="partner_total" invisible="1"/>
+                    <field name="pancake_search_window" invisible="1"/>
+                    <field name="pancake_limit" invisible="1"/>
+                    <field name="partner_limit" invisible="1"/>
+                    <field name="create_partner" invisible="1"/>
+
+                    <!-- Warnings banner -->
+                    <div class="alert alert-warning text-break" role="alert"
+                         invisible="not warnings_text" style="margin-bottom:16px;">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="fa fa-info-circle fa-lg me-2 text-warning"/>
+                            <strong class="fs-5">Kết quả phân tích từ AI</strong>
+                        </div>
+                        <field name="warnings_text" readonly="1" widget="text"
+                               style="white-space:pre-line;background:transparent;border:none;padding:0;"/>
+                    </div>
+
+                    <!-- ============================================================ -->
+                    <!--  MODE = NEW: hai zone tìm khách hàng                        -->
+                    <!-- ============================================================ -->
+                    <div invisible="mode != 'new'">
+
+                        <!-- Thông tin AI bóc tách (ẩn khi nhập tay) -->
+                        <div class="row mb-3" invisible="is_manual">
+                            <div class="col-12">
+                                <h5 class="text-muted mb-2">
+                                    <i class="fa fa-search me-1"/> Thông tin từ hóa đơn
+                                </h5>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <span>
+                                        <strong>Tên:</strong>
+                                        <field name="extracted_name" readonly="1" class="ms-1"/>
+                                        <span invisible="not cleaned_name or cleaned_name == extracted_name"
+                                              class="text-muted ms-1">
+                                            → <field name="cleaned_name" readonly="1"/>
+                                        </span>
+                                    </span>
+                                    <span>
+                                        <strong>SĐT:</strong>
+                                        <field name="extracted_phone" readonly="1" class="ms-1"/>
+                                    </span>
+                                    <span invisible="not extracted_address">
+                                        <strong>Địa chỉ:</strong>
+                                        <field name="extracted_address" readonly="1" class="ms-1"/>
+                                    </span>
+                                    <span invisible="not invoice_number">
+                                        <strong>Số HĐ:</strong>
+                                        <field name="invoice_number" readonly="1" class="ms-1"/>
+                                    </span>
+                                    <span invisible="not invoice_date_text">
+                                        <strong>Ngày HĐ:</strong>
+                                        <field name="invoice_date_text" readonly="1" class="ms-1"/>
+                                    </span>
+                                </div>
+                                <div invisible="not invoice_note" class="mt-1 text-muted small">
+                                    <strong>Ghi chú:</strong>
+                                    <field name="invoice_note" readonly="1" class="ms-1"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Khách hàng đã chọn -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <h5 class="mb-2">
+                                    <i class="fa fa-user me-1 text-primary"/> Khách hàng được chọn
+                                </h5>
+                                <div invisible="create_partner">
+                                    <field name="partner_id"
+                                           string="Khách hàng hệ thống"
+                                           options="{'no_create': True}"
+                                           placeholder="Chọn từ danh sách hoặc tìm từ gợi ý bên dưới"/>
+                                </div>
+                                <!-- Form tạo mới -->
+                                <div invisible="not create_partner"
+                                     class="border rounded p-3 bg-light">
+                                    <strong class="text-success">
+                                        <i class="fa fa-plus-circle me-1"/>Tạo khách hàng mới
+                                    </strong>
+                                    <div class="mt-2">
+                                        <field name="partner_name" placeholder="Họ và tên *" required="create_partner"/>
+                                        <field name="partner_phone" placeholder="Số điện thoại" class="mt-1"/>
+                                        <field name="partner_address" placeholder="Địa chỉ" class="mt-1"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-start pt-4">
+                                <button name="action_toggle_create_partner"
+                                        type="object"
+                                        string="Tạo mới khách hàng"
+                                        class="btn btn-outline-success btn-sm"
+                                        icon="fa-plus"
+                                        invisible="create_partner"/>
+                                <button name="action_toggle_create_partner"
+                                        type="object"
+                                        string="Chọn từ hệ thống"
+                                        class="btn btn-outline-secondary btn-sm"
+                                        icon="fa-list"
+                                        invisible="not create_partner"/>
+                            </div>
+                        </div>
+
+                        <hr invisible="is_manual"/>
+
+                        <notebook invisible="is_manual">
+                            <!-- Tab 1: Pancake -->
+                            <page string="Pancake" name="tab_pancake">
+                                <div invisible="pancake_match_ids"
+                                     class="text-muted small fst-italic p-2">
+                                    Không tìm thấy hội thoại Pancake phù hợp trong khoảng thời gian đã chọn.
+                                </div>
+
+                                <field name="pancake_match_ids"
+                                       invisible="not pancake_match_ids"
+                                       context="{'active_wizard_id': id}"
+                                       mode="list">
+                                    <list create="0" delete="0">
+                                        <field name="customer_name_fm" string="Tên khách"/>
+                                        <field name="phone" string="SĐT" optional="show"/>
+                                        <field name="platform_fm" string="Nền tảng" optional="show"/>
+                                        <field name="last_message_snippet_clean" string="Tin nhắn cuối" optional="show"/>
+                                        <field name="last_message_at_fm" string="Thời gian" widget="datetime" optional="show"/>
+                                        <field name="partner_order_count" string="Đơn hàng" optional="show"/>
+                                        <button name="action_view_partner_sale_orders"
+                                                type="object"
+                                                icon="fa-list"
+                                                title="Xem danh sách đơn hàng"
+                                                invisible="partner_order_count == 0"/>
+                                        <button name="action_open_on_pancake"
+                                                type="object"
+                                                icon="fa-external-link"
+                                                title="Mở hội thoại trên Pancake"/>
+                                        <button name="action_select_as_ai_wizard_partner"
+                                                type="object"
+                                                string="Chọn"
+                                                icon="fa-check"
+                                                class="btn-success"
+                                                title="Chọn khách hàng này"/>
+                                    </list>
+                                </field>
+
+                                <div class="d-flex gap-2 mt-2 flex-wrap">
+                                    <button name="action_load_more_pancake"
+                                            type="object"
+                                            string="Xem thêm"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            icon="fa-chevron-down"
+                                            invisible="pancake_total &lt;= pancake_limit or not pancake_match_ids"/>
+                                    <button name="action_expand_pancake_1m"
+                                            type="object"
+                                            string="Tìm trong 1 tháng"
+                                            class="btn btn-outline-primary btn-sm"
+                                            icon="fa-calendar"
+                                            invisible="pancake_search_window != '7d'"/>
+                                    <button name="action_expand_pancake_3m"
+                                            type="object"
+                                            string="Tìm trong 3 tháng"
+                                            class="btn btn-outline-primary btn-sm"
+                                            icon="fa-calendar"
+                                            invisible="pancake_search_window != '1m'"/>
+                                </div>
+                            </page>
+
+                            <!-- Tab 2: Khách hàng hệ thống -->
+                            <page string="Khách hàng hệ thống" name="tab_system">
+                                <div invisible="partner_match_ids"
+                                     class="text-muted small fst-italic p-2">
+                                    Không tìm thấy khách hàng hệ thống phù hợp.
+                                </div>
+
+                                <field name="partner_match_ids"
+                                       invisible="not partner_match_ids"
+                                       context="{'active_wizard_id': id}"
+                                       mode="list">
+                                    <list create="0" delete="0">
+                                        <field name="name" string="Tên"/>
+                                        <field name="phone" string="SĐT" optional="show"/>
+                                        <field name="mobile" string="Di động" optional="hide"/>
+                                        <field name="street" string="Địa chỉ" optional="show"/>
+                                        <field name="ai_wizard_order_count" string="Đơn hàng" optional="show"/>
+                                        <button name="action_view_orders_in_wizard"
+                                                type="object"
+                                                icon="fa-list"
+                                                title="Xem danh sách đơn hàng"
+                                                invisible="ai_wizard_order_count == 0"/>
+                                        <button name="action_select_as_ai_wizard_partner"
+                                                type="object"
+                                                string="Chọn"
+                                                icon="fa-check"
+                                                class="btn-success"
+                                                title="Chọn khách hàng này"/>
+                                    </list>
+                                </field>
+
+                                <div class="mt-2">
+                                    <button name="action_load_more_partners"
+                                            type="object"
+                                            string="Xem thêm"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            icon="fa-chevron-down"
+                                            invisible="partner_total &lt;= partner_limit or not partner_match_ids"/>
+                                </div>
+                            </page>
+                        </notebook>
+
+                        <hr/>
+                    </div>
+
+                    <!-- ============================================================ -->
+                    <!--  MODE = EXISTING: UI cũ (chọn partner + reconcile)          -->
+                    <!-- ============================================================ -->
+                    <div invisible="mode != 'existing'">
+                        <div class="row">
+                            <div class="col-md-6 border-end">
+                                <h4 class="mb-3 text-primary">Thông tin Khách hàng</h4>
+
+                                <div class="mb-3">
+                                    <field name="skip_partner"
+                                           string="Bỏ qua — chỉ nhập dòng hàng, không cập nhật khách hàng"
+                                           widget="boolean_toggle"/>
+                                </div>
+
+                                <group invisible="create_partner or skip_partner">
+                                    <field name="suggested_partner_ids"
+                                           string="Gợi ý từ AI"
+                                           widget="many2many_tags"
+                                           readonly="1"
+                                           invisible="not suggested_partner_ids"/>
+                                    <field name="partner_id"
+                                           string="Khách hàng hệ thống"
+                                           options="{'no_create': True}"/>
+                                    <field name="create_partner"
+                                           string="Tạo mới khách hàng?"
+                                           widget="boolean_toggle"/>
+                                </group>
+
+                                <group string="Dữ liệu khách hàng bóc tách"
+                                       invisible="not create_partner or skip_partner">
+                                    <field name="partner_name"
+                                           string="Tên khách hàng"
+                                           placeholder="Nhập tên khách hàng..."
+                                           required="create_partner and not skip_partner"/>
+                                    <field name="partner_phone" string="Số điện thoại" placeholder="Nhập số điện thoại..."/>
+                                    <field name="partner_address" string="Địa chỉ" placeholder="Nhập địa chỉ..."/>
+                                    <field name="create_partner"
+                                           string="Chọn từ danh sách có sẵn?"
+                                           widget="boolean_toggle"/>
+                                </group>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h4 class="mb-3 text-primary">Phương thức đối chiếu</h4>
+                                <div class="card p-3 bg-light">
+                                    <field name="import_mode" widget="radio" nolabel="1"/>
+                                </div>
+                                <div class="text-muted mt-2 small">
+                                    <strong>Lưu ý:</strong> Chế độ cập nhật sẽ đối chiếu theo Sản phẩm hệ thống.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trang thai va coc (chi mode=new) -->
+                    <div class="mt-3 mb-3 p-3 border rounded bg-light" invisible="mode != 'new'">
+                        <h5 class="mb-3 text-primary">
+                            <i class="fa fa-tasks me-1" title="Trang thai"/> Trạng thái đơn hàng
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="fw-bold mb-1">Trạng thái ban đầu</div>
+                                <field name="initial_state" widget="radio"/>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="fw-bold mb-1">Hình thức thực hiện</div>
+                                <field name="fulfillment_method" widget="radio"/>
+                            </div>
+                            <div class="col-md-4"
+                                 invisible="initial_state in ('payment', 'completed')">
+                                <div class="fw-bold mb-1">Đặt cọc</div>
+                                <field name="has_deposit"
+                                       string="Có đặt cọc?"
+                                       widget="boolean_toggle"/>
+                                <div invisible="not has_deposit" class="mt-2">
+                                    <div class="small text-muted">Số tiền cọc</div>
+                                    <field name="initial_deposit_amount"
+                                           widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"
+                                           placeholder="0"/>
+                                </div>
+                                <div invisible="has_deposit" class="text-muted small fst-italic mt-1">
+                                    Không đặt cọc
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chi tiet dong hang -->
+                    <div class="mt-4">
+                        <h4 class="mb-3 text-primary" invisible="is_manual">Chi tiết dòng hàng bóc tách (Có thể chỉnh sửa)</h4>
+                        <h4 class="mb-3 text-primary" invisible="not is_manual">Chi tiết dòng hàng</h4>
+                        <field name="currency_id" invisible="1"/>
+                        <field name="line_ids">
+                            <list create="1" delete="1"
+                                  decoration-warning="not product_id">
+                                <field name="currency_id" column_invisible="1"/>
+                                <field name="product_name" string="Tên sản phẩm" readonly="not parent.is_manual"/>
+                                <field name="product_id" string="Sản phẩm hệ thống"
+                                       options="{'no_create': True}"/>
+                                <field name="quantity" string="Số lượng"/>
+                                <field name="price_unit" string="Đơn giá" widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="subtotal" string="Thành tiền" readonly="1"
+                                       widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </list>
+                        </field>
+                        <div class="d-flex justify-content-end align-items-center mt-2 pe-2 gap-3">
+                            <span class="text-muted">Tổng cộng:</span>
+                            <strong class="fs-5 text-primary">
+                                <field name="total_wizard" readonly="1" widget="monetary"
+                                       options="{'currency_field': 'currency_id'}"/>
+                            </strong>
+                        </div>
+                    </div>
+                </sheet>
+
+                <footer>
+                    <button name="action_import_invoice"
+                            string="Tạo đơn hàng mới"
+                            type="object"
+                            class="btn-primary"
+                            invisible="mode != 'new'"/>
+                    <button name="action_import_invoice"
+                            string="Nhập vào đơn hàng"
+                            type="object"
+                            class="btn-primary"
+                            invisible="mode != 'existing'"/>
+                    <button string="Hủy bỏ" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

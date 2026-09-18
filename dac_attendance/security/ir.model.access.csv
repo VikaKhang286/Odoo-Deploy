@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_attendance_config_user,hr.employee.attendance.config.user,model_hr_employee_attendance_config,base.group_user,1,1,1,1
+access_hr_employee_attendance_config_manager,hr.employee.attendance.config.manager,model_hr_employee_attendance_config,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_dac_attendance_report_user,dac.attendance.report.user,model_dac_attendance_report,base.group_user,1,0,0,0
+access_dac_attendance_report_manager,dac.attendance.report.manager,model_dac_attendance_report,hr_attendance.group_hr_attendance_manager,1,1,0,0
+access_dac_attendance_summary_wizard_user,dac.attendance.summary.wizard.user,model_dac_attendance_summary_wizard,base.group_user,1,1,1,1
+access_dac_attendance_leave_user,dac.attendance.leave.user,model_dac_attendance_leave,base.group_user,1,1,1,0
+access_dac_attendance_leave_manager,dac.attendance.leave.manager,model_dac_attendance_leave,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_dac_attendance_amendment_user,dac.attendance.amendment.user,model_dac_attendance_amendment,base.group_user,1,1,1,0
+access_dac_attendance_amendment_manager,dac.attendance.amendment.manager,model_dac_attendance_amendment,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_dac_attendance_dashboard_user,dac.attendance.dashboard.user,model_dac_attendance_dashboard,base.group_user,1,0,0,0

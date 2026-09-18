@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="dac_attendance.AttendanceMiniCalendar">
+    <div class="o_dac_mini_calendar">
+        <div class="o_dac_mini_calendar_header">
+            <span class="o_dac_mini_calendar_month">Tháng <t t-esc="props.monthLabel"/></span>
+        </div>
+        <div class="o_dac_mini_calendar_weekdays">
+            <span>T2</span><span>T3</span><span>T4</span>
+            <span>T5</span><span>T6</span>
+            <span class="o_dac_weekend">T7</span><span class="o_dac_weekend">CN</span>
+        </div>
+        <div class="o_dac_mini_calendar_grid">
+            <!-- Empty cells before month start -->
+            <t t-foreach="leadingBlanks" t-as="b" t-key="b">
+                <span class="o_dac_cal_empty"/>
+            </t>
+            <!-- Day cells -->
+            <t t-foreach="props.days" t-as="day" t-key="day.date">
+                <span t-attf-class="o_dac_cal_day o_dac_cal_day--{{ day.status }}"
+                      t-att-title="dayTooltip(day)">
+                    <t t-esc="day.day"/>
+                </span>
+            </t>
+        </div>
+        <div class="o_dac_mini_calendar_legend">
+            <span class="o_dac_legend_dot o_dac_legend_dot--on_time"/> Đúng giờ
+            <span class="o_dac_legend_dot o_dac_legend_dot--late"/> Trễ
+            <span class="o_dac_legend_dot o_dac_legend_dot--absent"/> Vắng
+            <span class="o_dac_legend_dot o_dac_legend_dot--leave"/> Phép
+        </div>
+    </div>
+</t>
+
+</templates>

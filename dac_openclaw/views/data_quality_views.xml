@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_data_quality_issue_tree" model="ir.ui.view">
+        <field name="name">dac_openclaw.data.quality.issue.tree</field>
+        <field name="model">dac_openclaw.data.quality.issue</field>
+        <field name="arch" type="xml">
+            <list string="Data Quality Issues" default_order="detected_at desc">
+                <field name="detected_at"/>
+                <field name="issue_type"/>
+                <field name="severity" decoration-danger="severity == 'critical'"
+                       decoration-warning="severity == 'high'"
+                       decoration-info="severity == 'medium'"/>
+                <field name="task_id"/>
+                <field name="conversation_id"/>
+                <field name="order_id"/>
+                <field name="description"/>
+                <field name="resolved"/>
+                <field name="resolved_at"/>
+                <button name="action_mark_resolved" type="object" string="Đánh dấu đã xử lý"
+                        icon="fa-check" invisible="resolved"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_data_quality_issue_search" model="ir.ui.view">
+        <field name="name">dac_openclaw.data.quality.issue.search</field>
+        <field name="model">dac_openclaw.data.quality.issue</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="issue_type"/>
+                <field name="description"/>
+                <filter name="unresolved" string="Chưa xử lý" domain="[('resolved','=',False)]"/>
+                <filter name="critical" string="Critical" domain="[('severity','=','critical')]"/>
+                <filter name="high" string="High" domain="[('severity','=','high')]"/>
+                <group expand="1" string="Group By">
+                    <filter name="group_type" string="Issue Type" context="{'group_by': 'issue_type'}"/>
+                    <filter name="group_severity" string="Severity" context="{'group_by': 'severity'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_data_quality_issue" model="ir.actions.act_window">
+        <field name="name">Data Quality Issues</field>
+        <field name="res_model">dac_openclaw.data.quality.issue</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_unresolved': 1}</field>
+        <field name="search_view_id" ref="view_data_quality_issue_search"/>
+    </record>
+
+    <menuitem id="menu_data_quality"
+              name="Data Quality"
+              parent="menu_dac_openclaw_root"
+              action="action_data_quality_issue"
+              sequence="20"/>
+</odoo>

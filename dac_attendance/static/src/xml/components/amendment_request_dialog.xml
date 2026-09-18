@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="dac_attendance.AmendmentRequestDialog">
+    <Dialog title="'Yêu cầu điều chỉnh chấm công'" size="'md'">
+        <div class="o_dac_amendment_dialog">
+            <div t-if="state.errorMsg" class="alert alert-danger mb-3">
+                <i class="fa fa-exclamation-triangle me-2"/>
+                <t t-esc="state.errorMsg"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Ngày cần điều chỉnh <span class="text-danger">*</span></label>
+                <input type="date" class="form-control"
+                       t-att-value="state.targetDate"
+                       t-on-change="(e) => this.state.targetDate = e.target.value"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Loại điều chỉnh</label>
+                <div class="d-flex gap-2 flex-wrap">
+                    <t t-foreach="amendmentTypes" t-as="at" t-key="at.value">
+                        <button t-attf-class="btn btn-sm {{ state.amendmentType === at.value ? 'btn-warning' : 'btn-outline-secondary' }}"
+                                t-on-click="() => this.state.amendmentType = at.value">
+                            <t t-esc="at.label"/>
+                        </button>
+                    </t>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label fw-bold">Giờ vào thực tế <span class="text-danger">*</span></label>
+                    <input type="datetime-local" class="form-control"
+                           t-att-value="state.actualCheckIn"
+                           t-on-change="(e) => this.state.actualCheckIn = e.target.value"/>
+                </div>
+                <div class="col-6"
+                     t-att-style="state.amendmentType === 'missing_checkin' ? 'opacity:0.4' : ''">
+                    <label class="form-label fw-bold">Giờ ra thực tế</label>
+                    <input type="datetime-local" class="form-control"
+                           t-att-value="state.actualCheckOut"
+                           t-att-disabled="state.amendmentType === 'missing_checkin'"
+                           t-on-change="(e) => this.state.actualCheckOut = e.target.value"/>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Lý do <span class="text-danger">*</span></label>
+                <textarea class="form-control" rows="3"
+                          t-att-value="state.reason"
+                          placeholder="Mô tả lý do quên hoặc sai giờ chấm công..."
+                          t-on-input="(e) => this.state.reason = e.target.value"/>
+            </div>
+        </div>
+
+        <t t-set-slot="footer">
+            <button class="btn btn-secondary" t-on-click="props.close">Hủy</button>
+            <button class="btn btn-warning text-white" t-on-click="onSubmit"
+                    t-att-disabled="state.submitting">
+                <i t-if="state.submitting" class="fa fa-spinner fa-spin me-2"/>
+                <t t-esc="state.submitting ? 'Đang gửi...' : 'Gửi yêu cầu'"/>
+            </button>
+        </t>
+    </Dialog>
+</t>
+
+</templates>

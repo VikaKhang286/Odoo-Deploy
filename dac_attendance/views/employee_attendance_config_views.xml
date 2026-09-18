@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_employee_attendance_config_list" model="ir.ui.view">
+        <field name="name">hr.employee.attendance.config.list</field>
+        <field name="model">hr.employee.attendance.config</field>
+        <field name="arch" type="xml">
+            <list string="Cấu hình chấm công nhân viên">
+                <field name="employee_id"/>
+                <field name="company_id"/>
+                <field name="check_in_method"/>
+                <field name="location_validation_type"/>
+                <field name="allowed_ip_range"/>
+                <field name="gps_radius_meters"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_employee_attendance_config_form" model="ir.ui.view">
+        <field name="name">hr.employee.attendance.config.form</field>
+        <field name="model">hr.employee.attendance.config</field>
+        <field name="arch" type="xml">
+            <form string="Cấu hình chấm công nhân viên">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="company_id" readonly="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="check_in_method" widget="radio"/>
+                            <field name="location_validation_type" widget="radio"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Cấu hình IP">
+                            <field name="allowed_ip_range" placeholder="VD: 192.168.1.0/24"/>
+                        </group>
+                        <group string="Cấu hình GPS">
+                            <field name="allowed_gps_lat"/>
+                            <field name="allowed_gps_lng"/>
+                            <field name="gps_radius_meters"/>
+                        </group>
+                    </group>
+                    <group string="Số ngày phép mỗi năm">
+                        <group>
+                            <field name="annual_leave_days"/>
+                            <field name="sick_leave_days"/>
+                        </group>
+                        <group>
+                            <field name="unpaid_leave_days"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_employee_attendance_config_search" model="ir.ui.view">
+        <field name="name">hr.employee.attendance.config.search</field>
+        <field name="model">hr.employee.attendance.config</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm cấu hình chấm công">
+                <field name="employee_id"/>
+                <field name="company_id"/>
+                <field name="check_in_method"/>
+                <filter name="filter_active" string="Đang hoạt động" domain="[('active', '=', True)]"/>
+                <filter name="filter_location" string="Xác thực vị trí" domain="[('check_in_method', '=', 'location')]"/>
+                <filter name="filter_photo" string="Chụp ảnh" domain="[('check_in_method', '=', 'photo')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_by_company" string="Công ty" context="{'group_by': 'company_id'}"/>
+                    <filter name="group_by_method" string="Phương thức" context="{'group_by': 'check_in_method'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_employee_attendance_config" model="ir.actions.act_window">
+        <field name="name">Cấu hình chấm công nhân viên</field>
+        <field name="res_model">hr.employee.attendance.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+</odoo>

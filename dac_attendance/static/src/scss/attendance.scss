@@ -1,0 +1,122 @@
+/* DAC Attendance Styles */
+
+.o_attendance_kiosk_container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.o_attendance_kiosk_header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.o_attendance_kiosk_header h1 {
+    font-size: 28px;
+    color: #333;
+}
+
+.o_attendance_kiosk_content {
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.o_attendance_action {
+    margin: 20px 0;
+}
+
+.o_attendance_action .btn-lg {
+    padding: 20px 40px;
+    font-size: 24px;
+    border-radius: 10px;
+}
+
+.o_camera_section {
+    text-align: center;
+}
+
+.o_camera_section video {
+    border-radius: 10px;
+    border: 3px solid #ddd;
+}
+
+.o_camera_section canvas {
+    display: none;
+}
+
+#photo_preview {
+    margin-top: 15px;
+}
+
+#photo_preview img {
+    border-radius: 10px;
+    border: 3px solid #28a745;
+}
+
+.o_attendance_kiosk_info {
+    text-align: center;
+    color: #666;
+}
+
+/* Validation status indicators */
+.validation-success {
+    color: #28a745;
+}
+
+.validation-warning {
+    color: #ffc107;
+}
+
+.validation-error {
+    color: #dc3545;
+}
+
+/* Report styles */
+.o_attendance_report_container {
+    padding: 20px;
+}
+
+.late-indicator {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.early-leave-indicator {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+/* Photo thumbnail in attendance record */
+.attendance-photo-thumbnail {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+/* GPS location display */
+.gps-location-display {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .o_attendance_kiosk_container {
+        padding: 10px;
+    }
+    
+    .o_attendance_kiosk_content {
+        padding: 20px;
+    }
+    
+    .o_attendance_action .btn-lg {
+        padding: 15px 30px;
+        font-size: 20px;
+    }
+}

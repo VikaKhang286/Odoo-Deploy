@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Systray attendance box with action button -->
+    <t t-name="dac_attendance.AttendanceSystray">
+        <div class="o_dac_attendance_systray"
+             t-att-title="statusTitle">
+            <div t-attf-class="o_dac_attendance_box {{ boxClass }}">
+                <div class="o_dac_attendance_box_content">
+                    <div class="o_dac_attendance_box_status_row">
+                        <span class="o_dac_attendance_box_dot"/>
+                        <span class="o_dac_attendance_box_label">
+                            <t t-esc="statusLabel"/>
+                        </span>
+                    </div>
+                    <div class="o_dac_attendance_box_meta">
+                        <span t-if="state.checkedIn and statusSubText"
+                              class="o_dac_attendance_box_sub">
+                            <t t-esc="statusSubText"/>
+                        </span>
+                        <span class="o_dac_attendance_box_hint">
+                            <t t-esc="statusMetaText"/>
+                        </span>
+                    </div>
+                </div>
+                <button t-attf-class="{{ actionButtonClass }}"
+                        t-att-title="statusTitle"
+                        t-on-click="state.checkedIn ? onClickCheckOut : onClickCheckIn"
+                        type="button">
+                    <span t-if="state.loading" class="o_dac_attendance_action_spinner">
+                        <i class="fa fa-spinner fa-spin"/>
+                    </span>
+                    <span>
+                        <t t-esc="actionLabel"/>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="dac_attendance.ManagerDashboard">
+    <div class="o_dac_manager_dashboard">
+
+        <!-- Loading -->
+        <div t-if="state.loading" class="o_dac_dashboard_loading">
+            <i class="fa fa-spinner fa-spin fa-2x text-muted"/>
+            <p class="text-muted mt-2">Đang tải dữ liệu...</p>
+        </div>
+
+        <t t-else="">
+            <div t-if="state.error" class="alert alert-danger m-4">
+                <t t-esc="state.error"/>
+            </div>
+
+            <t t-else="">
+                <!-- Header -->
+                <div class="o_dac_mgr_header">
+                    <h4>Dashboard Quản lý Chấm công</h4>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted" t-esc="todayLabel"/>
+                        <button class="o_dac_btn_refresh" t-on-click="loadDashboard"
+                                t-att-disabled="state.loading">
+                            <i class="fa fa-refresh me-1"/>Làm mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="o_dac_kpi_row">
+                    <div class="o_dac_kpi_card o_dac_kpi_card--present"
+                         t-on-click="() => this.state.activeTab = 'present'">
+                        <div class="o_dac_kpi_number" t-esc="state.data.today_stats.present"/>
+                        <div class="o_dac_kpi_label">Có mặt</div>
+                        <i class="fa fa-user-check o_dac_kpi_icon"/>
+                    </div>
+                    <div class="o_dac_kpi_card o_dac_kpi_card--absent"
+                         t-on-click="() => this.state.activeTab = 'absent'">
+                        <div class="o_dac_kpi_number" t-esc="state.data.today_stats.absent"/>
+                        <div class="o_dac_kpi_label">Vắng mặt</div>
+                        <i class="fa fa-user-times o_dac_kpi_icon"/>
+                    </div>
+                    <div class="o_dac_kpi_card o_dac_kpi_card--late"
+                         t-on-click="() => this.state.activeTab = 'late'">
+                        <div class="o_dac_kpi_number" t-esc="state.data.today_stats.late"/>
+                        <div class="o_dac_kpi_label">Đi trễ</div>
+                        <i class="fa fa-clock-o o_dac_kpi_icon"/>
+                    </div>
+                    <div class="o_dac_kpi_card o_dac_kpi_card--pending"
+                         t-on-click="() => this.state.approvalTab = 'leaves'">
+                        <div class="o_dac_kpi_number" t-esc="state.data.today_stats.pending_approvals"/>
+                        <div class="o_dac_kpi_label">Chờ duyệt</div>
+                        <i class="fa fa-bell o_dac_kpi_icon"/>
+                    </div>
+                </div>
+
+                <!-- Main content: 2 columns -->
+                <div class="o_dac_mgr_main_row">
+
+                    <!-- Attendance List -->
+                    <div class="o_dac_card o_dac_mgr_list_card">
+                        <div class="o_dac_card_title">Nhân viên hôm nay</div>
+                        <div class="o_dac_tab_row">
+                            <button t-attf-class="o_dac_tab {{ state.activeTab === 'present' ? 'o_dac_tab--active' : '' }}"
+                                    t-on-click="() => this.state.activeTab = 'present'">
+                                Có mặt
+                                <span class="o_dac_tab_badge" t-esc="state.data.today_stats.present"/>
+                            </button>
+                            <button t-attf-class="o_dac_tab {{ state.activeTab === 'absent' ? 'o_dac_tab--active' : '' }}"
+                                    t-on-click="() => this.state.activeTab = 'absent'">
+                                Vắng
+                                <span class="o_dac_tab_badge o_dac_tab_badge--danger" t-esc="state.data.today_stats.absent"/>
+                            </button>
+                            <button t-attf-class="o_dac_tab {{ state.activeTab === 'late' ? 'o_dac_tab--active' : '' }}"
+                                    t-on-click="() => this.state.activeTab = 'late'">
+                                Trễ
+                                <span class="o_dac_tab_badge o_dac_tab_badge--warning" t-esc="state.data.today_stats.late"/>
+                            </button>
+                        </div>
+
+                        <!-- Present -->
+                        <div t-if="state.activeTab === 'present'" class="o_dac_emp_list">
+                            <t t-if="!state.data.present_list.length">
+                                <p class="text-muted text-center py-4">Chưa có nhân viên nào check-in hôm nay</p>
+                            </t>
+                            <t t-foreach="state.data.present_list" t-as="emp" t-key="emp.employee_id">
+                                <div class="o_dac_emp_row">
+                                    <span t-attf-class="o_dac_emp_dot {{ emp.is_late ? 'o_dac_emp_dot--late' : 'o_dac_emp_dot--ok' }}"/>
+                                    <span class="o_dac_emp_name" t-esc="emp.name"/>
+                                    <span class="o_dac_emp_time">
+                                        <t t-esc="emp.check_in"/>
+                                        <t t-if="emp.check_out"> → <t t-esc="emp.check_out"/></t>
+                                        <t t-elif="emp.still_working"> <span class="text-primary">đang làm</span></t>
+                                    </span>
+                                    <span t-if="emp.is_late" class="o_dac_emp_late_tag">
+                                        trễ <t t-esc="emp.late_minutes"/>p
+                                    </span>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Absent -->
+                        <div t-if="state.activeTab === 'absent'" class="o_dac_emp_list">
+                            <t t-if="!state.data.absent_list.length">
+                                <p class="text-success text-center py-4"><i class="fa fa-check-circle me-2"/>Tất cả nhân viên đã check-in!</p>
+                            </t>
+                            <t t-foreach="state.data.absent_list" t-as="emp" t-key="emp.employee_id">
+                                <div class="o_dac_emp_row">
+                                    <span class="o_dac_emp_dot o_dac_emp_dot--absent"/>
+                                    <span class="o_dac_emp_name" t-esc="emp.name"/>
+                                    <span class="text-danger text-end">Chưa check-in</span>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Late -->
+                        <div t-if="state.activeTab === 'late'" class="o_dac_emp_list">
+                            <t t-if="!lateList.length">
+                                <p class="text-success text-center py-4"><i class="fa fa-check-circle me-2"/>Không có ai đi trễ hôm nay!</p>
+                            </t>
+                            <t t-foreach="lateList" t-as="emp" t-key="emp.employee_id">
+                                <div class="o_dac_emp_row">
+                                    <span class="o_dac_emp_dot o_dac_emp_dot--late"/>
+                                    <span class="o_dac_emp_name" t-esc="emp.name"/>
+                                    <span class="o_dac_emp_time" t-esc="emp.check_in"/>
+                                    <span class="o_dac_emp_late_tag">trễ <t t-esc="emp.late_minutes"/>p</span>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Approvals Panel -->
+                    <div class="o_dac_card o_dac_approval_card">
+                        <div class="o_dac_card_title">
+                            Chờ phê duyệt
+                            <span t-if="state.data.today_stats.pending_approvals > 0"
+                                  class="o_dac_pending_badge">
+                                <t t-esc="state.data.today_stats.pending_approvals"/>
+                            </span>
+                        </div>
+
+                        <div class="o_dac_tab_row">
+                            <button t-attf-class="o_dac_tab {{ state.approvalTab === 'leaves' ? 'o_dac_tab--active' : '' }}"
+                                    t-on-click="() => this.state.approvalTab = 'leaves'">
+                                Nghỉ phép
+                                <span class="o_dac_tab_badge" t-esc="state.data.pending_approvals.leaves.length"/>
+                            </button>
+                            <button t-attf-class="o_dac_tab {{ state.approvalTab === 'amendments' ? 'o_dac_tab--active' : '' }}"
+                                    t-on-click="() => this.state.approvalTab = 'amendments'">
+                                Điều chỉnh
+                                <span class="o_dac_tab_badge" t-esc="state.data.pending_approvals.amendments.length"/>
+                            </button>
+                        </div>
+
+                        <!-- Pending leaves -->
+                        <div t-if="state.approvalTab === 'leaves'" class="o_dac_approval_list">
+                            <t t-if="!state.data.pending_approvals.leaves.length">
+                                <p class="text-muted text-center py-4">Không có đơn nghỉ phép nào chờ duyệt</p>
+                            </t>
+                            <t t-foreach="state.data.pending_approvals.leaves" t-as="leave" t-key="leave.id">
+                                <div class="o_dac_approval_item">
+                                    <div class="o_dac_approval_icon o_dac_approval_icon--leave">
+                                        <i class="fa fa-calendar-check-o"/>
+                                    </div>
+                                    <div class="o_dac_approval_content">
+                                        <div class="o_dac_approval_name" t-esc="leave.employee_name"/>
+                                        <div class="o_dac_approval_detail">
+                                            <t t-esc="leave.leave_type"/> ·
+                                            <t t-esc="leave.date_from"/> → <t t-esc="leave.date_to"/> ·
+                                            <strong><t t-esc="leave.days"/> ngày</strong>
+                                        </div>
+                                        <div t-if="leave.reason" class="o_dac_approval_reason" t-esc="leave.reason"/>
+                                    </div>
+                                    <div class="o_dac_approval_actions">
+                                        <button class="o_dac_btn_approve"
+                                                t-on-click="() => this.onApproveLeave(leave.id)"
+                                                t-att-disabled="state.processingId === leave.id">
+                                            <i class="fa fa-check"/>
+                                        </button>
+                                        <button class="o_dac_btn_refuse"
+                                                t-on-click="() => this.onRefuseItem('leave', leave.id)"
+                                                t-att-disabled="state.processingId === leave.id">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Pending amendments -->
+                        <div t-if="state.approvalTab === 'amendments'" class="o_dac_approval_list">
+                            <t t-if="!state.data.pending_approvals.amendments.length">
+                                <p class="text-muted text-center py-4">Không có yêu cầu điều chỉnh nào chờ duyệt</p>
+                            </t>
+                            <t t-foreach="state.data.pending_approvals.amendments" t-as="amend" t-key="amend.id">
+                                <div class="o_dac_approval_item">
+                                    <div class="o_dac_approval_icon o_dac_approval_icon--amendment">
+                                        <i class="fa fa-pencil-square-o"/>
+                                    </div>
+                                    <div class="o_dac_approval_content">
+                                        <div class="o_dac_approval_name" t-esc="amend.employee_name"/>
+                                        <div class="o_dac_approval_detail">
+                                            <t t-esc="amend.amendment_type"/> · <t t-esc="amend.target_date"/> ·
+                                            <t t-esc="amend.actual_check_in"/>
+                                            <t t-if="amend.actual_check_out">→ <t t-esc="amend.actual_check_out"/></t>
+                                        </div>
+                                        <div t-if="amend.reason" class="o_dac_approval_reason" t-esc="amend.reason"/>
+                                    </div>
+                                    <div class="o_dac_approval_actions">
+                                        <button class="o_dac_btn_approve"
+                                                t-on-click="() => this.onApproveAmendment(amend.id)"
+                                                t-att-disabled="state.processingId === amend.id">
+                                            <i class="fa fa-check"/>
+                                        </button>
+                                        <button class="o_dac_btn_refuse"
+                                                t-on-click="() => this.onRefuseItem('amendment', amend.id)"
+                                                t-att-disabled="state.processingId === amend.id">
+                                            <i class="fa fa-times"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refuse reason inline input (shown when refusing) -->
+                <div t-if="state.refuseTarget" class="o_dac_refuse_overlay">
+                    <div class="o_dac_refuse_box">
+                        <h6>Nhập lý do từ chối</h6>
+                        <textarea class="form-control mb-3" rows="3"
+                                  t-att-value="state.refuseReason"
+                                  placeholder="Lý do từ chối..."
+                                  t-on-input="(e) => this.state.refuseReason = e.target.value"/>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button class="btn btn-sm btn-secondary"
+                                    t-on-click="() => this.state.refuseTarget = null">
+                                Hủy
+                            </button>
+                            <button class="btn btn-sm btn-danger" t-on-click="confirmRefuse">
+                                Xác nhận từ chối
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick link to reports -->
+                <div class="o_dac_mgr_footer">
+                    <button class="o_dac_btn_reports" t-on-click="openReports">
+                        <i class="fa fa-bar-chart me-2"/>Xem báo cáo chi tiết
+                    </button>
+                </div>
+            </t>
+        </t>
+    </div>
+</t>
+
+</templates>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dac_attendance_report_list" model="ir.ui.view">
+        <field name="name">dac.attendance.report.list</field>
+        <field name="model">dac.attendance.report</field>
+        <field name="arch" type="xml">
+            <list string="Chi tiết chấm công" create="false" edit="false" delete="false">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="check_in_date"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="worked_hours" string="Giờ làm"/>
+                <field name="is_late"/>
+                <field name="late_minutes"/>
+                <field name="is_early_leave"/>
+                <field name="gps_validated"/>
+                <field name="wifi_validated"/>
+                <field name="photo_validated"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dac_attendance_report_pivot" model="ir.ui.view">
+        <field name="name">dac.attendance.report.pivot</field>
+        <field name="model">dac.attendance.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Báo cáo chấm công">
+                <field name="employee_id" type="row"/>
+                <field name="check_in_date" type="col"/>
+                <field name="worked_hours" type="measure"/>
+                <field name="late_minutes" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_dac_attendance_report_search" model="ir.ui.view">
+        <field name="name">dac.attendance.report.search</field>
+        <field name="model">dac.attendance.report</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm chấm công">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="check_in_date"/>
+                <filter name="filter_late" string="Đi muộn" domain="[('is_late', '=', True)]"/>
+                <filter name="filter_early" string="Về sớm" domain="[('is_early_leave', '=', True)]"/>
+                <filter name="filter_no_gps" string="Không GPS" domain="[('gps_validated', '=', False)]"/>
+                <filter name="filter_no_photo" string="Không ảnh" domain="[('photo_validated', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_by_employee" string="Nhân viên" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_by_department" string="Phòng ban" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_by_date" string="Ngày" context="{'group_by': 'check_in_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dac_attendance_report" model="ir.actions.act_window">
+        <field name="name">Chi tiết chấm công</field>
+        <field name="res_model">dac.attendance.report</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="context">{'search_default_group_by_employee': 0}</field>
+    </record>
+
+    <record id="view_dac_attendance_summary_wizard_form" model="ir.ui.view">
+        <field name="name">dac.attendance.summary.wizard.form</field>
+        <field name="model">dac.attendance.summary.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Tạo báo cáo tổng hợp">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="department_id"/>
+                        <field name="employee_ids" widget="many2many_tags"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="include_late"/>
+                        <field name="include_early"/>
+                    </group>
+                    <group>
+                        <field name="group_by"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate_report" string="Tạo báo cáo" type="object" class="oe_highlight"/>
+                    <button string="Đóng" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_dac_attendance_summary" model="ir.actions.act_window">
+        <field name="name">Báo cáo tổng hợp chấm công</field>
+        <field name="res_model">dac.attendance.summary.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>
