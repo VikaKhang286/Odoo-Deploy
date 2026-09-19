@@ -896,7 +896,8 @@
                     <field name="user_id" widget="many2one_avatar_user" string="Sale phụ trách"/>
                     <field name="user_id_design" widget="many2one_avatar_user" string="Người thiết kế"/>
                     <field name="amount_total" sum="Total" widget="monetary" readonly="1"/>
-                    <field name="total_deposit_paid" string="Đặt cọc" widget="monetary" optional="show"/>
+                    <field name="deposit_amount" string="Đặt cọc" widget="monetary" optional="show"
+                           readonly="order_state_custom == 'cancel'"/>
                     <field name="remaining_amount_display" string="Còn phải thu" widget="monetary" readonly="1" optional="show"/>
                     <field name="order_state_select" string="Trạng thái"/>
                     <field name="production_deadline" string="Ngày hoàn tất sản xuất"
