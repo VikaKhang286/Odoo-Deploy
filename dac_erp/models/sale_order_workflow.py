@@ -286,10 +286,14 @@ class SaleOrderWorkflow(models.Model):
         state_order = ['quotation', 'deposit', 'production', 'delivery', 'installation', 'payment']
         allowed_groups = [self.env.ref('dac_erp.group_dac_erp_manager'),
                           self.env.ref('base.group_system')]
+        can_back_any_step = any(g in self.env.user.groups_id for g in allowed_groups)
+        is_sale = self.env.user.has_group('dac_erp.group_dac_erp_sale')
+        # Check the entire selection before changing any order.
         for order in self:
-            if not any(g in self.env.user.groups_id for g in allowed_groups):
+            if not (can_back_any_step or (is_sale and order.order_state_custom == 'deposit')):
                 raise UserError("Bạn không thể quay lại tiến trình trước!\n"
                                 "Vui lòng liên hệ quản lý để được hỗ trợ!")
+        for order in self:
             if order.order_state_custom in state_order:
                 idx = state_order.index(order.order_state_custom)
 

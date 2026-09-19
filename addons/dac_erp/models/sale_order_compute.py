@@ -62,7 +62,16 @@ class SaleOrderCompute(models.Model):
                 + order.shipping_fee
             )
 
-    @api.depends('amount_total', 'total_deposit_paid', 'is_order_completed', 'order_state_custom')
+    @api.depends('deposit_amount', 'is_deposit_confirmed', 'total_deposit_paid')
+    def _compute_deposit_paid_display(self):
+        """Use the editable confirmed deposit in the order summary."""
+        for order in self:
+            order.deposit_paid_display = (
+                order.deposit_amount if order.is_deposit_confirmed
+                else order.total_deposit_paid
+            )
+
+    @api.depends('amount_total', 'deposit_paid_display', 'is_order_completed', 'order_state_custom')
     def _compute_remaining_amount_display(self):
         """Tính số tiền còn lại cần thu để hiển thị cho user - Logic cải tiến"""
         for order in self:
@@ -74,7 +83,7 @@ class SaleOrderCompute(models.Model):
                 order.remaining_amount_display = 0.0
             else:
                 # Tính số tiền còn lại = Tổng - Cọc đã thanh toán
-                remaining = order.amount_total - order.total_deposit_paid
+                remaining = order.amount_total - order.deposit_paid_display
                 order.remaining_amount_display = max(remaining, 0.0)  # Không để âm
 
     @api.depends('name', 'create_date', 'order_state_custom', 'partner_id')

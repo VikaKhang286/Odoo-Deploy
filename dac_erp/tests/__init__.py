@@ -38,3 +38,7 @@ from . import test_order_state_select_quick_change
 from . import test_employee_user_provisioning
 from . import test_cart_pricing
 from . import test_customer_address
+
+from . import test_deposit_summary
+from . import test_deposit_sync
+from . import test_sale_back_permission

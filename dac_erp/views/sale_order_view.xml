@@ -202,7 +202,6 @@
                                 <div class="dac-deposit-inline">
                                     <span class="dac-deposit-label">TIỀN CỌC:</span>
                                     <field name="deposit_amount"
-                                           readonly="is_deposit_confirmed"
                                            widget="integer"
                                            class="dac-deposit-amount-field"/>
                                     <span class="dac-deposit-currency">đ</span>
@@ -453,10 +452,10 @@
                                 </span>
                             </div>
                             <!-- 4. Cọc đã thu (nếu có) -->
-                            <div class="dac-summary-row" invisible="total_deposit_paid == 0">
-                                <label for="total_deposit_paid" class="dac-summary-label">Cọc đã thu:</label>
+                            <div class="dac-summary-row" invisible="deposit_paid_display == 0">
+                                <label for="deposit_paid_display" class="dac-summary-label">Cọc đã thu:</label>
                                 <span class="dac-summary-value dac-summary-value--deposit">
-                                    <field name="total_deposit_paid" readonly="1" widget="monetary"/>
+                                    <field name="deposit_paid_display" readonly="1" widget="monetary"/>
                                 </span>
                             </div>
                             <!-- 5. Số tiền phải thu (nổi bật) -->

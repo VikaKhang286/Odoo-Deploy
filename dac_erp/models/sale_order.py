@@ -187,6 +187,12 @@ class SaleOrder(models.Model):
         store=False
     )
 
+    deposit_paid_display = fields.Monetary(
+        string="Cọc đã thu",
+        compute="_compute_deposit_paid_display",
+        currency_field='currency_id',
+    )
+
     # Tổng tiền cọc đã thanh toán
     total_deposit_paid = fields.Monetary(
         string="Cọc đã thanh toán",
