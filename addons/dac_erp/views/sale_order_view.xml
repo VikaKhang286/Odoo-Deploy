@@ -141,6 +141,9 @@
                                         class="btn btn-success"
                                         invisible="order_state_custom != 'payment' or is_payment_confirmed or has_final_invoice"
                                         groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager"/>
+                                <button name="dac_new_order" type="button"
+                                        class="btn btn-outline-primary dac-new-order-btn"
+                                        groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system">Đơn mới</button>
                             </div>
                         </div>
                     </header>

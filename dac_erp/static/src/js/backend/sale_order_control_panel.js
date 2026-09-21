@@ -143,11 +143,37 @@ patch(FormController.prototype, {
 
     controlPanel.classList.add(ACTIVE_CLASS);
     this.syncSaleOrderStateClass();
+    this.bindNewSaleOrderButton(sourceBar);
     this.bindSaleOrderActionMenu();
     this.syncSaleOrderDirtyState();
   },
 
+  bindNewSaleOrderButton(sourceBar) {
+    if (this.__dacNewOrderBar === sourceBar) {
+      return;
+    }
+    this.__dacNewOrderCleanup?.();
+    const onClick = (event) => {
+      if (!event.target.closest(".dac-new-order-btn")) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const newTab = window.open("about:blank", "_blank");
+      if (newTab) {
+        newTab.opener = null;
+        newTab.location.replace("/odoo/sales/new");
+      }
+    };
+    sourceBar.addEventListener("click", onClick, true);
+    this.__dacNewOrderBar = sourceBar;
+    this.__dacNewOrderCleanup = () => sourceBar.removeEventListener("click", onClick, true);
+  },
+
   cleanupSaleOrderControlPanel() {
+    this.__dacNewOrderCleanup?.();
+    this.__dacNewOrderCleanup = null;
+    this.__dacNewOrderBar = null;
     this.unbindSaleOrderActionMenu();
     this.clearSaleOrderStateClass();
 

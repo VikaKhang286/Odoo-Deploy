@@ -20,15 +20,23 @@ class DepositConfirmWizard(models.TransientModel):
     def default_get(self, fields_list):
         """Auto-fill thông tin đơn hàng từ context"""
         res = super().default_get(fields_list)
+        company = self.env.company
         active_id = self.env.context.get('active_id')
         if active_id:
             order = self.env['sale.order'].browse(active_id)
             if order.exists():
+                company = order.company_id
                 res['order_name'] = order.name
                 res['partner_name'] = order.partner_id.name or ''
                 res['currency_id'] = order.currency_id.id
                 res['amount_total_order'] = order.amount_total
                 res['deposit_amount'] = order.deposit_amount
+        if 'journal_id' in fields_list and not res.get('journal_id'):
+            bank_journal = self.env['account.journal'].search([
+                ('type', '=', 'bank'),
+                ('company_id', '=', company.id),
+            ], limit=1)
+            res['journal_id'] = bank_journal.id
         return res
 
     def action_confirm(self):
