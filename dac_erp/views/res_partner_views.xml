@@ -32,6 +32,9 @@
           <attribute name="optional">show</attribute>
           <attribute name="readonly">1</attribute>
         </xpath>
+        <xpath expr="//field[@name='street']" position="after">
+          <field name="street2" string="Đường" optional="show" readonly="1"/>
+        </xpath>
       </field>
     </record>
   </data>

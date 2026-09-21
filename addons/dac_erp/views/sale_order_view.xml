@@ -153,6 +153,7 @@
                         <field name="conversation_count" invisible="1"/>
                         <field name="conversation_buttons_html" invisible="1"/>
                         <field name="customer_address_manual" invisible="1"/>
+                        <field name="customer_address_manual_set" invisible="1"/>
                         <!-- KHỐI 1: HEADER & THÔNG TIN CỐT LÕI (Chia 3 nhóm Box riêng biệt) -->
                         <div class="row align-items-stretch dac-core-info-row">
 

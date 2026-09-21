@@ -263,32 +263,9 @@ class SaleOrder(models.Model):
 
     @api.onchange('partner_id')
     def _onchange_partner_id_address(self):
-        """Tự động điền địa chỉ giao hàng từ khách hàng"""
-        if self.partner_id and not self.delivery_address:
-            # Tìm địa chỉ delivery của partner
-            delivery_partner = self.partner_id.child_ids.filtered(lambda c: c.type == 'delivery')
-            if delivery_partner:
-                # Sử dụng địa chỉ delivery đầu tiên
-                partner = delivery_partner[0]
-            else:
-                # Fallback: sử dụng địa chỉ chính của partner
-                partner = self.partner_id
-
-            # Tạo địa chỉ đầy đủ
-            address_parts = []
-            if partner.street:
-                address_parts.append(partner.street)
-            if partner.street2:
-                address_parts.append(partner.street2)
-            if partner.city:
-                address_parts.append(partner.city)
-            if partner.state_id:
-                address_parts.append(partner.state_id.name)
-            if partner.country_id:
-                address_parts.append(partner.country_id.name)
-
-            if address_parts:
-                self.delivery_address = ', '.join(address_parts)
+        """Giữ địa chỉ giao hàng liên kết với trường street của khách hàng."""
+        for order in self:
+            order.delivery_address = order.partner_id.street or False
 
     @api.onchange('order_type')
     def _onchange_order_type_cart(self):
@@ -523,49 +500,54 @@ class SaleOrder(models.Model):
 
     # Thông tin bổ sung
     # Số điện thoại đơn hàng
-    customer_address = fields.Char(
+    customer_address = fields.Text(
         string='Địa chỉ', compute='_compute_customer_address',
         inverse='_inverse_customer_address', readonly=False,
         help='Nhập địa chỉ khách hàng.',
     )
-    customer_address_manual = fields.Char(copy=True)
+    customer_address_manual = fields.Text(copy=True)
+    customer_address_manual_set = fields.Boolean(default=False, copy=True)
     phone = fields.Char(string="Số điện thoại", related='partner_id.phone', store=True, readonly=False, tracking=True)
 
     @api.depends(
-        'partner_id', 'partner_id.street', 'partner_id.street2', 'partner_id.city',
-        'partner_id.state_id.name', 'partner_id.country_id.name', 'customer_address_manual',
+        'partner_id', 'partner_id.street',
+        'customer_address_manual', 'customer_address_manual_set',
     )
     def _compute_customer_address(self):
-        """Hiển thị địa chỉ theo định dạng: Đường, Phường, Thành phố (Tỉnh), Quốc gia."""
+        """Hiển thị nguyên văn trường street của khách hàng."""
         for order in self:
             partner = order.partner_id
-            if order.customer_address_manual:
+            if order.customer_address_manual_set:
                 order.customer_address = order.customer_address_manual
                 continue
             if not partner:
                 order.customer_address = False
                 continue
 
-            address_parts = [
-                partner.street,
-                partner.street2,
-                partner.city,
-                partner.state_id.name,
-                partner.country_id.name,
-            ]
-            order.customer_address = ', '.join(part for part in address_parts if part)
+            order.customer_address = partner.street or False
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id_customer_address(self):
+        """Load the selected customer's address as the initial editable value."""
+        for order in self:
+            order.customer_address_manual = False
+            order.customer_address_manual_set = False
+        self._compute_customer_address()
 
     @api.onchange('customer_address')
     def _onchange_customer_address_draft(self):
-        """Giữ địa chỉ người dùng nhập trước khi họ chọn khách hàng."""
+        """Giữ địa chỉ tự do và đồng bộ sang địa chỉ giao hàng."""
         for order in self:
             order.customer_address_manual = order.customer_address or False
+            order.customer_address_manual_set = True
+            order.delivery_address = order.customer_address or False
 
     def _inverse_customer_address(self):
         """Lưu nguyên văn địa chỉ tự do vào cột Đường của khách hàng."""
         for order in self:
-            address = (order.customer_address or '').strip()
-            order.customer_address_manual = address or False
+            address = order.customer_address or False
+            order.customer_address_manual = address
+            order.customer_address_manual_set = True
             if order.partner_id:
                 order.partner_id.write({'street': address or False})
 
