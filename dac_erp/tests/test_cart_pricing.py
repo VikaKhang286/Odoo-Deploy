@@ -3,6 +3,62 @@ from odoo.tests.common import TransactionCase
 
 class TestCartPricing(TransactionCase):
 
+    def test_cart_product_tax_is_cleared_before_and_after_save(self):
+        tax = self.env['account.tax'].create({
+            'name': 'Cart regression VAT 10%', 'amount': 10,
+            'type_tax_use': 'sale', 'company_id': self.env.company.id,
+        })
+        product = self.env['product.product'].create({
+            'name': 'Cart tax regression product', 'type': 'cart',
+            'taxes_id': [(6, 0, tax.ids)],
+        })
+        partner = self.env['res.partner'].create({'name': 'Cart tax customer'})
+        values = {
+            'partner_id': partner.id, 'order_type': 'cart',
+            'order_line': [(0, 0, {
+                'product_id': product.id, 'product_uom_qty': 1,
+                'price_unit': 100000,
+            })],
+        }
+        draft = self.env['sale.order'].new(values)
+        self.assertFalse(draft.order_line.tax_id)
+        order = self.env['sale.order'].create(values)
+        line = order.order_line.filtered(lambda item: item.product_id == product)
+        self.assertFalse(line.tax_id)
+        self.assertEqual(line.price_tax, 0)
+        self.assertEqual(line.price_total, line.price_subtotal)
+        order.order_type = 'general'
+        self.assertEqual(line.tax_id, tax)
+        self.assertEqual(line.price_tax, line.price_subtotal * 0.1)
+        order.order_type = 'cart'
+        self.assertFalse(line.tax_id)
+        self.assertEqual(line.price_tax, 0)
+        self.assertEqual(product.taxes_id, tax)
+
+    def test_cart_quick_create_product_type_and_accessory_name(self):
+        products = self.env['product.product'].with_context(dac_cart_product_create=True)
+        for entered, name, kind in [
+            ('Xe mới kiểm thử', 'Xe mới kiểm thử', 'cart'),
+            ('+ Kệ kiểm thử', 'Kệ kiểm thử', 'cart_accessory'),
+            ('  +Dù kiểm thử  ', 'Dù kiểm thử', 'cart_accessory'),
+        ]:
+            product_id, _label = products.name_create(entered)
+            product = products.browse(product_id)
+            self.assertEqual(product.name, name)
+            self.assertEqual(product.type, kind)
+            self.assertEqual(product.categ_id, product.product_tmpl_id._cart_category_for_type(kind))
+        ordinary = self.env['product.product'].create({'name': '+ Ordinary', 'type': 'service'})
+        self.assertEqual(ordinary.name, '+ Ordinary')
+        self.assertEqual(ordinary.type, 'service')
+
+    def test_cart_create_dialog_normalizes_template_and_variant(self):
+        for model in ['product.product', 'product.template']:
+            product = self.env[model].with_context(dac_cart_product_create=True).create({
+                'name': '+ Kệ tạo chi tiết', 'type': 'consu',
+            })
+            self.assertEqual(product.name, 'Kệ tạo chi tiết')
+            self.assertEqual(product.type, 'cart_accessory')
+
     def _default_cart_product(self):
         product = self.env['sale.order']._get_default_cart_product()
         return product or self.env['product.product'].create({

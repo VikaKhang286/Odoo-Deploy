@@ -28,6 +28,12 @@ class SaleOrderLine(models.Model):
         },
     }
 
+    @api.depends('product_id', 'company_id', 'order_id.order_type')
+    def _compute_tax_id(self):
+        cart_lines = self.filtered(lambda line: line.order_id.order_type == 'cart')
+        cart_lines.tax_id = False
+        super(SaleOrderLine, self - cart_lines)._compute_tax_id()
+
     @api.model
     def _is_cart_order_from_context(self):
         order_id = self.env.context.get('default_order_id')

@@ -65,11 +65,24 @@ class ProductTemplate(models.Model):
             if category:
                 product.categ_id = category
 
+    @api.model
+    def _prepare_cart_product_values(self, values):
+        values = dict(values)
+        if self.env.context.get('dac_cart_product_create'):
+            name = (values.get('name') or self.env.context.get('default_name') or '').strip()
+            accessory = name.startswith('+')
+            values['name'] = name.lstrip('+').strip() if accessory else name
+            values['type'] = 'cart_accessory' if accessory else 'cart'
+            category = self._cart_category_for_type(values['type'])
+            if category:
+                values['categ_id'] = category.id
+        return values
+
     @api.model_create_multi
     def create(self, vals_list):
         prepared = []
         for values in vals_list:
-            values = dict(values)
+            values = self._prepare_cart_product_values(values)
             category = self._cart_category_for_type(values.get('type'))
             if category:
                 values['categ_id'] = category.id
@@ -86,6 +99,19 @@ class ProductTemplate(models.Model):
 
 class ProductProduct(models.Model):
     _inherit = 'product.product'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Normalize before delegated template creation so variant values match.
+        template_model = self.env['product.template']
+        prepared = [
+            template_model._prepare_cart_product_values(values)
+            if not values.get('product_tmpl_id') else dict(values)
+            for values in vals_list
+        ]
+        # Values have already been normalized; do not classify the stripped name twice.
+        return super(ProductProduct, self.with_context(dac_cart_product_create=False)).create(prepared)
+
 
     @api.depends(
         'name',

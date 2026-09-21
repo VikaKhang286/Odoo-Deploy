@@ -250,7 +250,7 @@
                                             <field name="sequence" widget="handle" optional="show"/>
                                             <!-- These values are loaded with each row for the product marker. -->
                                             <field name="product_id" string="Sản phẩm"
-                                                  context="{'display_default_code': False, 'dac_variant_display': True, 'dac_cart_accessory_prefix': True}"
+                                                  context="{'display_default_code': False, 'dac_variant_display': True, 'dac_cart_accessory_prefix': True, 'dac_cart_product_create': parent.order_type == 'cart', 'default_type': 'cart' if parent.order_type == 'cart' else 'consu'}"
                                                    domain="[('sale_ok', '=', True), ('type', 'in', ['cart', 'cart_accessory'])] if parent.order_type == 'cart' else [('sale_ok', '=', True)]"
                                                    invisible="display_type"/>
                                             <field name="description" string="Nội dung" invisible="display_type"/>
