@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="dac_erp.SaleOrderDateFilters"
+       t-inherit="web.ControlPanel"
+       t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_cp_switch_buttons')]" position="before">
+            <div t-if="showDacSaleDateFilters"
+                 class="dac-sale-date-filters d-print-none d-inline-flex btn-group"
+                 role="group"
+                 aria-label="Lọc theo ngày tạo">
+                <button t-foreach="[
+                            ['create_date_today', 'Hôm nay'],
+                            ['create_date_yesterday', 'Hôm qua'],
+                            ['create_date_this_week', 'Tuần này'],
+                            ['create_date_last_week', 'Tuần trước'],
+                            ['create_date_last_month', 'Tháng trước']
+                        ]"
+                        t-as="dateFilter"
+                        t-key="dateFilter[0]"
+                        type="button"
+                        t-att-class="{'btn btn-secondary': true, 'active': isDacSaleDateFilterActive(dateFilter[0])}"
+                        t-on-click="() => this.onDacSaleDateFilterClick(dateFilter[0])">
+                    <t t-esc="dateFilter[1]"/>
+                </button>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('o_cp_switch_buttons')]" position="attributes">
+            <attribute name="t-att-style">showDacSaleDateFilters ? 'display: none !important;' : undefined</attribute>
+        </xpath>
+    </t>
+</templates>

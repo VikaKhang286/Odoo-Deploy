@@ -1,0 +1,43 @@
+.o_control_panel:has(.dac-sale-date-filters) .o_cp_switch_buttons {
+    display: none !important;
+}
+
+.dac-sale-date-filters {
+    flex: 0 0 auto;
+    order: 1;
+}
+
+.o_control_panel:has(.dac-sale-date-filters) .o_control_panel_main {
+    align-items: flex-start !important;
+}
+
+.o_control_panel:has(.dac-sale-date-filters) .o_control_panel_breadcrumbs {
+    align-self: flex-start;
+    height: auto !important;
+}
+
+.o_control_panel_navigation:has(.dac-sale-date-filters) {
+    align-content: flex-start;
+    flex-wrap: wrap !important;
+}
+
+.o_control_panel_navigation:has(.dac-sale-date-filters) .o_cp_pager {
+    flex: 0 0 100%;
+    justify-content: flex-end;
+    order: 2;
+}
+
+.o_control_panel_navigation:has(.dac-sale-date-filters) .o_cp_pager .o_pager {
+    justify-content: flex-end;
+}
+
+.dac-sale-date-filters .btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .dac-sale-date-filters {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+}

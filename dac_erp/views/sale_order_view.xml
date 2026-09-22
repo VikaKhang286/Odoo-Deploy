@@ -918,6 +918,17 @@
                     <field name="partner_id"/>
                     <field name="order_number"/>
                     <field name="order_state_custom"/>
+                    <filter string="Hôm nay" name="create_date_today"
+                            domain="[('create_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('create_date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Hôm qua" name="create_date_yesterday"
+                            domain="[('create_date', '&gt;=', (context_today() - relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00')), ('create_date', '&lt;', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Tuần này" name="create_date_this_week"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1, weekday=0), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <filter string="Tuần trước" name="create_date_last_week"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-2, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <filter string="Tháng trước" name="create_date_last_month"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(months=-1, day=1), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <separator/>
                     <filter string="Đơn hàng của tôi" name="my_orders" domain="[('user_id', '=', uid)]"/>
                     <separator/>
                     <filter string="Đơn hàng chung" name="order_general" domain="[('order_type', '=', 'general')]"/>
@@ -947,6 +958,29 @@
                         <filter string="Thời gian tạo" name="group_by_date" context="{'group_by': 'date:month'}"/>
                     </group>
                 </search>
+            </field>
+        </record>
+
+        <!-- Quick date filters used by Odoo's native /odoo/sales quotation action. -->
+        <record id="dac_sale_order_native_search_date_filters" model="ir.ui.view">
+            <field name="name">sale.order.native.search.date.filters</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+            <field name="arch" type="xml">
+                <filter name="filter_create_date" position="after">
+                    <separator/>
+                    <filter string="Hôm nay" name="create_date_today"
+                            domain="[('create_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('create_date', '&lt;', (context_today() + relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Hôm qua" name="create_date_yesterday"
+                            domain="[('create_date', '&gt;=', (context_today() - relativedelta(days=1)).strftime('%Y-%m-%d 00:00:00')), ('create_date', '&lt;', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+                    <filter string="Tuần này" name="create_date_this_week"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(days=1, weekday=0), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <filter string="Tuần trước" name="create_date_last_week"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(weeks=-2, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(weeks=-1, days=1, weekday=0), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <filter string="Tháng trước" name="create_date_last_month"
+                            domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(months=-1, day=1), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc())]"/>
+                    <separator/>
+                </filter>
             </field>
         </record>
 
