@@ -11,6 +11,15 @@ class SaleOrder(models.Model):
 
     _inherit = 'sale.order'
 
+    @api.model
+    def action_open_new_sale_order(self):
+        """Open the native new quotation page from custom order lists."""
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/odoo/sales/new',
+            'target': 'blank',
+        }
+
     # Trạng thái đơn hàng tùy chỉnh
     order_state_custom = fields.Selection([
         ('quotation', 'Báo giá'),
@@ -623,10 +632,14 @@ class SaleOrder(models.Model):
         để không bắn 2 dòng 'Tổng' và 'Số tiền trước thuế'.
         """
         if self.env.context.get('dac_skip_total_log'):
-            tracked_fields = {
-                k: v for k, v in tracked_fields.items()
-                if k not in ('amount_untaxed', 'amount_total')
-            }
+            excluded = {'amount_untaxed', 'amount_total'}
+            if isinstance(tracked_fields, dict):
+                tracked_fields = {
+                    key: value for key, value in tracked_fields.items()
+                    if key not in excluded
+                }
+            else:
+                tracked_fields = set(tracked_fields) - excluded
         return super(SaleOrder, self)._message_track(tracked_fields, initial)
 
     def _mail_track(self, tracked_fields, initial):
@@ -634,10 +647,14 @@ class SaleOrder(models.Model):
         Một số luồng trong 18 vẫn đi qua _mail_track; lọc giống hệt để chắc ăn.
         """
         if self.env.context.get('dac_skip_total_log'):
-            tracked_fields = {
-                k: v for k, v in tracked_fields.items()
-                if k not in ('amount_untaxed', 'amount_total')
-            }
+            excluded = {'amount_untaxed', 'amount_total'}
+            if isinstance(tracked_fields, dict):
+                tracked_fields = {
+                    key: value for key, value in tracked_fields.items()
+                    if key not in excluded
+                }
+            else:
+                tracked_fields = set(tracked_fields) - excluded
         return super(SaleOrder, self)._mail_track(tracked_fields, initial)
 
     # Override field amount_untaxed để dùng compute mới

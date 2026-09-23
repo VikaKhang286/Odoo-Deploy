@@ -869,6 +869,22 @@
             </field>
         </record>
 
+        <record id="action_new_cart_sale_order" model="ir.actions.act_window">
+            <field name="name">Tạo đơn xe đẩy</field>
+            <field name="path">cart-sales</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="dac_sale_order_custom_view_form"/>
+            <field name="target">current</field>
+            <field name="context">{'default_order_type': 'cart', 'default_fulfillment_method': 'delivery'}</field>
+        </record>
+
+        <record id="action_open_new_sale_order_url" model="ir.actions.act_url">
+            <field name="name">Tạo đơn</field>
+            <field name="url">/odoo/cart-sales/new</field>
+            <field name="target">new</field>
+        </record>
+
         <!-- List view riêng cho Đơn hàng Xe đẩy: có 2 ảnh mẫu xe + duyệt thiết kế -->
         <record id="dac_sale_order_cart_view_list" model="ir.ui.view">
             <field name="name">sale.order.cart.list</field>
@@ -881,6 +897,13 @@
                       decoration-warning="partner_vip_class == 'vip'"
                       decoration-info="partner_vip_class == 'loyal'"
                       decoration-danger="partner_vip_class == 'premium' or is_production_overdue">
+                    <header>
+                        <button name="%(action_open_new_sale_order_url)d"
+                                type="action"
+                                string="Tạo đơn"
+                                class="btn-secondary"
+                                display="always"/>
+                    </header>
                     <field name="partner_vip_class" column_invisible="1" optional="hide"/>
                     <field name="is_production_overdue" column_invisible="1"/>
                     <field name="order_state_custom" column_invisible="1"/>
@@ -981,6 +1004,29 @@
                             domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today() + relativedelta(months=-1, day=1), datetime.time(0, 0, 0)).to_utc()), ('create_date', '&lt;', datetime.datetime.combine(context_today() + relativedelta(day=1), datetime.time(0, 0, 0)).to_utc())]"/>
                     <separator/>
                 </filter>
+            </field>
+        </record>
+
+        <!-- Keep Odoo's native /odoo/sales list, but show the complete DAC
+             workflow instead of the four-state native sale.order status. -->
+        <record id="dac_sale_order_native_quotation_custom_state" model="ir.ui.view">
+            <field name="name">sale.order.native.quotation.custom.state</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <field name="state" position="replace">
+                    <field name="order_state_select"
+                           string="Trạng thái"
+                           widget="badge"
+                           readonly="1"
+                           optional="show"
+                           decoration-info="order_state_select == 'quotation'"
+                           decoration-primary="order_state_select == 'deposit'"
+                           decoration-warning="order_state_select in ('production', 'installation', 'delivery', 'payment')"
+                           decoration-success="order_state_select == 'completed'"
+                           decoration-danger="order_state_select == 'cancel'"/>
+                </field>
             </field>
         </record>
 
