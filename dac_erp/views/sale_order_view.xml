@@ -812,6 +812,7 @@
                     <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất"/>
                     <field name="amount_total" sum="Total" widget="monetary" readonly="1"/>
                     <field name="order_state_select" string="Trạng thái"/>
+                    <field name="list_note" string="Ghi chú" optional="show"/>
                     <field name="is_priority" string="Ưu tiên"
                            readonly="order_state_custom in ['delivery', 'installation', 'payment', 'completed', 'cancel']"/>
                     <field name="is_priority_today" string="Trong ngày"
@@ -859,6 +860,7 @@
                     <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất"/>
                     <field name="amount_total" sum="Total" widget="monetary" readonly="1"/>
                     <field name="order_state_select" string="Trạng thái"/>
+                    <field name="list_note" string="Ghi chú" optional="show"/>
                     <field name="is_priority" string="Ưu tiên"
                            readonly="order_state_custom in ['delivery', 'installation', 'payment', 'completed', 'cancel']"/>
                     <field name="is_priority_today" string="Trong ngày"
@@ -927,6 +929,7 @@
                            readonly="order_state_custom == 'cancel'"/>
                     <field name="remaining_amount_display" string="Còn phải thu" widget="monetary" readonly="1" optional="show"/>
                     <field name="order_state_select" string="Trạng thái"/>
+                    <field name="list_note" string="Ghi chú" optional="show"/>
                     <field name="production_deadline" string="Ngày hoàn tất sản xuất"
                            readonly="order_state_custom not in ['quotation', 'deposit']"/>
                 </list>
@@ -1015,6 +1018,10 @@
             <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
             <field name="priority">20</field>
             <field name="arch" type="xml">
+                <xpath expr="//list" position="attributes">
+                    <attribute name="editable">bottom</attribute>
+                    <attribute name="edit">true</attribute>
+                </xpath>
                 <field name="state" position="replace">
                     <field name="order_state_select"
                            string="Trạng thái"
@@ -1026,6 +1033,7 @@
                            decoration-warning="order_state_select in ('production', 'installation', 'delivery', 'payment')"
                            decoration-success="order_state_select == 'completed'"
                            decoration-danger="order_state_select == 'cancel'"/>
+                    <field name="list_note" string="Ghi chú" optional="show"/>
                 </field>
             </field>
         </record>

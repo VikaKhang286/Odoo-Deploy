@@ -3,6 +3,88 @@ from odoo.tests.common import TransactionCase
 
 class TestCartPricing(TransactionCase):
 
+    def test_action_cancel_supports_multiple_selected_orders(self):
+        partner = self.env['res.partner'].create({'name': 'Khách hủy nhiều đơn'})
+        orders = self.env['sale.order'].create([
+            {'partner_id': partner.id},
+            {'partner_id': partner.id},
+        ])
+        orders.write({'state': 'sale'})
+
+        result = orders.action_cancel()
+
+        self.assertTrue(result)
+        self.assertEqual(set(orders.mapped('state')), {'cancel'})
+
+    def test_action_cancel_single_order_keeps_standard_wizard(self):
+        partner = self.env['res.partner'].create({'name': 'Khách hủy một đơn'})
+        order = self.env['sale.order'].create({'partner_id': partner.id})
+        order.write({'state': 'sale'})
+
+        result = order.action_cancel()
+
+        self.assertEqual(result.get('res_model'), 'sale.order.cancel')
+        self.assertEqual(order.state, 'sale')
+
+    def test_amount_total_is_importable_and_updates_cart_line(self):
+        self.assertTrue(self.env['sale.order']._fields['amount_total'].inverse)
+        self.assertFalse(self.env['sale.order']._fields['amount_total'].readonly)
+
+        partner = self.env['res.partner'].create({'name': 'Khách import tổng'})
+        product = self._default_cart_product()
+        order = self.env['sale.order'].create({
+            'partner_id': partner.id,
+            'order_type': 'cart',
+            'shipping_fee': 100000,
+            'order_line': [(0, 0, {
+                'product_id': product.id,
+                'product_uom_qty': 1,
+                'price_unit': 950000,
+            })],
+        })
+
+        order.amount_total = 1235000
+
+        self.assertEqual(order.order_line.price_unit, 1135000)
+        self.assertEqual(order.amount_total, 1235000)
+
+    def test_import_total_creates_cart_line_when_order_has_none(self):
+        partner = self.env['res.partner'].create({'name': 'Khách import chưa có dòng'})
+        order = self.env['sale.order'].create({
+            'partner_id': partner.id,
+            'order_type': 'cart',
+            'shipping_fee': 50000,
+        })
+
+        order.amount_total = 440000
+
+        self.assertEqual(len(order.order_line), 1)
+        self.assertEqual(order.order_line.price_unit, 390000)
+        self.assertEqual(order.amount_total, 440000)
+
+    def test_import_total_marks_default_general_order_as_cart(self):
+        partner = self.env['res.partner'].create({'name': 'Khách import mặc định'})
+        order = self.env['sale.order'].create({'partner_id': partner.id})
+
+        order.with_context(import_file=True).write({'amount_total': 725000})
+
+        self.assertEqual(order.order_type, 'cart')
+        self.assertEqual(order.fulfillment_method, 'delivery')
+        self.assertEqual(order.amount_total, 725000)
+
+    def test_import_total_supports_cancelled_order_rows(self):
+        partner = self.env['res.partner'].create({'name': 'Khách import đơn hủy'})
+        order = self.env['sale.order'].with_context(import_file=True).create({
+            'partner_id': partner.id,
+            'order_state_custom': 'cancel',
+            'amount_total': 525000,
+        })
+
+        self.assertEqual(order.order_type, 'cart')
+        self.assertEqual(order.order_state_custom, 'cancel')
+        self.assertEqual(order.amount_total, 525000)
+
+
     def test_cart_product_tax_is_cleared_before_and_after_save(self):
         tax = self.env['account.tax'].create({
             'name': 'Cart regression VAT 10%', 'amount': 10,

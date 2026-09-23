@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import html_escape
 import logging
 
@@ -61,6 +62,93 @@ class SaleOrderCompute(models.Model):
                 - order.promotion_amount
                 + order.shipping_fee
             )
+
+    def _inverse_amount_total(self):
+        """Cho phép import cột Tổng bằng cách đồng bộ ngược vào dòng xe đẩy.
+
+        ``amount_total`` là số tổng hợp nên không thể lưu trực tiếp. Với đơn xe
+        đẩy (không có thuế), phần Tổng được nhập sẽ được chuyển thành giá hàng
+        sau khi loại phí vận chuyển và cộng lại khuyến mãi. Nếu đơn có nhiều
+        dòng, chỉ dòng sản phẩm đầu tiên được điều chỉnh theo phần chênh lệch để
+        giữ nguyên các dòng còn lại.
+        """
+        for order in self:
+            # ``new()`` được dùng rộng rãi trong onchange/test để mô phỏng số
+            # tổng. Chỉ đồng bộ xuống dòng hàng khi bản ghi đã tồn tại.
+            if not order.id:
+                continue
+            if order.order_type != 'cart' and self.env.context.get('import_file'):
+                order.with_context(
+                    dac_skip_total_log=True,
+                    allow_reopen_cancelled=True,
+                ).write({
+                    'order_type': 'cart',
+                    'fulfillment_method': 'delivery',
+                })
+
+            if order.order_type != 'cart':
+                raise UserError(_(
+                    "Chỉ có thể import trực tiếp cột 'Tổng' cho Đơn hàng Xe đẩy. "
+                    "Với đơn hàng chung, hãy import đơn giá trên từng dòng sản phẩm."
+                ))
+
+            target_total = order.amount_total or 0.0
+            minimum_total = order.shipping_fee - order.promotion_amount
+            if target_total < minimum_total:
+                raise ValidationError(_(
+                    "Tổng tiền không thể nhỏ hơn Phí vận chuyển sau khi trừ Khuyến mãi."
+                ))
+
+            product_lines = order.order_line.filtered(
+                lambda line: not line.display_type and line.price_unit >= 0
+            ).sorted(lambda line: (line.sequence, line.id))
+            current_total = (
+                order.amount_untaxed_original
+                + order.amount_tax
+                - order.promotion_amount
+                + order.shipping_fee
+            )
+            difference = target_total - current_total
+            if order.currency_id.is_zero(difference):
+                continue
+
+            adjustable_line = product_lines.filtered(
+                lambda line: line.product_uom_qty
+                and (1.0 - (line.discount or 0.0) / 100.0) > 0
+            )[:1]
+            if adjustable_line:
+                factor = (
+                    adjustable_line.product_uom_qty
+                    * (1.0 - (adjustable_line.discount or 0.0) / 100.0)
+                )
+                new_price = adjustable_line.price_unit + difference / factor
+                if new_price < 0:
+                    raise ValidationError(_(
+                        "Tổng nhập vào quá thấp so với các dòng sản phẩm còn lại."
+                    ))
+                adjustable_line.with_context(dac_skip_total_log=True).write({
+                    'price_unit': new_price,
+                })
+                continue
+
+            product = order._get_default_cart_product()
+            target_product_total = (
+                target_total + order.promotion_amount - order.shipping_fee
+            )
+            line_values = {
+                'order_id': order.id,
+                'name': product.get_product_multiline_description_sale()
+                    if product else _("Tổng nhập khẩu"),
+                'description': _("Tổng nhập từ tệp Excel/CSV"),
+                'product_id': product.id if product else False,
+                'product_uom': product.uom_id.id if product else False,
+                'product_uom_qty': 1.0,
+                'price_unit': target_product_total,
+                'tax_id': [(6, 0, [])],
+            }
+            self.env['sale.order.line'].with_context(
+                dac_skip_total_log=True,
+            ).create(line_values)
 
     @api.depends('deposit_amount', 'is_deposit_confirmed', 'total_deposit_paid')
     def _compute_deposit_paid_display(self):

@@ -20,6 +20,14 @@ class SaleOrder(models.Model):
             'target': 'blank',
         }
 
+    def action_cancel(self):
+        """Hủy trực tiếp một batch; giữ wizard chuẩn khi chỉ chọn một đơn."""
+        if len(self) > 1:
+            return super(SaleOrder, self.with_context(
+                disable_cancel_warning=True,
+            )).action_cancel()
+        return super().action_cancel()
+
     # Trạng thái đơn hàng tùy chỉnh
     order_state_custom = fields.Selection([
         ('quotation', 'Báo giá'),
@@ -88,6 +96,7 @@ class SaleOrder(models.Model):
     # Tiêu đề và mô tả ngắn gọn do AI tóm tắt
     order_title = fields.Char(string='Tiêu đề đơn hàng', copy=False)
     order_summary = fields.Text(string='Mô tả ngắn gọn', copy=False)
+    list_note = fields.Char(string='Ghi chú', tracking=True)
 
     # Trạng thái xác nhận
     is_quotation_confirmed = fields.Boolean(string="Đã xác nhận báo giá", default=False)
@@ -230,6 +239,7 @@ class SaleOrder(models.Model):
     amount_total = fields.Monetary(
         string="Tổng",
         compute="_compute_amount_total_positive_lines",
+        inverse="_inverse_amount_total",
         currency_field='currency_id',
         store=False
     )
@@ -351,7 +361,8 @@ class SaleOrder(models.Model):
         # Cho phép bypass khi context có 'allow_reopen_cancelled' = True
         # (dùng cho MCP reopen action, đã có audit log + guard riêng)
         if not self.env.context.get('allow_reopen_cancelled'):
-            if any(rec.order_state_custom == 'cancel' for rec in self):
+            cancelled_protected_vals = set(vals) - {'list_note'}
+            if cancelled_protected_vals and any(rec.order_state_custom == 'cancel' for rec in self):
                 raise UserError(_("Đơn hàng đã hủy! không thể thay đổi!"))
 
         # Nếu bỏ chọn ưu tiên, tự động bỏ chọn ưu tiên trong ngày
