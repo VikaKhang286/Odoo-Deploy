@@ -1021,6 +1021,7 @@
                 <xpath expr="//list" position="attributes">
                     <attribute name="editable">bottom</attribute>
                     <attribute name="edit">true</attribute>
+                    <attribute name="js_class">dac_sale_note_editable_list</attribute>
                 </xpath>
                 <field name="state" position="replace">
                     <field name="order_state_select"
