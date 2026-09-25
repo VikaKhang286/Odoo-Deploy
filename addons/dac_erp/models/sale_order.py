@@ -31,7 +31,7 @@ class SaleOrder(models.Model):
     # Trạng thái đơn hàng tùy chỉnh
     order_state_custom = fields.Selection([
         ('quotation', 'Báo giá'),
-        ('deposit', 'Đặt cọc'),
+        ('deposit', 'Thiết kế - Đặt cọc'),
         ('production', 'Sản xuất'),
         ('installation', 'Thi công - lắp đặt'),
         ('delivery', 'Giao hàng'),
@@ -383,6 +383,13 @@ class SaleOrder(models.Model):
         # 3) Gọi super() viết dữ liệu
         result = super().write(vals)
 
+        # Import không chạy onchange của form. Khi file import có địa chỉ giao
+        # hàng, đồng bộ giá trị đó sang địa chỉ của khách hàng trên đơn.
+        if self.env.context.get('import_file') and 'delivery_address' in vals:
+            address = vals.get('delivery_address') or False
+            for rec in self.filtered('partner_id'):
+                rec.partner_id.write({'street': address})
+
         # 4) Nếu có thay đổi ảnh, log vào chatter
         if image_key_present:
             for rec in self:
@@ -500,7 +507,12 @@ class SaleOrder(models.Model):
             if not vals.get('is_priority'):
                 vals['is_priority_today'] = False
         records = super().create(vals_list)
-        for rec in records:
+        for rec, vals in zip(records, vals_list):
+            if (self.env.context.get('import_file')
+                    and 'delivery_address' in vals and rec.partner_id):
+                rec.partner_id.write({
+                    'street': vals.get('delivery_address') or False,
+                })
             if rec.user_id_production and rec.user_id_production in rec.production_group_ids:
                 rec.production_group_ids = [(3, rec.user_id_production.id)]
         return records

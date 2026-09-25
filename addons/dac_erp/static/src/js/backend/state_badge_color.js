@@ -14,7 +14,7 @@ function applyStateBadgeClasses(root = document) {
     cancel: "dac-state-cancel",
     // nhãn hiển thị (VN)
     "Báo giá": "dac-state-quotation",
-    "Đặt cọc": "dac-state-deposit",
+    "Thiết kế - Đặt cọc": "dac-state-deposit",
     "Sản xuất": "dac-state-production",
     "Giao hàng": "dac-state-delivery",
     "Thu tiền": "dac-state-payment",

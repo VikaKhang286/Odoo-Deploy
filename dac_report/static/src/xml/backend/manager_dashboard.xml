@@ -177,7 +177,7 @@
                                             <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.quotation_amount)"/></div>
                                         </div>
                                         <div class="stage-card stage-deposit" t-on-click="() => this.openOrdersByState('deposit')">
-                                            <h6>Đặt cọc</h6>
+                                            <h6>Thiết kế - Đặt cọc</h6>
                                             <div class="stage-value"><t t-esc="state.data.deposit_count"/></div>
                                             <div class="stage-subtext">~ <t t-esc="formatCurrency(state.data.deposit_amount)"/></div>
                                         </div>

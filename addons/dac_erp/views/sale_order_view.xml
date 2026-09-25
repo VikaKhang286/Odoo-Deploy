@@ -93,7 +93,7 @@
                                         invisible="order_state_custom != 'quotation' or is_quotation_confirmed"
                                         groups="dac_erp.group_dac_erp_sale,dac_erp.group_dac_erp_manager,base.group_system"/>
                                 <button name="action_next_step"
-                                        string="Đặt cọc"
+                                        string="Thiết kế - Đặt cọc"
                                         type="object"
                                         class="btn btn-primary"
                                         invisible="order_state_custom != 'quotation' or not is_quotation_confirmed"
@@ -570,7 +570,7 @@
 
                                 <!-- Nút Chuyển sang tiến trình tiếp theo: Đặt cọc -->
                                 <button name="action_next_step"
-                                    string="Đặt cọc"
+                                    string="Thiết kế - Đặt cọc"
                                     type="object"
                                     class="btn-primary"
                                     invisible="order_state_custom != 'quotation' or not is_quotation_confirmed"
@@ -962,7 +962,7 @@
                     <separator/>
                     <filter string="Cơ hội" name="opportunity" domain="[('is_zero_amount', '=', True)]"/>
                     <filter string="Báo giá" name="quotation" domain="[('order_state_custom', '=', 'quotation'), ('is_zero_amount', '=', False)]"/>
-                    <filter string="Đặt cọc" name="deposit" domain="[('order_state_custom', '=', 'deposit')]"/>
+                    <filter string="Thiết kế - Đặt cọc" name="deposit" domain="[('order_state_custom', '=', 'deposit')]"/>
                     <filter string="Sản xuất" name="production" domain="[('order_state_custom', '=', 'production')]"/>
                     <filter string="Thi công - lắp đặt" name="installation" domain="[('order_state_custom','=','installation')]"/>
                     <filter string="Giao hàng" name="delivery" domain="[('order_state_custom', '=', 'delivery')]"/>

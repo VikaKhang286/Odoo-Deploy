@@ -683,7 +683,7 @@ export class ManagerDashboard extends Component {
   getStateName(state) {
     const stateNames = {
       quotation: "Báo giá",
-      deposit: "Đặt cọc",
+      deposit: "Thiết kế - Đặt cọc",
       production: "Sản xuất",
       installation: "Thi công/Lắp đặt",
       delivery: "Giao hàng",
