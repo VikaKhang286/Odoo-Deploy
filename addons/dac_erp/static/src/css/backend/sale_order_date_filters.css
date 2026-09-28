@@ -35,6 +35,12 @@
     white-space: nowrap;
 }
 
+.dac-sale-date-filters .btn.active {
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #fff !important;
+}
+
 @media (max-width: 991.98px) {
     .dac-sale-date-filters {
         max-width: 100%;

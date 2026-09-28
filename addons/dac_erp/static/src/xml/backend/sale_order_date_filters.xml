@@ -19,6 +19,7 @@
                         t-key="dateFilter[0]"
                         type="button"
                         t-att-class="{'btn btn-secondary': true, 'active': isDacSaleDateFilterActive(dateFilter[0])}"
+                        t-att-aria-pressed="isDacSaleDateFilterActive(dateFilter[0]) ? 'true' : 'false'"
                         t-on-click="() => this.onDacSaleDateFilterClick(dateFilter[0])">
                     <t t-esc="dateFilter[1]"/>
                 </button>

@@ -2,6 +2,7 @@
 
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { patch } from "@web/core/utils/patch";
+import { useBus } from "@web/core/utils/hooks";
 
 const SALE_DATE_FILTERS = new Set([
     "create_date_today",
@@ -12,6 +13,11 @@ const SALE_DATE_FILTERS = new Set([
 ]);
 
 patch(ControlPanel.prototype, {
+    setup() {
+        super.setup(...arguments);
+        useBus(this.env.searchModel, "update", () => this.render());
+    },
+
     get showDacSaleDateFilters() {
         return this.env.searchModel?.resModel === "sale.order" && this.env.config.viewType === "list";
     },
