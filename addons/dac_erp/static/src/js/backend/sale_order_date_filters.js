@@ -2,7 +2,7 @@
 
 import { ControlPanel } from "@web/search/control_panel/control_panel";
 import { patch } from "@web/core/utils/patch";
-import { useBus } from "@web/core/utils/hooks";
+import { status } from "@odoo/owl";
 
 const SALE_DATE_FILTERS = new Set([
     "create_date_today",
@@ -13,11 +13,6 @@ const SALE_DATE_FILTERS = new Set([
 ]);
 
 patch(ControlPanel.prototype, {
-    setup() {
-        super.setup(...arguments);
-        useBus(this.env.searchModel, "update", () => this.render());
-    },
-
     get showDacSaleDateFilters() {
         return this.env.searchModel?.resModel === "sale.order" && this.env.config.viewType === "list";
     },
@@ -28,8 +23,9 @@ patch(ControlPanel.prototype, {
             .some((item) => item.isActive);
     },
 
-    onDacSaleDateFilterClick(name) {
-        const items = this.env.searchModel.getSearchItems(
+    async onDacSaleDateFilterClick(name) {
+        const searchModel = this.env.searchModel;
+        const items = searchModel.getSearchItems(
             (item) => item.type === "filter" && SALE_DATE_FILTERS.has(item.name)
         );
         const selected = items.find((item) => item.name === name);
@@ -37,12 +33,23 @@ patch(ControlPanel.prototype, {
             return;
         }
 
-        // These shortcuts are mutually exclusive. Clicking the active one clears it.
-        for (const item of items) {
-            if (item.id !== selected.id && item.isActive) {
-                this.env.searchModel.toggleSearchItem(item.id);
+        // Apply the mutually exclusive shortcut as one search-model update. Without
+        // batching, switching buttons reloads the list once to clear the old filter
+        // and a second time to activate the new one, causing a visible white flash.
+        searchModel.blockNotification = true;
+        try {
+            for (const item of items) {
+                if (item.id !== selected.id && item.isActive) {
+                    searchModel.toggleSearchItem(item.id);
+                }
             }
+            searchModel.toggleSearchItem(selected.id);
+        } finally {
+            searchModel.blockNotification = false;
         }
-        this.env.searchModel.toggleSearchItem(selected.id);
+        await searchModel._notify();
+        if (status(this) === "mounted") {
+            this.render();
+        }
     },
 });
