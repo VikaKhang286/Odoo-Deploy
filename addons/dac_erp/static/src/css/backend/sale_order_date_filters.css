@@ -36,8 +36,9 @@
 }
 
 .dac-sale-date-filters .btn.active {
-    background-color: #2563eb !important;
-    border-color: #2563eb !important;
+    --o-brand-primary: #2563eb;
+    background-color: var(--o-brand-primary) !important;
+    border-color: var(--o-brand-primary) !important;
     color: #fff !important;
 }
 
