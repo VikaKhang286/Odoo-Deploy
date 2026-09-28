@@ -362,7 +362,8 @@
                                     <group>
                                         <field name="user_id_production" widget="many2one_avatar_user" string="Người sản xuất" readonly="is_design_user"/>
                                         <field name="production_group_ids" widget="many2many_tags" string="Nhóm sản xuất" readonly="is_design_user"/>
-
+                                        <field name="production_assigned_date" string="Ngày phân công" readonly="production_done"/>
+                                        <field name="production_deadline" string="Deadline" readonly="production_done or is_production_user"/>
                                     </group>
                                     <group>
                                         <field name="production_is_delayed" string="Có trễ không?" widget="boolean_toggle" readonly="started_delivery or started_installation"/>
@@ -672,12 +673,14 @@
                                                                 <t t-esc="record.description_plain.value"/>
                                                             </div>
                                                             <div class="dac-task-card-footer">
+                                                                <div>
                                                                 <span t-attf-class="dac-task-state-badge dac-state-#{record.state.raw_value}">
                                                                     <t t-esc="record.state.value"/>
                                                                 </span>
                                                                 <span class="dac-task-days-left">
                                                                     <t t-esc="record.days_left_display.value"/>
                                                                 </span>
+                                                                </div>
                                                                 <div class="ms-auto">
                                                                     <button name="action_set_urgent" type="object"
                                                                             t-attf-class="btn btn-sm dac-urgent-btn #{record.priority.raw_value === 'urgent' ? 'dac-urgent-active' : 'dac-urgent-inactive'}">

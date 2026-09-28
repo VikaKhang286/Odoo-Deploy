@@ -81,7 +81,10 @@ class SaleOrder(models.Model):
         'order_id',                         # cột FK về sale.order
         'user_id',                          # cột FK về res.users
         string='Nhóm sản xuất',
-        domain=lambda self: self.env['res.users']._dac_exact_role_domain('production'),
+        domain=lambda self: expression.OR([
+            self.env['res.users']._dac_exact_role_domain(role)
+            for role in ('production', 'design_production', 'full_stack')
+        ]),
         tracking=True,
         help='Những người tham gia sản xuất, Có thể bao gồm người phụ trách sản xuất.',
     )
@@ -111,7 +114,16 @@ class SaleOrder(models.Model):
     deposit_amount = fields.Float(string="Tiền cọc", default=0.0)
 
     # Tiến trình sản xuất
-    production_deadline = fields.Date(string="Deadline sản xuất", tracking=True)
+    production_assigned_date = fields.Date(
+        string="Ngày phân công sản xuất",
+        default=fields.Date.context_today,
+        tracking=True,
+    )
+    production_deadline = fields.Date(
+        string="Deadline sản xuất",
+        tracking=True,
+        help="Hạn chót hoàn tất sản xuất",
+    )
 
     # --- flags đánh dấu đã chạm các mốc quy trình ---
     reached_production = fields.Boolean(default=False, copy=False)
@@ -424,6 +436,11 @@ class SaleOrder(models.Model):
                         'design_assigned_date': today
                     })
 
+        if 'user_id_production' in vals and vals.get('user_id_production'):
+            today = fields.Date.context_today(self)
+            for rec in self.filtered(lambda order: not order.production_assigned_date):
+                super(SaleOrder, rec).write({'production_assigned_date': today})
+
         if "order_state_custom" in vals:
             new_state = vals["order_state_custom"]
             now = fields.Datetime.now()
@@ -431,6 +448,8 @@ class SaleOrder(models.Model):
                 # Lần đầu vào pha sản xuất
                 if new_state == "production" and not rec.reached_production:
                     rec.reached_production = True
+                if new_state == "production" and not rec.production_assigned_date:
+                    rec.production_assigned_date = fields.Date.context_today(rec)
                 # Từ production rời sang pha khác → đóng dấu rời SX
                 if rec.order_state_custom == "production" and new_state != "production":
                     rec.left_production_date = now
@@ -504,6 +523,8 @@ class SaleOrder(models.Model):
             # Nếu chưa có date, set date đúng giờ hiện tại
             if not vals.get('date'):
                 vals['date'] = fields.Datetime.now()
+            if vals.get('user_id_production') and not vals.get('production_assigned_date'):
+                vals['production_assigned_date'] = fields.Date.context_today(self)
             if not vals.get('is_priority'):
                 vals['is_priority_today'] = False
         records = super().create(vals_list)
@@ -644,6 +665,8 @@ class SaleOrder(models.Model):
     def _onchange_user_id_production(self):
         for rec in self:
             if rec.user_id_production:
+                if not rec.production_assigned_date:
+                    rec.production_assigned_date = fields.Date.context_today(rec)
                 # loại bỏ lead khỏi nhóm ngay trên form
                 rec.production_group_ids -= rec.user_id_production
 

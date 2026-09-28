@@ -43,6 +43,12 @@ class TestProductionWorkflow(TransactionCase):
         self.assertEqual(action.get('type'), 'ir.actions.act_window')
         self.assertEqual(action.get('res_model'), 'production.deadline.wizard')
 
+    def test_production_assignment_date_defaults_to_today(self):
+        self.assertEqual(
+            self.order.production_assigned_date,
+            fields.Date.context_today(self.order),
+        )
+
     def test_production_deadline_wizard_uses_default_days(self):
         self.env['ir.config_parameter'].sudo().set_param('dac_erp.production_default_deadline_days', '5')
         self.order.production_deadline = False
