@@ -403,10 +403,7 @@
                                 <group>
                                     <field name="delivery_address" string="Địa chỉ giao hàng" invisible="fulfillment_method != 'delivery'" readonly="is_delivery_confirmed or is_design_user" widget="text" placeholder="Nhập địa chỉ giao hàng..."/>
                                     <field name="installation_address" string="Địa chỉ thi công" invisible="fulfillment_method != 'installation'" readonly="is_installation_confirmed or is_design_user" widget="text" placeholder="Nhập địa chỉ thi công/lắp đặt..."/>
-                                    <field name="commitment_date"
-                                           string="Ngày giao hàng"
-                                           readonly="is_delivery_confirmed or is_installation_confirmed or is_design_user or is_production_user"/>
-                                    
+                                    <field name="commitment_date" string="Ngày giao hàng" help="Ngày dự kiến khách hàng nhận được hàng." readonly="is_delivery_confirmed or is_installation_confirmed or is_design_user or is_production_user"/>
                                 </group>
                             </page>
                         </notebook>
