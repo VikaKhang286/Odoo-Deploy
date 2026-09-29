@@ -164,10 +164,7 @@ class SaleOrderCompute(models.Model):
         """Tính số tiền còn lại cần thu để hiển thị cho user - Logic cải tiến"""
         for order in self:
             # Nếu đơn hàng đã hoàn thành -> luôn hiển thị 0
-            if order.is_order_completed:
-                order.remaining_amount_display = 0.0
-            # Nếu đơn hàng bị hủy -> không tính toán (sẽ ẩn ở view)
-            elif order.order_state_custom == 'cancel':
+            if order.is_order_completed or order.order_state_custom in ('completed', 'cancel'):
                 order.remaining_amount_display = 0.0
             else:
                 # Tính số tiền còn lại = Tổng - Cọc đã thanh toán
