@@ -6,13 +6,6 @@
   position: relative;
 }
 
-/* Keep chatter actions usable without an intermittent horizontal scrollbar. */
-.dac-sale-form .o-mail-Chatter-topbar {
-  flex-wrap: wrap;
-  row-gap: 4px;
-  overflow-x: hidden !important;
-}
-
 .o_control_panel.dac-sale-order-control-panel-active {
   display: block !important;
   overflow: visible !important;

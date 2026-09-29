@@ -2,12 +2,10 @@
   "use strict";
 
   const STORAGE_KEY = "dac_chatter_width";
-  const TWO_COLUMN_MIN_WIDTH = 1024;
-  const MIN_CHATTER_WIDTH = 360;
   let isDragging = false;
 
   function initResizer() {
-    const formView = document.querySelector(".o_form_view.dac-sale-form");
+    const formView = document.querySelector(".o_form_view");
     if (!formView) return;
 
     // Find the sheet background and the chatter container
@@ -61,9 +59,9 @@
         const dx = initialX - e.clientX;
         let newWidth = initialWidth + dx;
 
-        // Keep the chatter wide enough for its action bar, capped at 60% of the form.
-        const minWidth = Math.min(MIN_CHATTER_WIDTH, formWidth);
-        const maxWidth = Math.max(minWidth, formWidth * 0.6);
+        // Constrain chatter width (min 260px, max 60% of form width)
+        const minWidth = 260;
+        const maxWidth = formWidth * 0.6;
         if (newWidth < minWidth) newWidth = minWidth;
         if (newWidth > maxWidth) newWidth = maxWidth;
 
@@ -104,8 +102,8 @@
     const formView = chatter.closest(".o_form_view");
     if (!formView) return;
     
-    // Keep this breakpoint in sync with sale_order_xxl_breakpoint.js and CSS.
-    if (window.innerWidth < TWO_COLUMN_MIN_WIDTH) {
+    // Check if the viewport width supports 2-column mode (min-width: 1024px)
+    if (window.innerWidth < 1024) {
       // Clear any custom width overrides when in mobile/single column mode
       chatter.style.removeProperty("width");
       chatter.style.removeProperty("flex");
@@ -116,12 +114,7 @@
 
     const savedWidth = localStorage.getItem(STORAGE_KEY);
     if (savedWidth) {
-      const formWidth = formView.getBoundingClientRect().width;
-      if (!formWidth) return;
-      const minWidth = Math.min(MIN_CHATTER_WIDTH, formWidth);
-      const maxWidth = Math.max(minWidth, formWidth * 0.6);
-      const safeWidth = Math.min(Math.max(Number(savedWidth) || minWidth, minWidth), maxWidth);
-      setChatterWidth(chatter, safeWidth);
+      setChatterWidth(chatter, `${savedWidth}px`);
     }
   }
 
@@ -145,7 +138,7 @@
   // Handle window resizing (e.g. going from wide screen to narrow screen)
   window.addEventListener("resize", function () {
     const chatter = document.querySelector(
-      ".o_form_view.dac-sale-form :is(.o_FormRenderer_chatterContainer, .o-mail-Chatter, .o_chatter, .o_form_view_chatter)"
+      ".o_FormRenderer_chatterContainer, .o-mail-Chatter, .o_chatter, .o_form_view_chatter"
     );
     if (chatter) {
       applySavedWidth(chatter);

@@ -9,9 +9,9 @@ patch(FormController.prototype, {
   get className() {
     const className = { ...super.className };
 
-    if (this.props.resModel !== "sale.order" || this.env.inDialog) {
-      return className;
-    }
+    // if (this.props.resModel !== "sale.order" || this.env.inDialog) {
+    //   return className;
+    // }
 
     // Odoo normally enables this layout only at its XXL breakpoint. Sales
     // orders need the wide form/chatter layout from 1024px instead.
