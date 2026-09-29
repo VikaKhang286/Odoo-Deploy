@@ -7,13 +7,13 @@
             <field name="inherit_id" ref="dac_erp.dac_sale_order_custom_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//notebook/page[2]" position="attributes">
-                    <attribute name="string">Thiết kế</attribute>
+                    <attribute name="string">Thông tin xe đẩy</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[3]" position="attributes">
-                    <attribute name="string">Sản xuất &amp; giao</attribute>
+                    <attribute name="string">Thiết kế - Đặt cọc</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[4]" position="attributes">
-                    <attribute name="string">Giao nhận &amp; lắp đặt</attribute>
+                    <attribute name="string">Sản xuất</attribute>
                 </xpath>
 
                 <xpath expr="//notebook" position="inside">
