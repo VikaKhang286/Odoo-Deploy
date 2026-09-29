@@ -311,7 +311,7 @@
 
                             <!-- TAB 2: THIẾT KẾ (Ẩn ở báo giá) -->
                             <page string="Thông tin Thiết kế" invisible="order_state_custom == 'quotation'">
-                                <div class="mb-3 p-2 border rounded bg-warning bg-opacity-10"
+                                <div class="mb-3 p-2 border rounded bg-opacity-10"
                                      invisible="not note_for_design and (is_design_user or is_production_user)">
                                     <div class="fw-bold mb-1 text-warning" invisible="not note_for_design">
                                         <i class="fa fa-pencil me-1"/>Ghi chú từ Sale:
@@ -348,7 +348,7 @@
 
                             <!-- TAB 3: SẢN XUẤT (Ẩn ở lúc báo giá và chưa tiến hành SX) -->
                             <page string="Thông tin Sản xuất" invisible="order_state_custom in ['quotation', 'deposit']">
-                                <div class="mb-3 p-2 border rounded bg-warning bg-opacity-10"
+                                <div class="mb-3 p-2 border rounded bg-opacity-10"
                                      invisible="not note_for_production and (is_production_user or is_design_user)">
                                     <div class="fw-bold mb-1 text-warning" invisible="not note_for_production">
                                         <i class="fa fa-pencil me-1"/>Ghi chú từ Sale:

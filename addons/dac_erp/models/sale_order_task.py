@@ -7,6 +7,15 @@ _logger = logging.getLogger(__name__)
 class SaleOrderTask(models.Model):
     _inherit = 'sale.order'
 
+    def _get_design_task_priority(self):
+        """Map the order priority flags to the design task priority."""
+        self.ensure_one()
+        if self.is_priority_today:
+            return 'urgent'
+        if self.is_priority:
+            return 'high'
+        return 'normal'
+
     def _sync_design_task(self):
         """Tạo hoặc cập nhật task thiết kế khi sale phân công / cập nhật deadline."""
         if not self.user_id_design:
@@ -22,10 +31,12 @@ class SaleOrderTask(models.Model):
         dl = self.design_deadline
         deadline_dt = (str(dl) + ' 23:59:00') if dl else False
         order_ref = self.order_number or self.name
+        task_priority = self._get_design_task_priority()
         if existing:
             existing.with_context(dac_skip_order_sync=True).write({
                 'assigned_user_id': self.user_id_design.id,
                 'deadline': deadline_dt,
+                'priority': task_priority,
             })
         else:
             Task.with_context(dac_skip_order_sync=True).create({
@@ -36,7 +47,7 @@ class SaleOrderTask(models.Model):
                 'deadline': deadline_dt,
                 'created_by_agent': 'sale_assignment',
                 'state': 'draft',
-                'priority': 'high' if self.is_priority or self.is_priority_today else 'normal',
+                'priority': task_priority,
             })
 
     def _sync_production_task(self):

@@ -482,7 +482,9 @@ class SaleOrder(models.Model):
 
         # Đồng bộ task khi phân công thiết kế hoặc cập nhật deadline
         # Bỏ qua khi sync ngược (task → order) đang chạy, tránh vòng lặp.
-        _DESIGN_TRIGGER = frozenset(['user_id_design', 'design_deadline'])
+        _DESIGN_TRIGGER = frozenset([
+            'user_id_design', 'design_deadline', 'is_priority', 'is_priority_today',
+        ])
         _PROD_TRIGGER = frozenset(['user_id_production', 'production_deadline'])
         if not self.env.context.get('dac_skip_task_sync'):
             if _DESIGN_TRIGGER & vals.keys():
