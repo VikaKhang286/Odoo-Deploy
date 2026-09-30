@@ -175,6 +175,16 @@ class SaleOrderPancake(models.Model):
             return self.action_open_pancake_conversation(self.conversation_id.id)
         return self.action_view_conversations()
 
+    def action_open_map_conversation_wizard(self):
+        """Keep legacy database views working after the action was renamed.
+
+        Some production views still call this historical method name.  The
+        current order/conversation flow no longer needs a separate mapping
+        wizard: an explicitly linked conversation is opened directly, while
+        orders without one show the customer's Pancake conversations.
+        """
+        return self.action_open_order_conversation()
+
     def action_open_pancake_conversation(self, conversation_id):
         """Mở trực tiếp cuộc hội thoại trên Pancake"""
         self.ensure_one()
