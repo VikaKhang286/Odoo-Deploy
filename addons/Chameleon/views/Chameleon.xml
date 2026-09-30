@@ -385,7 +385,7 @@
                         color: #475569;
                         line-height: 1.75;
                     }
-                    @media (max-width: 991.98px) {
+                    @media (max-width: 992px) {
                         .dac-home-hero,
                         .dac-home-grid {
                             grid-template-columns: 1fr !important;

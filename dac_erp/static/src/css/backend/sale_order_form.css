@@ -429,7 +429,7 @@
     flex-shrink: 0;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 992px) {
   /* FormCompiler still emits flex-column below Odoo's native XXL breakpoint. */
   .o_form_view.o_xxl_form_view .o_form_renderer {
     flex-flow: row nowrap !important;
@@ -925,7 +925,7 @@
   right: 20px;
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 992px) {
   .dac-action-bar-top,
   .dac-action-bar-flags,
   .dac-action-bar-money {

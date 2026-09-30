@@ -54,7 +54,7 @@ body.dac-resizing-chatter .dac-chatter-resizer {
 }
 
 /* Hide resizer on small/medium screens */
-@media (max-width: 991.98px) {
+@media (max-width: 992px) {
   .dac-chatter-resizer {
     display: none !important;
   }

@@ -3,7 +3,7 @@
 import { FormController } from "@web/views/form/form_controller";
 import { patch } from "@web/core/utils/patch";
 
-const SALE_ORDER_XXL_MIN_WIDTH = 1024;
+const SALE_ORDER_MIN_WIDTH = 992;
 
 patch(FormController.prototype, {
   get className() {
@@ -14,8 +14,8 @@ patch(FormController.prototype, {
     // }
 
     // Odoo normally enables this layout only at its XXL breakpoint. Sales
-    // orders need the wide form/chatter layout from 1024px instead.
-    if (window.innerWidth >= SALE_ORDER_XXL_MIN_WIDTH) {
+    // orders need the wide form/chatter layout from 992px instead.
+    if (window.innerWidth >= SALE_ORDER_MIN_WIDTH) {
       className["o_xxl_form_view"] = true;
     } else {
       delete className["o_xxl_form_view"];

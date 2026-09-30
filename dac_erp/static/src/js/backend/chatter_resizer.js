@@ -102,8 +102,8 @@
     const formView = chatter.closest(".o_form_view");
     if (!formView) return;
     
-    // Check if the viewport width supports 2-column mode (min-width: 1024px)
-    if (window.innerWidth < 1024) {
+    // Check if the viewport width supports 2-column mode (min-width: 992px)
+    if (window.innerWidth < 992) {
       // Clear any custom width overrides when in mobile/single column mode
       chatter.style.removeProperty("width");
       chatter.style.removeProperty("flex");

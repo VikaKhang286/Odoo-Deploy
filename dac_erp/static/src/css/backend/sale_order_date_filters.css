@@ -42,7 +42,7 @@
     color: #fff !important;
 }
 
-@media (max-width: 991.98px) {
+@media (max-width: 992px) {
     .dac-sale-date-filters {
         max-width: 100%;
         overflow-x: auto;
